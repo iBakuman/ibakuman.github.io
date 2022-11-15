@@ -1,0 +1,1317 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='What is Heap Sort Heap sort is a comparison-based sorting technique based on Binary Heap data structure. It is similar to the selection sort where we first find the minimum element and place the minimum element at the beginning. Repeat the same process for the remaining elements. Heap sort is an in-place algorithm. Its typical implementation is not stable, but can be made stable (See this ) Typically 2-3 times'><title>Heap Sort</title><link rel='canonical' href='https://ibakuman.github.io/p/heap-sort/'><link rel="prev" href="https://ibakuman.github.io/p/%E6%89%8B%E5%86%99-promise/" /><link rel="next" href="https://ibakuman.github.io/p/%E6%8F%AD%E7%A7%98-iife-%E8%AF%AD%E6%B3%95/" /><link rel="stylesheet" href="/css/style.min.bf10987aab49ea7004516b22a02f1f8e40112b95988746a53090a2d81db2d117.css" integrity="sha256-vxCYeqtJ6nAEUWsioC8fjkARK5WYh0alMJCi2B2y0Rc="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='Heap Sort'>
+<meta property='og:description' content='What is Heap Sort Heap sort is a comparison-based sorting technique based on Binary Heap data structure. It is similar to the selection sort where we first find the minimum element and place the minimum element at the beginning. Repeat the same process for the remaining elements. Heap sort is an in-place algorithm. Its typical implementation is not stable, but can be made stable (See this ) Typically 2-3 times'>
+<meta property='og:url' content='https://ibakuman.github.io/p/heap-sort/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Sort' /><meta property='article:tag' content='Heap' /><meta property='article:tag' content='Array' /><meta property='article:published_time' content='2022-10-31T10:11:00&#43;08:00'/><meta property='article:modified_time' content='2022-10-31T10:11:00&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="Heap Sort">
+<meta name="twitter:description" content="What is Heap Sort Heap sort is a comparison-based sorting technique based on Binary Heap data structure. It is similar to the selection sort where we first find the minimum element and place the minimum element at the beginning. Repeat the same process for the remaining elements. Heap sort is an in-place algorithm. Its typical implementation is not stable, but can be made stable (See this ) Typically 2-3 times"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "dark");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a 
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+            
+
+            <li >
+                <a href='/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                    
+                    <span>主页</span>
+                </a>
+            </li>
+        
+            
+
+            <li >
+                <a href='/%E5%85%B3%E4%BA%8E/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>关于</span>
+                </a>
+            </li>
+        
+            
+
+            <li >
+                <a href='/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>归档</span>
+                </a>
+            </li>
+        
+            
+
+            <li >
+                <a href='/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>搜索</span>
+                </a>
+            </li>
+        
+            
+
+            <li >
+                <a href='/%E9%93%BE%E6%8E%A5/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>链接</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">  
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/en/" >English</option>
+                        
+                            <option value="https://ibakuman.github.io/" selected>中文</option>
+                        
+                    </select>
+                </li>
+            
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>暗色模式</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/heap-sort/">
+                <img src="/gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_800x0_resize_q75_box.jpg 800w, /gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="532"
+                        loading="lazy"
+                        alt="Featured image of post Heap Sort" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/algorithm/" >
+                Algorithm
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/p/heap-sort/">Heap Sort</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Oct 31, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 5 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="what-is-heap-sort">What is Heap Sort</h2>
+<blockquote>
+<p>Heap sort is a comparison-based sorting technique based on <a class="link" href="http://www.geeksforgeeks.org/binary-heap/"  target="_blank" rel="noopener"
+    >Binary Heap</a> data structure. It is similar to the <a class="link" href="http://www.geeksforgeeks.org/selection-sort/"  target="_blank" rel="noopener"
+    >selection sort</a> where we first find the minimum element and place the minimum element at the beginning. Repeat the same process for the remaining elements.</p>
+</blockquote>
+<ul>
+<li>Heap sort is an <span class='ibakuman-inline-note'>in-place</span> algorithm.</li>
+<li>Its typical implementation is not stable, but can be made stable (See <a class="link" href="https://www.geeksforgeeks.org/stability-in-sorting-algorithms/"  target="_blank" rel="noopener"
+    >this</a> )</li>
+<li>Typically 2-3 times slower than well-implemented <a class="link" href="http://www.geeksforgeeks.org/quick-sort/"  target="_blank" rel="noopener"
+    >QuickSort</a> .  <span class='ibakuman-inline-note'>The reason for slowness is a lack of locality of reference.</span></li>
+</ul>
+<h3 id="advantages-of-heapsort">Advantages of heapsort:</h3>
+<ul>
+<li>Efficiency – The time required to perform Heap sort increases <span class='ibakuman-inline-translation'>logarithmically<sub> { 按对数律 }</sub></span> while other algorithms may grow <span class='ibakuman-inline-translation'>exponentially<sub> { 按指数律 }</sub></span> slower as the number of items to sort increases. This sorting algorithm is very efficient.</li>
+<li>Memory Usage –<span class='ibakuman-inline-note'> Memory usage is minimal because apart from what is necessary to hold the initial list of items to be sorted, it needs no additional memory space to work</span>.</li>
+<li>Simplicity –  It is simpler to understand than other equally efficient sorting algorithms because it does not use advanced computer science concepts such as recursion.</li>
+</ul>
+<h3 id="applications-of-heapsort">Applications of HeapSort:</h3>
+<ul>
+<li>Heapsort is mainly used in <span class='ibakuman-inline-translation'>hybrid<sub> { a mixture of different things or styles }</sub></span> algorithms like the <a class="link" href="https://www.geeksforgeeks.org/introsort-or-introspective-sort/"  target="_blank" rel="noopener"
+    >IntroSort</a> .</li>
+<li><a class="link" href="https://www.geeksforgeeks.org/nearly-sorted-algorithm/"  target="_blank" rel="noopener"
+    >Sort a nearly sorted (or K sorted) array</a> .</li>
+<li><a class="link" href="https://www.geeksforgeeks.org/k-largestor-smallest-elements-in-an-array/"  target="_blank" rel="noopener"
+    >k largest(or smallest) elements in an array</a> .</li>
+</ul>
+<p>The heap sort algorithm has limited uses because Quicksort and Mergesort are better in practice. <span class='ibakuman-inline-translation'>Nevertheless<sub> { 尽管如此 }</sub></span>, the Heap data structure itself is <span class='ibakuman-inline-translation'>enormously<sub> { 范围广地，极大地 }</sub></span> used. See <a class="link" href="https://www.geeksforgeeks.org/applications-of-heap-data-structure/"  target="_blank" rel="noopener"
+    >Applications of Heap Data Structure</a></p>
+<h2 id="what-is-meant-by-heapify">What is meant by Heapify?</h2>
+<p>Heapify is the process of creating a heap data structure from a binary tree represented using an array. It is used to create Min-Heap or Max-heap. <span class='ibakuman-inline-note'>Start from the first index of the non-leaf node whose index is given by $n/2 – 1$</span>. Heapify uses recursion</p>
+<h3 id="algorithm-for-heapify">Algorithm for Heapify:</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Algorithm: Max-Heapify(numbers[], i)
+</span></span><span class="line"><span class="cl">leftchild := numbers[2i]
+</span></span><span class="line"><span class="cl">rightchild := numbers [2i + 1]
+</span></span><span class="line"><span class="cl">if leftchild ≤ numbers[].size and numbers[leftchild] &gt; numbers[i]
+</span></span><span class="line"><span class="cl">   largest := leftchild
+</span></span><span class="line"><span class="cl">else
+</span></span><span class="line"><span class="cl">   largest := i
+</span></span><span class="line"><span class="cl">if rightchild ≤ numbers[].size and numbers[rightchild] &gt; numbers[largest]
+</span></span><span class="line"><span class="cl">   largest := rightchild
+</span></span><span class="line"><span class="cl">if largest ≠ i
+</span></span><span class="line"><span class="cl">   swap numbers[i] with numbers[largest]
+</span></span><span class="line"><span class="cl">   Max-Heapify(numbers, largest)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="how-does-heapify-work">How does Heapify work?</h3>
+<p>Array = {1,3, 5,4, 6,13,10,9, 8,15,17}<br>
+Corresponding Complete Binary Tree is:<br>
+<div class="echarts" id="id-1" style="width: 80%; height: 40rem;"></div></p>
+<p>The task to build a Max-Heap from above array.<br>
+Total Nodes = 11.<br>
+<span class='ibakuman-inline-note'>Last Non-leaf node index = (11/2) – 1 = 4.</span><br>
+Therefore, last non-leaf node = 6.<br>
+To build the heap, heapify only the nodes: [1,3, 5,4, 6] in reverse order.<br>
+Heapify 6: Swap 6 and 17.<br>
+<div class="echarts" id="id-2" style="width: 80%; height: 40rem;"></div></p>
+<p>Heapify 4: Swap 4 and 9.<br>
+<div class="echarts" id="id-3" style="width: 80%; height: 40rem;"></div></p>
+<p>Heapify 5: Swap 13 and 5.<br>
+<div class="echarts" id="id-4" style="width: 80%; height: 40rem;"></div></p>
+<p><span class='ibakuman-inline-note'>Heapify 3: First Swap 3 and 17, again swap 3 and 15.</span><br>
+<div class="echarts" id="id-5" style="width: 80%; height: 40rem;"></div></p>
+<p><span class='ibakuman-inline-note'>Heapify 1: First Swap 1 and 17, again swap 1 and 15, finally swap 1 and 6.</span><br>
+<div class="echarts" id="id-6" style="width: 80%; height: 40rem;"></div></p>
+<h2 id="heap-sort-algorithm">Heap Sort Algorithm</h2>
+<p>To solve the problem follow the below idea:</p>
+<blockquote>
+<p> First convert the array into heap data structure using heapify, <span class='ibakuman-inline-note'>than one by one delete the root node of the Max-heap and replace it with the last node in the heap and then heapify the root of the heap</span>. Repeat this process until size of heap is greater than 1.</p>
+</blockquote>
+<p>Follow the given steps to solve the problem:</p>
+<ul>
+<li>Build a max heap from the input data.</li>
+<li>At this point, the maximum element is stored at the root of the heap. Replace it with the last item of the heap <span class='ibakuman-inline-translation'>followed by reducing the size of the heap by 1<sub> { 然后将堆的大小减一 }</sub></span>. Finally, heapify the root of the tree.</li>
+<li>Repeat step 2 while the size of the heap is greater than 1.</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Note<i class="details-icon fas fa-chevron-left fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">The heapify procedure can only be applied to a node if its children nodes are heapified. So the heapification must be performed in the bottom-up order.</div>
+        </div>
+    </div>
+<h2 id="detailed-working-of-heap-sort">Detailed Working of Heap Sort</h2>
+<p>To understand heap sort more clearly, let’s take an unsorted array and try to sort it using heap sort.<br>
+Consider the array: arr[] = {4,10,3, 5,1}.</p>
+<p>Build Complete Binary Tree: Build a complete binary tree from the array.</p>
+<p><img src="/p/heap-sort/2.png"
+	width="660"
+	height="366"
+	srcset="/p/heap-sort/2_hu4900c210ae26f26fb203dffc43535b33_47716_480x0_resize_box_3.png 480w, /p/heap-sort/2_hu4900c210ae26f26fb203dffc43535b33_47716_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Build complete binary tree from the array"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="180"
+		data-flex-basis="432px"
+	
+>
+</p>
+<p>Transform into max heap: After that, the task is to construct a tree from that unsorted array and try to convert it into <a class="link" href="https://www.geeksforgeeks.org/difference-between-min-heap-and-max-heap/"  target="_blank" rel="noopener"
+    >max heap.</a></p>
+<ul>
+<li><span class='ibakuman-inline-note'>To transform a heap into a max-heap, the parent node should always be greater than or equal to the child nodes</span></li>
+<li>Here, in this example, as the parent node 4 is smaller than the child node 10, thus, swap them to build a max-heap.</li>
+</ul>
+<p>Transform it into a max heap image widget</p>
+<ul>
+<li>Now, as seen, 4 as a parent is smaller than the child 5, thus swap both of these again and the resulted heap and array should be like this:</li>
+</ul>
+<p><img src="/p/heap-sort/5.png"
+	width="660"
+	height="366"
+	srcset="/p/heap-sort/5_hu71086e51d5320530016b9b821e95f71a_65250_480x0_resize_box_3.png 480w, /p/heap-sort/5_hu71086e51d5320530016b9b821e95f71a_65250_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Make the tree a max heap"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="180"
+		data-flex-basis="432px"
+	
+>
+</p>
+<p>Perform heap sort: Remove the maximum element in each step (i.e., move it to the end position and remove that) and then consider the remaining elements and transform it into a max heap.</p>
+<ul>
+<li>Delete the root element (10) from the max heap. In order to delete this node, try to swap it with the last node, i.e. (1). After removing the root element, again heapify it to convert it into max heap.</li>
+<li>Resulted heap and array should look like this:</li>
+</ul>
+<p><img src="/p/heap-sort/4.png"
+	width="571"
+	height="660"
+	srcset="/p/heap-sort/4_hu6e0db93f947880d9b4bfcf9e252313d8_75483_480x0_resize_box_3.png 480w, /p/heap-sort/4_hu6e0db93f947880d9b4bfcf9e252313d8_75483_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Remove 10 and perform heapify"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="86"
+		data-flex-basis="207px"
+	
+>
+</p>
+<ul>
+<li>Repeat the above steps and it will look like the following:</li>
+</ul>
+<p><img src="/p/heap-sort/3.png"
+	width="660"
+	height="587"
+	srcset="/p/heap-sort/3_hud6587547c3bdb103b91eaca0b4c1bfc6_82671_480x0_resize_box_3.png 480w, /p/heap-sort/3_hud6587547c3bdb103b91eaca0b4c1bfc6_82671_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Remove 5 and perform heapify"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="112"
+		data-flex-basis="269px"
+	
+>
+</p>
+<ul>
+<li>Now remove the root (i.e. 3) again and perform heapify.</li>
+</ul>
+<p><img src="/p/heap-sort/6.png"
+	width="660"
+	height="402"
+	srcset="/p/heap-sort/6_hu38e811c199b4fd0f8e72f47a482c03cf_65400_480x0_resize_box_3.png 480w, /p/heap-sort/6_hu38e811c199b4fd0f8e72f47a482c03cf_65400_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Remove 4 and perform heapify"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="164"
+		data-flex-basis="394px"
+	
+>
+</p>
+<ul>
+<li>Now when the root is removed once again it is sorted. and the sorted array will be like arr[] = {1,3, 4,5, 10}.</li>
+</ul>
+<p><img src="/p/heap-sort/1.png"
+	width="660"
+	height="195"
+	srcset="/p/heap-sort/1_hu758a9263bdffce68780425d5ff31f156_31173_480x0_resize_box_3.png 480w, /p/heap-sort/1_hu758a9263bdffce68780425d5ff31f156_31173_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="The sorted array"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="338"
+		data-flex-basis="812px"
+	
+>
+</p>
+<h2 id="implementation-of-heap-sort">Implementation of Heap Sort</h2>
+<p>Below is the implementation of the above approach:</p>
+
+
+
+
+
+<div class="ibakuman-tabs" id="tabs-1"><input type="radio" class="ibakuman-tabs__input" name="tabs-1" id="tabs-1-0" checked />
+    <label for="tabs-1-0">JavaScript</label>
+    <div class="ibakuman-tabs__content"><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// JavaScript program for implementation
+</span></span></span><span class="line"><span class="cl"><span class="c1">// of Heap Sort
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">sort</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">N</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Build heap (rearrange array)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">N</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">heapify</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">N</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// One by one extract an element from heap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Move current root to end
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kd">var</span> <span class="nx">temp</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">temp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// call max heapify on the reduced heap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nx">heapify</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// To heapify a subtree rooted with node i which is
+</span></span></span><span class="line"><span class="cl"><span class="c1">// an index in arr[]. n is size of heap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">function</span> <span class="nx">heapify</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">N</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">largest</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span> <span class="c1">// Initialize largest as root
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// left = 2*i + 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// right = 2*i + 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// If left child is larger than root
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">l</span> <span class="o">&lt;</span> <span class="nx">N</span> <span class="o">&amp;&amp;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">l</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">largest</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">largest</span> <span class="o">=</span> <span class="nx">l</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// If right child is larger than largest so far
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">r</span> <span class="o">&lt;</span> <span class="nx">N</span> <span class="o">&amp;&amp;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">r</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">largest</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">largest</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// If largest is not root
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">largest</span> <span class="o">!=</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">var</span> <span class="nx">swap</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">largest</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arr</span><span class="p">[</span><span class="nx">largest</span><span class="p">]</span> <span class="o">=</span> <span class="nx">swap</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Recursively heapify the affected sub-tree
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nx">heapify</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">N</span><span class="p">,</span> <span class="nx">largest</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* A utility function to print array of size n */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">printArray</span><span class="p">(</span><span class="nx">arr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">N</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">N</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&#34; &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">N</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">sort</span><span class="p">(</span><span class="nx">arr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&#34;Sorted array is&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">printArray</span><span class="p">(</span><span class="nx">arr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// This code is contributed by SoumikMondal
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><input type="radio" class="ibakuman-tabs__input" name="tabs-1" id="tabs-1-1"  />
+    <label for="tabs-1-1">C&#43;&#43;</label>
+    <div class="ibakuman-tabs__content"><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="c1">// C++ program for implementation of Heap Sort
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// To heapify a subtree rooted with node i
+</span></span></span><span class="line"><span class="cl"><span class="c1">// which is an index in arr[].
+</span></span></span><span class="line"><span class="cl"><span class="c1">// n is size of heap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">heapify</span><span class="p">(</span><span class="kt">int</span> <span class="n">arr</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">N</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Initialize largest as root
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">largest</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// left = 2*i + 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// right = 2*i + 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// If left child is larger than root
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">&lt;</span> <span class="n">N</span> <span class="o">&amp;&amp;</span> <span class="n">arr</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">largest</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">largest</span> <span class="o">=</span> <span class="n">l</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// If right child is larger than largest
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// so far
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="n">N</span> <span class="o">&amp;&amp;</span> <span class="n">arr</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">largest</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">largest</span> <span class="o">=</span> <span class="n">r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// If largest is not root
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">largest</span> <span class="o">!=</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">swap</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="n">largest</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Recursively heapify the affected
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// sub-tree
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">heapify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">largest</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Main function to do heap sort
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">heapSort</span><span class="p">(</span><span class="kt">int</span> <span class="n">arr</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Build heap (rearrange array)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">N</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">heapify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// One by one extract an element
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// from heap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Move current root to end
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">swap</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// call max heapify on the reduced heap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">heapify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// A utility function to print array of size n
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">printArray</span><span class="p">(</span><span class="kt">int</span> <span class="n">arr</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="s">&#34; &#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Driver&#39;s code
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">arr</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">/</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Function call
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">heapSort</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;Sorted array is </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printArray</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></div><input type="radio" class="ibakuman-tabs__input" name="tabs-1" id="tabs-1-2"  />
+    <label for="tabs-1-2">C</label>
+    <div class="ibakuman-tabs__content"><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Java program for implementation of Heap Sort
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="n">public</span> <span class="n">class</span> <span class="n">HeapSort</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">public</span> <span class="kt">void</span> <span class="n">sort</span><span class="p">(</span><span class="kt">int</span> <span class="n">arr</span><span class="p">[])</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="n">arr</span><span class="p">.</span><span class="n">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Build heap (rearrange array)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">N</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">heapify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// One by one extract an element from heap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// Move current root to end
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="kt">int</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// call max heapify on the reduced heap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">heapify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// To heapify a subtree rooted with node i which is
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// an index in arr[]. n is size of heap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">void</span> <span class="n">heapify</span><span class="p">(</span><span class="kt">int</span> <span class="n">arr</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">N</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">largest</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span> <span class="c1">// Initialize largest as root
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// left = 2*i + 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// right = 2*i + 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// If left child is larger than root
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">&lt;</span> <span class="n">N</span> <span class="o">&amp;&amp;</span> <span class="n">arr</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">largest</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">            <span class="n">largest</span> <span class="o">=</span> <span class="n">l</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// If right child is larger than largest so far
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="n">N</span> <span class="o">&amp;&amp;</span> <span class="n">arr</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">largest</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">            <span class="n">largest</span> <span class="o">=</span> <span class="n">r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// If largest is not root
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">largest</span> <span class="o">!=</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">int</span> <span class="n">swap</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">largest</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arr</span><span class="p">[</span><span class="n">largest</span><span class="p">]</span> <span class="o">=</span> <span class="n">swap</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// Recursively heapify the affected sub-tree
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">heapify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">largest</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/* A utility function to print array of size n */</span>
+</span></span><span class="line"><span class="cl">    <span class="k">static</span> <span class="kt">void</span> <span class="n">printArray</span><span class="p">(</span><span class="kt">int</span> <span class="n">arr</span><span class="p">[])</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="n">arr</span><span class="p">.</span><span class="n">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#34; &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Driver&#39;s code
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">public</span> <span class="k">static</span> <span class="kt">void</span> <span class="n">main</span><span class="p">(</span><span class="n">String</span> <span class="n">args</span><span class="p">[])</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">arr</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="n">arr</span><span class="p">.</span><span class="n">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Function call
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">HeapSort</span> <span class="n">ob</span> <span class="o">=</span> <span class="n">new</span> <span class="n">HeapSort</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ob</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&#34;Sorted array is&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">printArray</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="ibakuman-toolbar">
+    <span class="ibakuman-toolbar__toggle-open">
+      <i class="arrow fas fa-chevron-left fa-fw" aria-hidden="true"></i>
+    </span>
+    <span class="ibakuman-toolbar__ellipses">
+      <i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i>
+    </span>
+    <span class="ibakuman-toolbar__copy">
+      <i class="far fa-copy fa-fw" aria-hidden="true"></i>
+    </span>
+  </div>
+</div>
+
+<h2 id="some-faqs-related-to-heap-sort">Some FAQs related to Heap Sort</h2>
+<h3 id="what-are-the-two-phases-of-heap-sort">What are the two phases of Heap Sort?</h3>
+<p>The heap sort algorithm consists of two phases. In the first phase the array is converted into a max heap. And in the second phase the highest element is removed (i.e., the one at the tree root) and the remaining elements are used to create a new max heap.</p>
+<h3 id="why-heap-sort-is-not-stable">Why Heap Sort is not stable?</h3>
+<p>Heap sort algorithm is not a stable algorithm. This algorithm is not stable because the operations that are performed in a heap can change the relative ordering of the equivalent keys.</p>
+<h3 id="is-heap-sort-an-example-of-divide-and-conquer-algorithm">Is Heap Sort an example of “Divide and Conquer” algorithm?</h3>
+<p>Heap sort is NOT at all a Divide and Conquer algorithm. It uses a heap data structure to efficiently sort its element and not a “divide and conquer approach” to sort the elements.</p>
+<h3 id="which-sorting-algorithm-is-better--heap-sort-or-merge-sort">Which sorting algorithm is better – Heap sort or Merge Sort?</h3>
+<p>The answer lies in the comparison of their time complexity and space requirement. The Merge sort is slightly faster than the Heap sort. But on the other hand merge sort takes extra memory. Depending on the requirement, one should choose which one to use.</p>
+<h3 id="why-heap-sort-better-than-selection-sort">Why Heap sort better than Selection sort?</h3>
+<p>Heap sort is similar to selection sort, but with a better way to get the maximum element. It takes advantage of the heap data structure to get the maximum element in constant time.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/sort/">Sort</a>
+        
+            <a href="/tags/heap/">Heap</a>
+        
+            <a href="/tags/array/">Array</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">相关文章</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/program-for-array-rotation/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/19.ce3d7e9ebc658f78912c63e56a8e08f1_hu3c9ceb46f3c27ef42abe81330e191c65_524406_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Program for array rotation"
+                        
+                        data-hash="md5-zj1&#43;nrxlj3iRLGPlao4I8Q==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Program for array rotation</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2022 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.13.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#what-is-heap-sort">What is Heap Sort</a>
+      <ol>
+        <li><a href="#advantages-of-heapsort">Advantages of heapsort:</a></li>
+        <li><a href="#applications-of-heapsort">Applications of HeapSort:</a></li>
+      </ol>
+    </li>
+    <li><a href="#what-is-meant-by-heapify">What is meant by Heapify?</a>
+      <ol>
+        <li><a href="#algorithm-for-heapify">Algorithm for Heapify:</a></li>
+        <li><a href="#how-does-heapify-work">How does Heapify work?</a></li>
+      </ol>
+    </li>
+    <li><a href="#heap-sort-algorithm">Heap Sort Algorithm</a></li>
+    <li><a href="#detailed-working-of-heap-sort">Detailed Working of Heap Sort</a></li>
+    <li><a href="#implementation-of-heap-sort">Implementation of Heap Sort</a></li>
+    <li><a href="#some-faqs-related-to-heap-sort">Some FAQs related to Heap Sort</a>
+      <ol>
+        <li><a href="#what-are-the-two-phases-of-heap-sort">What are the two phases of Heap Sort?</a></li>
+        <li><a href="#why-heap-sort-is-not-stable">Why Heap Sort is not stable?</a></li>
+        <li><a href="#is-heap-sort-an-example-of-divide-and-conquer-algorithm">Is Heap Sort an example of “Divide and Conquer” algorithm?</a></li>
+        <li><a href="#which-sorting-algorithm-is-better--heap-sort-or-merge-sort">Which sorting algorithm is better – Heap sort or Merge Sort?</a></li>
+        <li><a href="#why-heap-sort-better-than-selection-sort">Why Heap sort better than Selection sort?</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gh/zhixuan2333/gh-blog@v0.1.0/js/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/mhchem.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"echarts":{"darkTheme":{"backgroundColor":"rgba(41,52,65,1)","bar":{"itemStyle":{"barBorderColor":"#ccc","barBorderWidth":0}},"boxplot":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"candlestick":{"itemStyle":{"borderColor":"#fc97af","borderColor0":"#87f7cf","borderWidth":1,"color":"#fc97af","color0":"transparent"}},"categoryAxis":{"axisLabel":{"color":"#aaaaaa","show":true},"axisLine":{"lineStyle":{"color":"#666666"},"show":true},"axisTick":{"lineStyle":{"color":"#333"},"show":true},"splitArea":{"areaStyle":{"color":["rgba(250,250,250,0.05)","rgba(200,200,200,0.02)"]},"show":false},"splitLine":{"lineStyle":{"color":["#e6e6e6"]},"show":false}},"color":["#fc97af","#87f7cf","#f7f494","#72ccff","#f7c5a0","#d4a4eb","#d2f5a6","#76f2f2"],"dataZoom":{"backgroundColor":"rgba(255,255,255,0)","dataBackgroundColor":"rgba(114,204,255,1)","fillerColor":"rgba(114,204,255,0.2)","handleColor":"#72ccff","handleSize":"100%","textStyle":{"color":"#333333"}},"funnel":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"gauge":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"geo":{"emphasis":{"itemStyle":{"areaColor":"rgba(255,178,72,1)","borderColor":"#eb8146","borderWidth":1},"label":{"color":"rgb(137,52,72)"}},"itemStyle":{"areaColor":"#f3f3f3","borderColor":"#999999","borderWidth":0.5},"label":{"color":"#893448"}},"graph":{"color":["#fc97af","#87f7cf","#f7f494","#72ccff","#f7c5a0","#d4a4eb","#d2f5a6","#76f2f2"],"itemStyle":{"borderColor":"#ccc","borderWidth":0},"label":{"color":"#293441"},"lineStyle":{"color":"#ffffff","width":1},"smooth":true,"symbol":"emptyCircle","symbolSize":3},"legend":{"textStyle":{"color":"#999999"}},"line":{"itemStyle":{"borderWidth":1},"lineStyle":{"width":2},"smooth":true,"symbol":"circle","symbolSize":6},"logAxis":{"axisLabel":{"color":"#aaaaaa","show":true},"axisLine":{"lineStyle":{"color":"#666666"},"show":true},"axisTick":{"lineStyle":{"color":"#333"},"show":true},"splitArea":{"areaStyle":{"color":["rgba(250,250,250,0.05)","rgba(200,200,200,0.02)"]},"show":true},"splitLine":{"lineStyle":{"color":["#e6e6e6"]},"show":true}},"map":{"emphasis":{"itemStyle":{"areaColor":"rgba(255,178,72,1)","borderColor":"#eb8146","borderWidth":1},"label":{"color":"rgb(137,52,72)"}},"itemStyle":{"areaColor":"#f3f3f3","borderColor":"#999999","borderWidth":0.5},"label":{"color":"#893448"}},"markPoint":{"emphasis":{"label":{"color":"#293441"}},"label":{"color":"#293441"}},"parallel":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"pie":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"radar":{"itemStyle":{"borderWidth":1},"lineStyle":{"width":2},"smooth":true,"symbol":"circle","symbolSize":3},"sankey":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"scatter":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"textStyle":{},"timeAxis":{"axisLabel":{"color":"#aaaaaa","show":true},"axisLine":{"lineStyle":{"color":"#666666"},"show":true},"axisTick":{"lineStyle":{"color":"#333"},"show":true},"splitArea":{"areaStyle":{"color":["rgba(250,250,250,0.05)","rgba(200,200,200,0.02)"]},"show":false},"splitLine":{"lineStyle":{"color":["#e6e6e6"]},"show":true}},"timeline":{"checkpointStyle":{"borderColor":"#fc97af","color":"#fc97af"},"controlStyle":{"borderColor":"#87f7cf","borderWidth":0.5,"color":"#87f7cf"},"emphasis":{"controlStyle":{"borderColor":"#87f7cf","borderWidth":0.5,"color":"#87f7cf"},"itemStyle":{"color":"#f7f494"},"label":{"color":"#87f7cf"}},"itemStyle":{"borderWidth":1,"color":"#87f7cf"},"label":{"color":"#87f7cf"},"lineStyle":{"color":"#87f7cf","width":1}},"title":{"subtextStyle":{"color":"#dddddd"},"textStyle":{"color":"#ffffff"}},"toolbox":{"emphasis":{"iconStyle":{"borderColor":"#666666"}},"iconStyle":{"borderColor":"#999999"}},"tooltip":{"axisPointer":{"crossStyle":{"color":"#cccccc","width":1},"lineStyle":{"color":"#cccccc","width":1}}},"valueAxis":{"axisLabel":{"color":"#aaaaaa","show":true},"axisLine":{"lineStyle":{"color":"#666666"},"show":true},"axisTick":{"lineStyle":{"color":"#333"},"show":true},"splitArea":{"areaStyle":{"color":["rgba(250,250,250,0.05)","rgba(200,200,200,0.02)"]},"show":false},"splitLine":{"lineStyle":{"color":["#e6e6e6"]},"show":true}},"visualMap":{"color":["#fc97af","#87f7cf"]}},"data":{"id-1":"{\"series\":[{\"animationDurationUpdate\":750,\"bottom\":\"10%\",\"data\":[{\"children\":[{\"children\":[{\"children\":[{\"name\":\"9\"},{\"name\":\"8\"}],\"name\":\"4\"},{\"children\":[{\"name\":\"15\"},{\"name\":\"17\"}],\"name\":\"6\"}],\"name\":\"3\"},{\"children\":[{\"name\":\"13\"},{\"name\":\"10\"}],\"name\":\"5\"}],\"name\":\"1\"}],\"initialTreeDepth\":3,\"itemStyle\":{\"color\":\"purple\"},\"label\":{\"fontSize\":16},\"left\":\"2%\",\"lineStyle\":{\"curveness\":0},\"orient\":\"vertical\",\"right\":\"2%\",\"symbol\":\"circle\",\"symbolSize\":40,\"top\":\"10%\",\"type\":\"tree\"}]}","id-2":"{\"series\":[{\"animationDurationUpdate\":750,\"bottom\":\"10%\",\"data\":[{\"children\":[{\"children\":[{\"children\":[{\"name\":\"9\"},{\"name\":\"8\"}],\"name\":\"4\"},{\"children\":[{\"name\":\"15\"},{\"name\":\"6\"}],\"name\":\"17\"}],\"name\":\"3\"},{\"children\":[{\"name\":\"13\"},{\"name\":\"10\"}],\"name\":\"5\"}],\"name\":\"1\"}],\"initialTreeDepth\":3,\"itemStyle\":{\"color\":\"purple\"},\"label\":{\"fontSize\":16},\"left\":\"2%\",\"lineStyle\":{\"curveness\":0},\"orient\":\"vertical\",\"right\":\"2%\",\"symbol\":\"circle\",\"symbolSize\":40,\"top\":\"10%\",\"type\":\"tree\"}]}","id-3":"{\"series\":[{\"animationDurationUpdate\":750,\"bottom\":\"10%\",\"data\":[{\"children\":[{\"children\":[{\"children\":[{\"name\":\"4\"},{\"name\":\"8\"}],\"name\":\"9\"},{\"children\":[{\"name\":\"15\"},{\"name\":\"6\"}],\"name\":\"17\"}],\"name\":\"3\"},{\"children\":[{\"name\":\"13\"},{\"name\":\"10\"}],\"name\":\"5\"}],\"name\":\"1\"}],\"initialTreeDepth\":3,\"itemStyle\":{\"color\":\"purple\"},\"label\":{\"fontSize\":16},\"left\":\"2%\",\"lineStyle\":{\"curveness\":0},\"orient\":\"vertical\",\"right\":\"2%\",\"symbol\":\"circle\",\"symbolSize\":40,\"top\":\"10%\",\"type\":\"tree\"}]}","id-4":"{\"series\":[{\"animationDurationUpdate\":750,\"bottom\":\"10%\",\"data\":[{\"children\":[{\"children\":[{\"children\":[{\"name\":\"4\"},{\"name\":\"8\"}],\"name\":\"9\"},{\"children\":[{\"name\":\"15\"},{\"name\":\"6\"}],\"name\":\"17\"}],\"name\":\"3\"},{\"children\":[{\"name\":\"5\"},{\"name\":\"10\"}],\"name\":\"13\"}],\"name\":\"1\"}],\"initialTreeDepth\":3,\"itemStyle\":{\"color\":\"purple\"},\"label\":{\"fontSize\":16},\"left\":\"2%\",\"lineStyle\":{\"curveness\":0},\"orient\":\"vertical\",\"right\":\"2%\",\"symbol\":\"circle\",\"symbolSize\":40,\"top\":\"10%\",\"type\":\"tree\"}]}","id-5":"{\"series\":[{\"animationDurationUpdate\":750,\"bottom\":\"10%\",\"data\":[{\"children\":[{\"children\":[{\"children\":[{\"name\":\"4\"},{\"name\":\"8\"}],\"name\":\"9\"},{\"children\":[{\"name\":\"3\"},{\"name\":\"6\"}],\"name\":\"15\"}],\"name\":\"17\"},{\"children\":[{\"name\":\"5\"},{\"name\":\"10\"}],\"name\":\"13\"}],\"name\":\"1\"}],\"initialTreeDepth\":3,\"itemStyle\":{\"color\":\"purple\"},\"label\":{\"fontSize\":16},\"left\":\"2%\",\"lineStyle\":{\"curveness\":0},\"orient\":\"vertical\",\"right\":\"2%\",\"symbol\":\"circle\",\"symbolSize\":40,\"top\":\"10%\",\"type\":\"tree\"}]}","id-6":"{\"series\":[{\"animationDurationUpdate\":750,\"bottom\":\"10%\",\"data\":[{\"children\":[{\"children\":[{\"children\":[{\"name\":\"4\"},{\"name\":\"8\"}],\"name\":\"9\"},{\"children\":[{\"name\":\"3\"},{\"name\":\"1\"}],\"name\":\"6\"}],\"name\":\"15\"},{\"children\":[{\"name\":\"5\"},{\"name\":\"10\"}],\"name\":\"13\"}],\"name\":\"17\"}],\"initialTreeDepth\":3,\"itemStyle\":{\"color\":\"purple\"},\"label\":{\"fontSize\":16},\"left\":\"2%\",\"lineStyle\":{\"curveness\":0},\"orient\":\"vertical\",\"right\":\"2%\",\"symbol\":\"circle\",\"symbolSize\":40,\"top\":\"10%\",\"type\":\"tree\"}]}"},"lightTheme":{"backgroundColor":"rgba(0,0,0,0)","bar":{"itemStyle":{"barBorderColor":"#ccc","barBorderWidth":0}},"boxplot":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"candlestick":{"itemStyle":{"borderColor":"#d87a80","borderColor0":"#2ec7c9","borderWidth":1,"color":"#d87a80","color0":"#2ec7c9"}},"categoryAxis":{"axisLabel":{"color":"#333","show":true},"axisLine":{"lineStyle":{"color":"#008acd"},"show":true},"axisTick":{"lineStyle":{"color":"#333"},"show":true},"splitArea":{"areaStyle":{"color":["rgba(250,250,250,0.3)","rgba(200,200,200,0.3)"]},"show":false},"splitLine":{"lineStyle":{"color":["#eee"]},"show":false}},"color":["#2ec7c9","#b6a2de","#5ab1ef","#ffb980","#d87a80","#8d98b3","#e5cf0d","#97b552","#95706d","#dc69aa","#07a2a4","#9a7fd1","#588dd5","#f5994e","#c05050","#59678c","#c9ab00","#7eb00a","#6f5553","#c14089"],"dataZoom":{"backgroundColor":"rgba(47,69,84,0)","dataBackgroundColor":"#efefff","fillerColor":"rgba(182,162,222,0.2)","handleColor":"#008acd","handleSize":"100%","textStyle":{"color":"#333333"}},"funnel":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"gauge":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"geo":{"emphasis":{"itemStyle":{"areaColor":"rgba(254,153,78,1)","borderColor":"#444","borderWidth":1},"label":{"color":"rgb(100,0,0)"}},"itemStyle":{"areaColor":"#dddddd","borderColor":"#eeeeee","borderWidth":0.5},"label":{"color":"#d87a80"}},"graph":{"color":["#2ec7c9","#b6a2de","#5ab1ef","#ffb980","#d87a80","#8d98b3","#e5cf0d","#97b552","#95706d","#dc69aa","#07a2a4","#9a7fd1","#588dd5","#f5994e","#c05050","#59678c","#c9ab00","#7eb00a","#6f5553","#c14089"],"itemStyle":{"borderColor":"#ccc","borderWidth":0},"label":{"color":"#eeeeee"},"lineStyle":{"color":"#aaaaaa","width":1},"smooth":true,"symbol":"emptyCircle","symbolSize":3},"legend":{"textStyle":{"color":"#333333"}},"line":{"itemStyle":{"borderWidth":1},"lineStyle":{"width":2},"smooth":true,"symbol":"emptyCircle","symbolSize":5},"logAxis":{"axisLabel":{"color":"#333","show":true},"axisLine":{"lineStyle":{"color":"#008acd"},"show":true},"axisTick":{"lineStyle":{"color":"#333"},"show":true},"splitArea":{"areaStyle":{"color":["rgba(250,250,250,0.3)","rgba(200,200,200,0.3)"]},"show":true},"splitLine":{"lineStyle":{"color":["#eee"]},"show":true}},"map":{"emphasis":{"itemStyle":{"areaColor":"rgba(254,153,78,1)","borderColor":"#444","borderWidth":1},"label":{"color":"rgb(100,0,0)"}},"itemStyle":{"areaColor":"#dddddd","borderColor":"#eeeeee","borderWidth":0.5},"label":{"color":"#d87a80"}},"markPoint":{"emphasis":{"label":{"color":"#eeeeee"}},"label":{"color":"#eeeeee"}},"parallel":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"pie":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"radar":{"itemStyle":{"borderWidth":1},"lineStyle":{"width":2},"smooth":true,"symbol":"emptyCircle","symbolSize":3},"sankey":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"scatter":{"itemStyle":{"borderColor":"#ccc","borderWidth":0}},"textStyle":{},"timeAxis":{"axisLabel":{"color":"#333","show":true},"axisLine":{"lineStyle":{"color":"#008acd"},"show":true},"axisTick":{"lineStyle":{"color":"#333"},"show":true},"splitArea":{"areaStyle":{"color":["rgba(250,250,250,0.3)","rgba(200,200,200,0.3)"]},"show":false},"splitLine":{"lineStyle":{"color":["#eee"]},"show":true}},"timeline":{"checkpointStyle":{"borderColor":"#2ec7c9","color":"#2ec7c9"},"controlStyle":{"borderColor":"#008acd","borderWidth":0.5,"color":"#008acd"},"emphasis":{"controlStyle":{"borderColor":"#008acd","borderWidth":0.5,"color":"#008acd"},"itemStyle":{"color":"#a9334c"},"label":{"color":"#008acd"}},"itemStyle":{"borderWidth":1,"color":"#008acd"},"label":{"color":"#008acd"},"lineStyle":{"color":"#008acd","width":1}},"title":{"subtextStyle":{"color":"#aaaaaa"},"textStyle":{"color":"#008acd"}},"toolbox":{"emphasis":{"iconStyle":{"borderColor":"#18a4a6"}},"iconStyle":{"borderColor":"#2ec7c9"}},"tooltip":{"axisPointer":{"crossStyle":{"color":"#008acd","width":1},"lineStyle":{"color":"#008acd","width":1}}},"valueAxis":{"axisLabel":{"color":"#333","show":true},"axisLine":{"lineStyle":{"color":"#008acd"},"show":true},"axisTick":{"lineStyle":{"color":"#333"},"show":true},"splitArea":{"areaStyle":{"color":["rgba(250,250,250,0.3)","rgba(200,200,200,0.3)"]},"show":true},"splitLine":{"lineStyle":{"color":["#eee"]},"show":true}},"visualMap":{"color":["#5ab1ef","#e0ffff"]}}},"folding":{"maxShownLines":40},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false}};</script><script type="text/javascript" src="/ts/main.min.b0a11aecaf4b1afb1564062b3ae6c5d7ceece4f3343c9519bf4f0f4ae1fe1c8f.js" integrity="sha256-sKEa7K9LGvsVZAYrOubF187s5PM0PJUZv08PSuH+HI8="></script>
+    </body>
+</html>
