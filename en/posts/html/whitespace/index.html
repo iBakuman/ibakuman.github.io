@@ -1,0 +1,1284 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview The presence of whitespace in the DOM can cause layout problems and make manipulation of the content tree difficult in unexpected ways, depending on where it is located. This article explores when difficulties can occur, and looks at what can be done to mitigate { 减轻；缓解 } resulting problems. What is whitespace? Whitespace is any string of text composed only of spaces, tabs or line'>
+<title>How whitespace is handled by HTML, CSS, and in the DOM</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/html/whitespace/'><link rel="prev" href="https://ibakuman.github.io/en/posts/javascript/prototype-chaing/" /><link rel="next" href="https://ibakuman.github.io/en/posts/javascript/the-simple-rules-to-this-in-javascript/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='How whitespace is handled by HTML, CSS, and in the DOM'>
+<meta property='og:description' content='Overview The presence of whitespace in the DOM can cause layout problems and make manipulation of the content tree difficult in unexpected ways, depending on where it is located. This article explores when difficulties can occur, and looks at what can be done to mitigate { 减轻；缓解 } resulting problems. What is whitespace? Whitespace is any string of text composed only of spaces, tabs or line'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/html/whitespace/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='whitespace' /><meta property='article:published_time' content='2022-11-28T13:32:24&#43;08:00'/><meta property='article:modified_time' content='2022-11-28T13:32:24&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="How whitespace is handled by HTML, CSS, and in the DOM">
+<meta name="twitter:description" content="Overview The presence of whitespace in the DOM can cause layout problems and make manipulation of the content tree difficult in unexpected ways, depending on where it is located. This article explores when difficulties can occur, and looks at what can be done to mitigate { 减轻；缓解 } resulting problems. What is whitespace? Whitespace is any string of text composed only of spaces, tabs or line"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/html/whitespace/">
+                <img src="/gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_800x0_resize_q75_box.jpg 800w, /gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="532"
+                        loading="lazy"
+                        alt="Featured image of post How whitespace is handled by HTML, CSS, and in the DOM" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/html/" >
+                HTML
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/html/whitespace/">How whitespace is handled by HTML, CSS, and in the DOM</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 28, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    8 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>The presence of whitespace in the <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model"  target="_blank" rel="noopener"
+    >DOM</a> can cause layout problems and make manipulation of the content tree difficult in unexpected ways, depending on where it is located. This article explores when difficulties can occur, and looks at what can be done to <span class='ibakuman-inline-translation'>mitigate<sub> { 减轻；缓解 }</sub></span> resulting problems.</p>
+<h2 id="what-is-whitespace">What is whitespace?</h2>
+<p>Whitespace is any string of text composed only of spaces, tabs or line breaks (<span class='ibakuman-inline-translation'>to be precise<sub> { 确切地讲 }</sub></span>, CRLF sequences, carriage returns or line feeds). These characters allow you to format your code in a way that will make it easily readable by yourself and other people. In fact, much of our source code is full of these whitespace characters, and we only tend to get rid of it in a production build step to reduce code download sizes.</p>
+<h3 id="html-largely-ignores-whitespace">HTML largely ignores whitespace?</h3>
+<p>In the case of HTML, whitespace is largely ignored — whitespace in between words is treated as a single character, and whitespace at the start and end of elements and outside elements is ignored. Take the following minimal example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>      Hello      World!     <span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This source code contains a couple of line feeds after the <code>DOCTYPE</code> and a bunch of space characters before, after, and inside the <code>&lt;h1&gt;</code> element, but the browser doesn&rsquo;t seem to care at all and just shows the words &ldquo;Hello World!&rdquo; as if these characters didn&rsquo;t exist at all:</p>
+<p>This is so that whitespace characters don&rsquo;t impact the layout of your page. Creating space around and inside elements is the job of CSS.</p>
+<h3 id="what-does-happen-to-whitespace">What does happen to whitespace?</h3>
+<p>They don&rsquo;t just disappear, however.</p>
+<p>Any whitespace characters that are outside of HTML elements in the original document are represented in the DOM. This is needed internally so that the editor can <span class='ibakuman-inline-translation'>preserve<sub> { 保留 }</sub></span> formatting of documents. This means that:</p>
+<ul>
+<li><span class="ibakuman-inline-note">There will be some text nodes that contain only whitespace</span>, and</li>
+<li>Some text nodes will have whitespace at the beginning or end.</li>
+</ul>
+<p>Take the following document, for example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en-US&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>My Document<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Header<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    Paragraph
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The DOM tree for this looks like so:</p>
+<p><img src="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace/dom-string.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="The DOM tree representing a simple HTML document"
+	
+	
+>
+</p>
+<p><span class='ibakuman-inline-translation'>Conserving<sub> { 保存 }</sub></span> whitespace characters in the DOM is useful in many ways, but there are certain places where this makes certain layouts more difficult to implement, and causes problems for developers who want to iterate through nodes in the DOM. We&rsquo;ll look at these, and some solutions, later on.</p>
+<h3 id="how-does-css-process-whitespace">How does CSS process whitespace?</h3>
+<p>Most whitespace characters are ignored, not all of them are. In the earlier example one of the spaces between &ldquo;Hello&rdquo; and &ldquo;World!&rdquo; still exists when the page is rendered in a browser. There are rules in the browser engine that decide which whitespace characters are useful and which aren&rsquo;t — these are specified at least in part in <a class="link" href="https://www.w3.org/TR/css-text-3/"  target="_blank" rel="noopener"
+    >CSS Text Module Level 3</a> , and especially the parts about the <a class="link" href="https://www.w3.org/TR/css-text-3/#white-space-property"  target="_blank" rel="noopener"
+    >CSS <code>white-space</code> property</a> and <a class="link" href="https://www.w3.org/TR/css-text-3/#white-space-processing"  target="_blank" rel="noopener"
+    >whitespace processing details</a> , but we also offer an easier explanation below.</p>
+<h4 id="example">Example</h4>
+<p>Let&rsquo;s take another example. To make it easier, we&rsquo;ve added a comment that shows all spaces with ◦, all tabs with ⇥, and all line breaks with ⏎:</p>
+<p>This example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>   Hello
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span> World!<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>   <span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">&lt;!--
+</span></span></span><span class="line"><span class="cl"><span class="c">&lt;h1&gt;◦◦◦Hello◦⏎
+</span></span></span><span class="line"><span class="cl"><span class="c">⇥⇥⇥⇥&lt;span&gt;◦World!&lt;/span&gt;⇥◦◦&lt;/h1&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c">--&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>is rendered in the browser like so:</p>
+<h4 id="explanation">Explanation</h4>
+<p>The <code>&lt;h1&gt;</code> element contains only inline elements. In fact it contains:</p>
+<ul>
+<li>A text node (consisting of some spaces, the word &ldquo;Hello&rdquo; and some tabs).</li>
+<li>An inline element (the <code>&lt;span&gt;</code>, which contains a space, and the word &ldquo;World!&rdquo;).</li>
+<li>Another text node (consisting only of tabs and spaces).</li>
+</ul>
+<p>Because of this, it establishes what is called an <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/CSS/Inline_formatting_context"  target="_blank" rel="noopener"
+    >inline formatting context</a> . This is one of the possible layout rendering contexts that browser engines work with.</p>
+<p>Inside this context, whitespace character processing can be summarized as follows:</p>
+<ol>
+<li>
+<p>First, <span class="ibakuman-inline-note">all spaces and tabs immediately before and after a line break are ignored so</span>, if we take our example markup from before:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>◦◦◦Hello◦⏎
+</span></span><span class="line"><span class="cl">⇥⇥⇥⇥<span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>◦World!<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>⇥◦◦<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>&hellip;and apply this first rule, we get:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>◦◦◦Hello⏎
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>◦World!<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>⇥◦◦<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>Next, all tab characters are handled as space characters, so the example becomes:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>◦◦◦Hello⏎
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>◦World!<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>◦◦◦<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>Next, line breaks are converted to spaces:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>◦◦◦Hello◦<span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>◦World!<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>◦◦◦<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>After that, any space immediately following another space (even across two separate inline elements) is ignored, so we end up with:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>◦Hello◦<span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>World!<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>◦<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>And finally, sequences of spaces at the beginning and end of an element are removed, so we finally get this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello◦<span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>World!<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<p>This is why people visiting the web page will see the phrase &ldquo;Hello World!&rdquo; nicely written at the top of the page, rather than a weirdly indented &ldquo;Hello&rdquo; followed but an even more weirdly indented &ldquo;World!&rdquo; on the line below that.</p>
+<p><strong>Note:</strong> <a class="link" href="https://firefox-source-docs.mozilla.org/devtools-user/index.html"  target="_blank" rel="noopener"
+    >Firefox DevTools</a> have supported highlighting text nodes since version 52, making it easier to see exactly what nodes whitespace characters are contained within. Pure whitespace nodes are marked with a &ldquo;whitespace&rdquo; label.</p>
+<h3 id="whitespace-in-block-formatting-contexts">Whitespace in block formatting contexts</h3>
+<p>Above we just looked at elements that contain inline elements, and inline formatting contexts. If an element contains at least one block element, then it instead establishes what is called a <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Block_formatting_context"  target="_blank" rel="noopener"
+    >block formatting context</a> .</p>
+<p>Within this context, whitespace is treated very differently.</p>
+<h4 id="example-1">Example</h4>
+<p>Let&rsquo;s take a look at an example to explain how. We&rsquo;ve marked the whitespace characters as before.</p>
+<p>We have 3 text nodes that contain only whitespace, one before the first <code>&lt;div&gt;</code>, one between the 2 <code>&lt;divs&gt;</code>, and one after the second <code>&lt;div&gt;</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;body&gt;
+</span></span><span class="line"><span class="cl">  &lt;div&gt;  Hello  &lt;/div&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   &lt;div&gt;  World!   &lt;/div&gt;
+</span></span><span class="line"><span class="cl">&lt;/body&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&lt;!--
+</span></span><span class="line"><span class="cl">&lt;body&gt;⏎
+</span></span><span class="line"><span class="cl">⇥&lt;div&gt;◦◦Hello◦◦&lt;/div&gt;⏎
+</span></span><span class="line"><span class="cl">⏎
+</span></span><span class="line"><span class="cl">◦◦◦&lt;div&gt;◦◦World!◦◦&lt;/div&gt;◦◦⏎
+</span></span><span class="line"><span class="cl">&lt;/body&gt;
+</span></span><span class="line"><span class="cl">--&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This renders like so:</p>
+<h4 id="explanation-1">Explanation</h4>
+<p>We can summarize how the whitespace here is handled as follows (there may be some slight differences in exact behavior between browsers, but this basically works):</p>
+<ol>
+<li>
+<p>Because we&rsquo;re inside a block formatting context, everything must be a block, so our 3 text nodes also become blocks, just like the 2 <code>&lt;div&gt;</code>s. Blocks occupy the full width available and are stacked on top of each other, which means that, starting from the example above:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;body&gt;⏎
+</span></span><span class="line"><span class="cl">⇥&lt;div&gt;◦◦Hello◦◦&lt;/div&gt;⏎
+</span></span><span class="line"><span class="cl">⏎
+</span></span><span class="line"><span class="cl">◦◦◦&lt;div&gt;◦◦World!◦◦&lt;/div&gt;◦◦⏎
+</span></span><span class="line"><span class="cl">&lt;/body&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>&hellip;we end up with a layout composed of this list of blocks:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;block&gt;⏎⇥&lt;/block&gt;
+</span></span><span class="line"><span class="cl">&lt;block&gt;◦◦Hello◦◦&lt;/block&gt;
+</span></span><span class="line"><span class="cl">&lt;block&gt;⏎◦◦◦&lt;/block&gt;
+</span></span><span class="line"><span class="cl">&lt;block&gt;◦◦World!◦◦&lt;/block&gt;
+</span></span><span class="line"><span class="cl">&lt;block&gt;◦◦⏎&lt;/block&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>This is then simplified further by applying the processing rules for whitespace in inline formatting contexts to these blocks:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;block&gt;&lt;/block&gt;
+</span></span><span class="line"><span class="cl">&lt;block&gt;Hello&lt;/block&gt;
+</span></span><span class="line"><span class="cl">&lt;block&gt;&lt;/block&gt;
+</span></span><span class="line"><span class="cl">&lt;block&gt;World!&lt;/block&gt;
+</span></span><span class="line"><span class="cl">&lt;block&gt;&lt;/block&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>The 3 empty blocks we now have are not going to occupy any space in the final layout, because they don&rsquo;t contain anything, so we&rsquo;ll end up with only 2 blocks taking up space in the page. People viewing the web page see the words &ldquo;Hello&rdquo; and &ldquo;World!&rdquo; on 2 separate lines as you&rsquo;d expect 2 <code>&lt;div&gt;</code>s to be laid out. The browser engine has essentially ignored all of the whitespace that was added in the source code.</p>
+</li>
+</ol>
+<h2 id="spaces-in-between-inline-and-inline-block-elements">Spaces in between inline and inline-block elements</h2>
+<p>Let&rsquo;s move on to look at a few issues that can arise due to whitespace, and what can be done about them. First of all, we&rsquo;ll look at what happens with spaces in between inline and inline-block elements. In fact, we saw this already in our very first example, when we described how whitespace is processed inside inline formatting contexts.</p>
+<p>We said that there were rules to ignore most characters but that word-separating characters remain. When you&rsquo;re only dealing with block-level elements such as <code>&lt;p&gt;</code> that only contain inline elements such as <code>&lt;em&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;span&gt;</code>, etc., you don&rsquo;t normally care about this because the extra whitespace that does make it to the layout is helpful to separate the words in the sentence.</p>
+<p>It gets more interesting however when you start using <code>inline-block</code> elements. These elements behave like inline elements on the outside, and blocks on the inside, and are often used to display more complex pieces of UI than just text, side-by-side on the same line, for example navigation menu items.</p>
+<p>Because they are blocks, many people expect that they will behave as such, but really they don&rsquo;t. If there is formatting whitespace between adjacent inline elements, this will result in space in the layout, just like the spaces between words in text.</p>
+<h3 id="example-2">Example</h3>
+<p>Consider this example (again, we&rsquo;ve included an HTML comment that shows the whitespace characters in the HTML):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.people-list {
+</span></span><span class="line"><span class="cl">  list-style-type: none;
+</span></span><span class="line"><span class="cl">  margin: 0;
+</span></span><span class="line"><span class="cl">  padding: 0;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">.people-list li {
+</span></span><span class="line"><span class="cl">  display: inline-block;
+</span></span><span class="line"><span class="cl">  width: 2em;
+</span></span><span class="line"><span class="cl">  height: 2em;
+</span></span><span class="line"><span class="cl">  background: #f06;
+</span></span><span class="line"><span class="cl">  border: 1px solid;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;ul class=&#34;people-list&#34;&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    &lt;li&gt;&lt;/li&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    &lt;li&gt;&lt;/li&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    &lt;li&gt;&lt;/li&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    &lt;li&gt;&lt;/li&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    &lt;li&gt;&lt;/li&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  &lt;/ul&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&lt;!--
+</span></span><span class="line"><span class="cl">&lt;ul class=&#34;people-list&#34;&gt;⏎
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">◦◦&lt;li&gt;&lt;/li&gt;⏎
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">◦◦&lt;li&gt;&lt;/li&gt;⏎
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">◦◦&lt;li&gt;&lt;/li&gt;⏎
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">◦◦&lt;li&gt;&lt;/li&gt;⏎
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">◦◦&lt;li&gt;&lt;/li&gt;⏎
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&lt;/ul&gt;
+</span></span><span class="line"><span class="cl">--&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This renders as follows:</p>
+<p>You probably don&rsquo;t want the gaps in between the blocks — depending on the use case (is this a list of avatars, or horizontal nav buttons?), you probably want the element sides flush with each other, and to be able to control any spacing yourself.</p>
+<p>The Firefox DevTools HTML Inspector will highlight text nodes, and also show you exactly what area the elements are taking up — useful if you are wondering what is causing the problem, and are maybe thinking you&rsquo;ve got some extra margin in there or something!</p>
+<p><img src="/en-US/docs/Web/API/Document_Object_Model/Whitespace/whitespace-devtools.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="Example of displaying whitespaces between blocks in the Firefox DevTools HTML Inspector"
+	
+	
+>
+</p>
+<h3 id="solutions">Solutions</h3>
+<p>There are a few ways of getting around this problem:</p>
+<p>Use <a class="link" href="https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox"  target="_blank" rel="noopener"
+    >Flexbox</a> to create the horizontal list of items instead of trying an <code>inline-block</code> solution. This handles everything for you, and is definitely the preferred solution:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ul {
+</span></span><span class="line"><span class="cl">  list-style-type: none;
+</span></span><span class="line"><span class="cl">  margin: 0;
+</span></span><span class="line"><span class="cl">  padding: 0;
+</span></span><span class="line"><span class="cl">  display: flex;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If you need to rely on <code>inline-block</code>, you could set the <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-size"  target="_blank" rel="noopener"
+    ><code>font-size</code></a> of the list to 0. This only works if your blocks are not sized with ems (based on the <code>font-size</code>, so the block size would also end up being 0). rems would be a good choice here:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ul {
+</span></span><span class="line"><span class="cl">  font-size: 0;
+</span></span><span class="line"><span class="cl">  /* … */
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">li {
+</span></span><span class="line"><span class="cl">  display: inline-block;
+</span></span><span class="line"><span class="cl">  width: 2rem;
+</span></span><span class="line"><span class="cl">  height: 2rem;
+</span></span><span class="line"><span class="cl">  /* … */
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Or you could set negative margin on the list items:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">li {
+</span></span><span class="line"><span class="cl">  display: inline-block;
+</span></span><span class="line"><span class="cl">  width: 2rem;
+</span></span><span class="line"><span class="cl">  height: 2rem;
+</span></span><span class="line"><span class="cl">  margin-right: -0.25rem;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>You can also solve this problem by putting your list items all on the same line in the source, which causes the whitespace nodes to not be created in the first place:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;li&gt;&lt;/li&gt;&lt;li&gt;&lt;/li&gt;&lt;li&gt;&lt;/li&gt;&lt;li&gt;&lt;/li&gt;&lt;li&gt;&lt;/li&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="dom-traversal-and-whitespace">DOM traversal and whitespace</h2>
+<p>When trying to do <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model"  target="_blank" rel="noopener"
+    >DOM</a> manipulation in JavaScript, you can also encounter problems because of whitespace nodes. For example, if you have a reference to a parent node and want to affect its first element child using <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/API/Node/firstChild"  target="_blank" rel="noopener"
+    ><code>Node.firstChild</code></a> , if there is a rogue whitespace node just after the opening parent tag you will not get the result you are expecting. The text node would be selected instead of the element you want to affect.</p>
+<p>As another example, if you have a certain subset of elements that you want to do something to based on whether they are empty (have no child nodes) or not, you could check whether each element is empty using something like <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/API/Node/hasChildNodes"  target="_blank" rel="noopener"
+    ><code>Node.hasChildNodes()</code></a> , but again, if any target elements contain text nodes, you could end up with false results.</p>
+<h2 id="whitespace-helper-functions">Whitespace helper functions</h2>
+<p>The JavaScript code below defines several functions that make it easier to deal with whitespace in the DOM:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span><span class="lnt">141
+</span><span class="lnt">142
+</span><span class="lnt">143
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * Throughout, whitespace is defined as one of the characters
+</span></span><span class="line"><span class="cl"> *  &#34;\t&#34; TAB \u0009
+</span></span><span class="line"><span class="cl"> *  &#34;\n&#34; LF  \u000A
+</span></span><span class="line"><span class="cl"> *  &#34;\r&#34; CR  \u000D
+</span></span><span class="line"><span class="cl"> *  &#34; &#34;  SPC \u0020
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * This does not use JavaScript&#39;s &#34;\s&#34; because that includes non-breaking
+</span></span><span class="line"><span class="cl"> * spaces (and also some other characters).
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * Determine whether a node&#39;s text content is entirely whitespace.
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * @param nod  A node implementing the |CharacterData| interface (i.e.,
+</span></span><span class="line"><span class="cl"> *             a |Text|, |Comment|, or |CDATASection| node
+</span></span><span class="line"><span class="cl"> * @return     True if all of the text content of |nod| is whitespace,
+</span></span><span class="line"><span class="cl"> *             otherwise false.
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">function is_all_ws(nod) {
+</span></span><span class="line"><span class="cl">  return !(/[^\t\n\r ]/.test(nod.textContent));
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * Determine if a node should be ignored by the iterator functions.
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * @param nod  An object implementing the DOM1 |Node| interface.
+</span></span><span class="line"><span class="cl"> * @return     true if the node is:
+</span></span><span class="line"><span class="cl"> *                1) A |Text| node that is all whitespace
+</span></span><span class="line"><span class="cl"> *                2) A |Comment| node
+</span></span><span class="line"><span class="cl"> *             and otherwise false.
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">function is_ignorable(nod) {
+</span></span><span class="line"><span class="cl">  return (nod.nodeType === 8) || // A comment node
+</span></span><span class="line"><span class="cl">         (nod.nodeType === 3 &amp;&amp; is_all_ws(nod)); // a text node, all ws
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * Version of |previousSibling| that skips nodes that are entirely
+</span></span><span class="line"><span class="cl"> * whitespace or comments. (Normally |previousSibling| is a property
+</span></span><span class="line"><span class="cl"> * of all DOM nodes that gives the sibling node, the node that is
+</span></span><span class="line"><span class="cl"> * a child of the same parent, that occurs immediately before the
+</span></span><span class="line"><span class="cl"> * reference node.)
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * @param sib  The reference node.
+</span></span><span class="line"><span class="cl"> * @return     Either:
+</span></span><span class="line"><span class="cl"> *               1) The closest previous sibling to |sib| that is not
+</span></span><span class="line"><span class="cl"> *                  ignorable according to |is_ignorable|, or
+</span></span><span class="line"><span class="cl"> *               2) null if no such node exists.
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">function node_before(sib) {
+</span></span><span class="line"><span class="cl">  while ((sib = sib.previousSibling)) {
+</span></span><span class="line"><span class="cl">    if (!is_ignorable(sib)) {
+</span></span><span class="line"><span class="cl">      return sib;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  return null;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * Version of |nextSibling| that skips nodes that are entirely
+</span></span><span class="line"><span class="cl"> * whitespace or comments.
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * @param sib  The reference node.
+</span></span><span class="line"><span class="cl"> * @return     Either:
+</span></span><span class="line"><span class="cl"> *               1) The closest next sibling to |sib| that is not
+</span></span><span class="line"><span class="cl"> *                  ignorable according to |is_ignorable|, or
+</span></span><span class="line"><span class="cl"> *               2) null if no such node exists.
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">function node_after(sib) {
+</span></span><span class="line"><span class="cl">  while ((sib = sib.nextSibling)) {
+</span></span><span class="line"><span class="cl">    if (!is_ignorable(sib)) {
+</span></span><span class="line"><span class="cl">      return sib;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  return null;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * Version of |lastChild| that skips nodes that are entirely
+</span></span><span class="line"><span class="cl"> * whitespace or comments. (Normally |lastChild| is a property
+</span></span><span class="line"><span class="cl"> * of all DOM nodes that gives the last of the nodes contained
+</span></span><span class="line"><span class="cl"> * directly in the reference node.)
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * @param sib  The reference node.
+</span></span><span class="line"><span class="cl"> * @return     Either:
+</span></span><span class="line"><span class="cl"> *               1) The last child of |sib| that is not
+</span></span><span class="line"><span class="cl"> *                  ignorable according to |is_ignorable|, or
+</span></span><span class="line"><span class="cl"> *               2) null if no such node exists.
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">function last_child(par) {
+</span></span><span class="line"><span class="cl">  let res = par.lastChild;
+</span></span><span class="line"><span class="cl">  while (res) {
+</span></span><span class="line"><span class="cl">    if (!is_ignorable(res)) {
+</span></span><span class="line"><span class="cl">      return res;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    res = res.previousSibling;
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  return null;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * Version of |firstChild| that skips nodes that are entirely
+</span></span><span class="line"><span class="cl"> * whitespace and comments.
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * @param sib  The reference node.
+</span></span><span class="line"><span class="cl"> * @return     Either:
+</span></span><span class="line"><span class="cl"> *               1) The first child of |sib| that is not
+</span></span><span class="line"><span class="cl"> *                  ignorable according to |is_ignorable|, or
+</span></span><span class="line"><span class="cl"> *               2) null if no such node exists.
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">function first_child(par) {
+</span></span><span class="line"><span class="cl">  let res = par.firstChild;
+</span></span><span class="line"><span class="cl">  while (res) {
+</span></span><span class="line"><span class="cl">    if (!is_ignorable(res)) {
+</span></span><span class="line"><span class="cl">      return res;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    res = res.nextSibling;
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  return null;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * Version of |data| that doesn&#39;t include whitespace at the beginning
+</span></span><span class="line"><span class="cl"> * and end and normalizes all whitespace to a single space. (Normally
+</span></span><span class="line"><span class="cl"> * |data| is a property of text nodes that gives the text of the node.)
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * @param txt  The text node whose data should be returned
+</span></span><span class="line"><span class="cl"> * @return     A string giving the contents of the text node with
+</span></span><span class="line"><span class="cl"> *             whitespace collapsed.
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">function data_of(txt) {
+</span></span><span class="line"><span class="cl">  let data = txt.textContent;
+</span></span><span class="line"><span class="cl">  data = data.replace(/[\t\n\r ]+/g, &#34; &#34;);
+</span></span><span class="line"><span class="cl">  if (data[0] === &#34; &#34;) {
+</span></span><span class="line"><span class="cl">    data = data.substring(1, data.length);
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  if (data[data.length - 1] === &#34; &#34;) {
+</span></span><span class="line"><span class="cl">    data = data.substring(0, data.length - 1);
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  return data;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="example-3">Example</h3>
+<p>The following code demonstrates the use of the functions above. It iterates over the children of an element (whose children are all elements) to find the one whose text is <code>&quot;This is the third paragraph&quot;</code>, and then changes the class attribute and the contents of that paragraph.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">let cur = first_child(document.getElementById(&#34;test&#34;));
+</span></span><span class="line"><span class="cl">while (cur) {
+</span></span><span class="line"><span class="cl">  if (data_of(cur.firstChild) === &#34;This is the third paragraph.&#34;) {
+</span></span><span class="line"><span class="cl">    cur.className = &#34;magic&#34;;
+</span></span><span class="line"><span class="cl">    cur.firstChild.textContent = &#34;This is the magic paragraph.&#34;;
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  cur = node_after(cur);
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/whitespace/">whitespace</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#what-is-whitespace">What is whitespace?</a>
+      <ol>
+        <li><a href="#html-largely-ignores-whitespace">HTML largely ignores whitespace?</a></li>
+        <li><a href="#what-does-happen-to-whitespace">What does happen to whitespace?</a></li>
+        <li><a href="#how-does-css-process-whitespace">How does CSS process whitespace?</a>
+          <ol>
+            <li><a href="#example">Example</a></li>
+            <li><a href="#explanation">Explanation</a></li>
+          </ol>
+        </li>
+        <li><a href="#whitespace-in-block-formatting-contexts">Whitespace in block formatting contexts</a>
+          <ol>
+            <li><a href="#example-1">Example</a></li>
+            <li><a href="#explanation-1">Explanation</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#spaces-in-between-inline-and-inline-block-elements">Spaces in between inline and inline-block elements</a>
+      <ol>
+        <li><a href="#example-2">Example</a></li>
+        <li><a href="#solutions">Solutions</a></li>
+      </ol>
+    </li>
+    <li><a href="#dom-traversal-and-whitespace">DOM traversal and whitespace</a></li>
+    <li><a href="#whitespace-helper-functions">Whitespace helper functions</a>
+      <ol>
+        <li><a href="#example-3">Example</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

@@ -1,0 +1,1420 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview Bundling JavaScript applications takes time and can be complicated. A single bundling process doesn’t take a lot of time, but in your development process, the bundling processes add up and they can add a significant delay to your development pipeline. On top of that, bundling a JavaScript application usually requires you to write a configuration file. If you bundle a JavaScript application using'>
+<title>Getting started with esbuild</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/esbuild/getting-started-with-esbuild/'><link rel="prev" href="https://ibakuman.github.io/en/posts/linux/debugging-a-bash-script/" /><link rel="next" href="https://ibakuman.github.io/en/posts/linux/10-cool-and-awesome-bash-loop-examples/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='Getting started with esbuild'>
+<meta property='og:description' content='Overview Bundling JavaScript applications takes time and can be complicated. A single bundling process doesn’t take a lot of time, but in your development process, the bundling processes add up and they can add a significant delay to your development pipeline. On top of that, bundling a JavaScript application usually requires you to write a configuration file. If you bundle a JavaScript application using'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/esbuild/getting-started-with-esbuild/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Build' /><meta property='article:tag' content='Go' /><meta property='article:published_time' content='2022-11-23T16:54:33&#43;08:00'/><meta property='article:modified_time' content='2023-05-05T20:26:12&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/Getting-started-esbuild.png' />
+<meta name="twitter:title" content="Getting started with esbuild">
+<meta name="twitter:description" content="Overview Bundling JavaScript applications takes time and can be complicated. A single bundling process doesn’t take a lot of time, but in your development process, the bundling processes add up and they can add a significant delay to your development pipeline. On top of that, bundling a JavaScript application usually requires you to write a configuration file. If you bundle a JavaScript application using"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/Getting-started-esbuild.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/esbuild/getting-started-with-esbuild/">
+                
+                    <img src="/Getting-started-esbuild.png" loading="lazy" alt="Featured image of post Getting started with esbuild" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/esbuild/" >
+                ESBuild
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/esbuild/getting-started-with-esbuild/">Getting started with esbuild</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 23, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    6 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>Bundling JavaScript applications takes time and can be complicated. A single bundling process doesn’t take a lot of time, but in your development process, the bundling processes add up and they can add a significant delay to your development pipeline.</p>
+<p>On top of that, bundling a JavaScript application usually requires you to write a configuration file. If you bundle a JavaScript application using <code>webpack</code>, you need to write <code>webpack.config.js</code>. It’s a significant cognitive overhead.</p>
+<p>That’s where <a class="link" href="https://blog.logrocket.com/fast-javascript-bundling-with-esbuild/"  target="_blank" rel="noopener"
+    >esbuild</a> comes in. Esbuild is a fast and simple JavaScript bundler written in Go.</p>
+<p>In this article, you’ll learn how to use esbuild to bundle JavaScript applications. You’ll explore common use cases, from bundling <a class="link" href="https://blog.logrocket.com/whats-new-in-typescript-4-2/"  target="_blank" rel="noopener"
+    >TypeScript</a> , React, image files, and CSS files to <span class='ibakuman-inline-translation'>serving the bundling process as a server<sub> { 将打包过程作为服务器提供服务 }</sub></span>.</p>
+<h2 id="installing-esbuild">Installing esbuild</h2>
+<p>First, install the bundler using npm:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ npm install -g esbuild
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then you can verify the installation by invoking esbuild:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild --version 0.13.12
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If you don’t want to install esbuild globally, you can do that as well:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ npm install esbuild
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>But you have to invoke esbuild with a full path:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ./node_modules/.bin/esbuild --version 0.13.12
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="bundling-typescript-with-esbuild">Bundling TypeScript with esbuild</h2>
+<p>The first task you’re going to accomplish using esbuild is bundling a TypeScript file. Create a file named <code>input_typescript.ts</code> and add the following code to it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">message</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&#34;Hello, esbuild!&#34;</span><span class="p">;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>You can bundle the TypeScript code via CLI:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild input_typescript.ts --outfile<span class="o">=</span>output.js --bundle --loader:.ts<span class="o">=</span>ts
+</span></span><span class="line"><span class="cl">output.js 99b
+</span></span><span class="line"><span class="cl">⚡ Done in 7ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then, check the content of the bundled file like so:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// input_typescript.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="s2">&#34;Hello, esbuild!&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">})();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The esbuild command accepts <code>input_typescript.ts</code> as the argument. We’ll refer to this argument as the entry point, because it’s where the application starts.</p>
+<p>Then, provide the <code>outfile</code> option as a way to define the output file. If you don’t provide this option, esbuild will send the result to stdout. The <code>loader</code> option is the one that you use to load the TypeScript file extension. <span class="ibakuman-inline-note">You can omit this option, however, because esbuild can decide which loader to use based on the file extension</span>.</p>
+<p>With the bundle option, <code>esbuild</code> will inline all dependencies into the output file. Let’s look at a demo to see the difference.</p>
+<p>Suppose you have a file named <code>main.ts</code> with the content as follows:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">SayHello</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./library&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">SayHello</span><span class="p">();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>main.ts</code> file imports <code>SayHello</code> from <code>library.ts</code> which has the content as below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">SayHello() {</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Hello, esbuild!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If you don’t use the <code>bundle</code> option, esbuild will just import the dependency in the result:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild main.ts
+</span></span><span class="line"><span class="cl">import <span class="o">{</span> SayHello <span class="o">}</span> from <span class="s2">&#34;./library&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">SayHello<span class="o">()</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>But if you used the <code>bundle</code> option, esbuild would inline the content of the library in the result:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild main.ts --bundle
+</span></span><span class="line"><span class="cl"><span class="o">(()</span> <span class="o">=</span>&gt; <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  // library.ts
+</span></span><span class="line"><span class="cl">  <span class="k">function</span> SayHello<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    console.log<span class="o">(</span><span class="s2">&#34;Hello, esbuild!&#34;</span><span class="o">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  // main.ts
+</span></span><span class="line"><span class="cl">  SayHello<span class="o">()</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">})()</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>With the <code>bundle</code> option, you pack all your code into one file. In other words, two files become one file.</p>
+<h2 id="bundling-react-with-esbuild">Bundling React with esbuild</h2>
+<p>Integrating React library into your project is a complicated venture. It even warrants the creation of a <a class="link" href="https://blog.logrocket.com/getting-started-with-create-react-app-d93147444a27/"  target="_blank" rel="noopener"
+    >Create React App project</a> . If you want to use webpack to add React into your project, you have to <span class='ibakuman-inline-translation'>endure<sub> { 忍受 }</sub></span> the writing process of <a class="link" href="https://blog.logrocket.com/versatile-webpack-configurations-react-application/"  target="_blank" rel="noopener"
+    >a complicated webpack.config.js</a> .</p>
+<p>But with esbuild, it’s a simple process.</p>
+<p>First, install the React library using npm:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ npm install react react-dom
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then create a JavaScript file called <code>App.js</code>. Add the following code to the file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="kr">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="kr">from</span> <span class="s2">&#34;react-dom&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">App() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="p">,</span> <span class="nx">esbuild</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">App</span> <span class="p">/&gt;,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">));</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Create an HTML file called <code>index.html</code> so React can render your application into the div with an ID root. Add the following code to the file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1, shrink-to-fit=no&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Hello, esbuild!<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;root&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;AppBundle.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In the HTML file, we are using <code>AppBundle.js</code>. This is the name of the bundled JavaScript file.</p>
+<p>Now, bundle <code>App.js</code> to <code>AppBundle.js</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild App.js --bundle --outfile<span class="o">=</span>AppBundle.js --loader:.js<span class="o">=</span>jsx
+</span></span><span class="line"><span class="cl">AppBundle.js  890.8kb
+</span></span><span class="line"><span class="cl">⚡ Done in 46ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>You’ve learned all the options in the previous section. You use the <code>bundle</code> option because, well, you want to bundle the JavaScript file. Then, give the output file the name you want using the <code>outfile</code> option.</p>
+<p>The last option, <code>loader</code>, is not actually optional. Tell esbuild to use the JSX loader for files with the .js extension, because JSX syntax is inside <code>App.js</code>. If you don’t use the JSX loader, esbuild will throw an error. <span class="ibakuman-inline-note">You can omit the loader option if the extension of the input file is .jsx, not .js. So if you name the JavaScript file App.jsx, then you can omit the loader option.
+</span></p>
+<p>Now that you have <code>AppBundle.js</code>, let’s open <code>index.html</code> to check whether your bundling process works or not. You must open <code>index.html</code> using the http protocol, not the file protocol.</p>
+<p>Then, you can serve the HTML file using <code>http-server</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ npx http-server
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Finally, open <a class="link" href="http://localhost:8080/index.html"  target="_blank" rel="noopener"
+    >http://localhost:8080/index.html</a> . You should see the screen below:</p>
+<p><img src="/en/posts/esbuild/getting-started-with-esbuild/assets/The_React_app_bundled_with_esbuild.png"
+	width="598"
+	height="341"
+	srcset="/en/posts/esbuild/getting-started-with-esbuild/assets/The_React_app_bundled_with_esbuild_hu765b344e28553616fac6c56fd93d7cea_11634_480x0_resize_box_3.png 480w, /en/posts/esbuild/getting-started-with-esbuild/assets/The_React_app_bundled_with_esbuild_hu765b344e28553616fac6c56fd93d7cea_11634_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="The React app bundled with esbuild"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="175"
+		data-flex-basis="420px"
+	
+>
+</p>
+<h2 id="using-the-build-api">Using the build API</h2>
+<p>While you can bundle your JavaScript file with CLI, you also have an option to use the <a class="link" href="https://esbuild.github.io/api/#build-api"  target="_blank" rel="noopener"
+    >build API</a> .</p>
+<p>Suppose you want to bundle <code>input_typescript.ts</code> into <code>output.js</code>. This is the command you would use:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild input_typescript.ts --outfile<span class="o">=</span>output.js --bundle --loader:.ts<span class="o">=</span>ts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Let’s try the build API. Write a JavaScript file called <code>build.js</code> and add the following code:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">require<span class="o">(</span><span class="s2">&#34;esbuild&#34;</span><span class="o">)</span>.build<span class="o">({</span>
+</span></span><span class="line"><span class="cl">  entryPoints: <span class="o">[</span><span class="s2">&#34;input_typescript.ts&#34;</span><span class="o">]</span>,
+</span></span><span class="line"><span class="cl">  outfile: <span class="s2">&#34;output.js&#34;</span>,
+</span></span><span class="line"><span class="cl">  bundle: true,
+</span></span><span class="line"><span class="cl">  loader: <span class="o">{</span><span class="s2">&#34;.ts&#34;</span>: <span class="s2">&#34;ts&#34;</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">})</span>
+</span></span><span class="line"><span class="cl">.then<span class="o">(()</span> <span class="o">=</span>&gt; console.log<span class="o">(</span><span class="s2">&#34;⚡ Done&#34;</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">.catch<span class="o">(()</span> <span class="o">=</span>&gt; process.exit<span class="o">(</span>1<span class="o">))</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Import the esbuild library and use the <code>build</code> method from it. The argument is an object that has keys and values similar to the options in the esbuild command.</p>
+<p>Then you can execute the bundling process with Node.js:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ node build.js
+</span></span><span class="line"><span class="cl">⚡ Done
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>You can treat the <code>build</code> file as a configuration file. It’s like <code>webpack.config.js</code>, but for esbuild.</p>
+<h2 id="bundling-css-with-esbuild">Bundling CSS with esbuild</h2>
+<p>Let’s try bundling something else, such as CSS files. Create a CSS file named <code>color.css</code> and add the following code to it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="p">.</span><span class="nc">beautiful</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">color</span><span class="p">:</span> <span class="nb">rgb</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then, create another CSS file that imports the CSS file above. Name it <code>style.css</code> and add the following code to it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="p">@</span><span class="k">import</span> <span class="s1">&#39;color.css&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nt">p</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">font-weight</span><span class="p">:</span> <span class="kc">bold</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To bundle these two CSS files, you can use esbuild as shown below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild style.css --outfile<span class="o">=</span>out.css --bundle
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  out.css  100b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">⚡ Done in 7ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The content of <code>out.css</code> will be the combination of the two CSS files:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">/* color.css */
+</span></span><span class="line"><span class="cl">.beautiful <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  color: rgb<span class="o">(</span>0, 0, 255<span class="o">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/* style.css */
+</span></span><span class="line"><span class="cl">p <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  font-weight: bold<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now, you can include only this one file in your HTML file.</p>
+<p>You can also minify the CSS file using the <code>minify</code> option:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild style.css --outfile<span class="o">=</span>out.css --bundle --minify
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  out.css  42b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">⚡ Done in 3ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The content of the CSS file will be compact, as shown below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="nt">beautiful</span><span class="p">{</span><span class="k">color</span><span class="p">:</span><span class="mh">#00f</span><span class="p">}</span><span class="nt">p</span><span class="p">{</span><span class="k">font-weight</span><span class="p">:</span><span class="kc">bold</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As you can see, <span class="ibakuman-inline-note">the bundler even changed the way you specify the color</span>. The input file uses the rgb syntax, but the output file uses hexadecimal code, <span class="ibakuman-inline-note">which is more compact</span>.</p>
+<h2 id="bundling-images">Bundling images</h2>
+<p>You can also bundle images with esbuild. You have two options for bundling images: the first is to load the image as an external file in the JavaScript file, and the second is to embed the image as a Base64-encoded data URL in a JavaScript file.</p>
+<p>Let’s look at the difference. First, put one JPG file and one PNG file into the project directory. You need two images with different extensions because you want to load both images in different ways. Name the PNG image <code>image.png</code> and the JPG image <code>image.jpg</code>.</p>
+<p>Create an HTML file named <code>images.html</code> and add the following content:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1, shrink-to-fit=no&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Hello, esbuild!<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;root&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">img</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;image_png&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">img</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;image_jpg&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;out_image.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then, you need to create a JavaScript file. Name it <code>input_image.js</code> and add the following code:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">png_url</span> <span class="nx">from</span> <span class="s1">&#39;./image.png&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">png_image</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;image_png&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">png_image</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">png_url</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">jpg_url</span> <span class="nx">from</span> <span class="s1">&#39;./image.jpg&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">jpg_image</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;image_jpg&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">jpg_image</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">jpg_url</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Next, load the image using the import statement inside the JavaScript file. <span class="ibakuman-inline-note">Unlike bundling CSS files, you don’t bundle images directly, but bundle images by bundling the JavaScript files that refer to the images</span>.</p>
+<p>Now, bundle the JavaScript files:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild input_image.js --bundle --loader:.png<span class="o">=</span>dataurl --loader:.jpg<span class="o">=</span>file --outfile<span class="o">=</span>out_image.js
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  out_image.js        20.1kb
+</span></span><span class="line"><span class="cl">  image-UKQOKISI.jpg  10.1kb
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">⚡ Done in 11ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Notice that you used two loaders. The .png extension uses the <code>dataurl</code> loader and the .jpg extension uses the <code>file</code> loader. Instead of <code>image-UKQOKISI.jpg</code>, you will get a different name.</p>
+<p>If you peek inside <code>out_image.js</code>, you’ll see the following:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// image.png
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kd">var</span> <span class="nx">image_default</span> <span class="o">=</span> <span class="s2">&#34;data:image/png;base64,iVBORw0KGgoAAAANSU...&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// image.jpg
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kd">var</span> <span class="nx">image_default2</span> <span class="o">=</span> <span class="s2">&#34;./image-UKQOKISI.jpg&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// input_image.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kd">var</span> <span class="nx">png_image</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;image_png&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">png_image</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">image_default</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">jpg_image</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;image_jpg&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">jpg_image</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">image_default2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As you can see, the first image uses a Based64-encoded data URL format. The second image uses the file path format. For the second image, you also have an external file called <code>image-UKQOKISI.jpg</code>.</p>
+<p>You can check the images by opening <code>images.html</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ npx http-server
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Open <a class="link" href="http://localhost:8080/images.html"  target="_blank" rel="noopener"
+    >http://localhost:8080/images.html</a> and you would get the following screen:</p>
+<p><img src="/en/posts/esbuild/getting-started-with-esbuild/assets/The_HTML_file_loads_images.png"
+	width="548"
+	height="361"
+	srcset="/en/posts/esbuild/getting-started-with-esbuild/assets/The_HTML_file_loads_images_hu55c10884891dbd0a3470273b7e880b79_24800_480x0_resize_box_3.png 480w, /en/posts/esbuild/getting-started-with-esbuild/assets/The_HTML_file_loads_images_hu55c10884891dbd0a3470273b7e880b79_24800_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="The HTML file loads images"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="151"
+		data-flex-basis="364px"
+	
+>
+</p>
+<h2 id="using-plugin">Using Plugin</h2>
+<p>Esbuild is not a complete solution for bundling. It has default supports for React, CSS, and images, but it doesn’t support SASS. If you want to bundle SASS files, you need to install an esbuild plugin. The list of the esbuild plugins can be found <a class="link" href="https://github.com/esbuild/community-plugins"  target="_blank" rel="noopener"
+    >here</a> .</p>
+<p>There are a couple of plugins that bundle SASS files. In this tutorial, you’ll use <code>esbuild-plugin-sass</code>. Install the plugin using npm like so:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ npm install esbuild-plugin-sass
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Let’s create an SCSS file named <code>style.scss</code>. Add the following content to it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-scss" data-lang="scss"><span class="line"><span class="cl"><span class="nv">$font</span><span class="o">:</span> <span class="n">Roboto</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$color</span><span class="o">:</span> <span class="nf">rgb</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">255</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nn">#root</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="na">font</span><span class="o">:</span> <span class="mi">1</span><span class="mf">.2</span><span class="kt">em</span> <span class="nv">$font</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="na">color</span><span class="o">:</span> <span class="nv">$color</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To use the <code>esbuild-plugin-sass</code> plugin, you need to use the build API. Create a file called <code>sass_build.js</code> and add the following content:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">sassPlugin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&#34;esbuild-plugin-sass&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">require</span><span class="p">(</span><span class="s2">&#34;esbuild&#34;</span><span class="p">).</span><span class="nx">build</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entryPoints</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;style.scss&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">outfile</span><span class="o">:</span> <span class="s2">&#34;bundle.css&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">bundle</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span><span class="nx">sassPlugin</span><span class="p">()]</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;⚡ Done&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="k">catch</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">Notice that you use the plugin using the plugins key. The entry is the SCSS file, but you can also fill the entry with the JavaScript file, which imports the SCSS file. The output is the CSS file.</span></p>
+<p>Execute this build file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ node sass_build.js
+</span></span><span class="line"><span class="cl">⚡ Done
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>You can check the result by opening the <code>bundle.css</code> file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">/* ../../../../../../tmp/tmp-234680-cl7EYSZ4C0qM/esbuild_demo/style.css */
+</span></span><span class="line"><span class="cl"><span class="c1">#root {</span>
+</span></span><span class="line"><span class="cl">  font: 1.2em Roboto<span class="p">;</span>
+</span></span><span class="line"><span class="cl">  color: blue<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="watch-mode">Watch Mode</h2>
+<p>It’s not fun to execute the bundling process every time you modify the input file. There should be a way to bundle the input files automatically. For this case, esbuild has the <code>watch</code> mode.</p>
+<p>Create a file called <code>watch_build.js</code> and add the following content:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">require</span><span class="p">(</span><span class="s2">&#34;esbuild&#34;</span><span class="p">).</span><span class="nx">build</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entryPoints</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;input_typescript.ts&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">outfile</span><span class="o">:</span> <span class="s2">&#34;output.js&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">bundle</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">loader</span><span class="o">:</span> <span class="p">{</span><span class="s2">&#34;.ts&#34;</span><span class="o">:</span> <span class="s2">&#34;ts&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">watch</span><span class="o">:</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;⚡ Done&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="k">catch</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>input_typescript.ts</code> file is the same as the previous example. This is the content of the file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="s2">&#34;Hello, esbuild!&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Execute the build file like so:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ node watch_build.js
+</span></span><span class="line"><span class="cl">⚡ Done
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The process hangs up. Check the content of <code>output.js</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">(()</span> <span class="o">=</span>&gt; <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  // input_typescript.ts
+</span></span><span class="line"><span class="cl">  var <span class="nv">message</span> <span class="o">=</span> <span class="s2">&#34;Hello, esbuild!&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  console.log<span class="o">(</span>message<span class="o">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">})()</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>While the build process is still alive, change the content of <code>input_typescript.ts</code> to the content shown below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="s2">&#34;Hello, esbuild!&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">x</span><span class="o">:</span> <span class="nx">number</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Finally, check the content of <code>output.js</code> again:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// input_typescript.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="s2">&#34;Hello, esbuild!&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">})();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The output file is updated automatically. <code>watch</code> watches the file system so esbuild can bundle the input files when it detects that the file changes.</p>
+<h2 id="serve-mode">Serve mode</h2>
+<p>There is another way to bundle files automatically called <code>serve</code> mode. It means that you launch a server to <span class='ibakuman-inline-translation'>serve<sub> { 提供 }</sub></span> the output file. If someone requests the output file from the browser, the server will bundle the input files automatically if the files have been changed.</p>
+<p>Let’s create an HTML file called <code>index_ts.html</code> and add the following code to it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1, shrink-to-fit=no&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Hello, esbuild!<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;output.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The output file is <code>output.js</code>, and the user requests it indirectly by accessing <code>index_ts.html</code>. The input file is the same as before, <code>input_typescript.ts</code>. The content of the file is as follows:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="s2">&#34;Hello, esbuild!&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This is how you bundle the file using the <code>serve</code> mode:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ esbuild input_typescript.ts --outfile<span class="o">=</span>output.js --bundle --loader:.ts<span class="o">=</span>ts --serve<span class="o">=</span>localhost:8000 --servedir<span class="o">=</span>.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> &gt; Local: http://127.0.0.1:8000/
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>serve</code> option is used to define the server and the port. The <code>servedir</code> option defines the directory the server serves.</p>
+<p>Now, open <a class="link" href="http://127.0.0.1/8000/index_ts.html"  target="_blank" rel="noopener"
+    >http://127.0.0.1/8000/index_ts.html</a> and check the console:</p>
+<p><img src="/en/posts/esbuild/getting-started-with-esbuild/assets/The_bundler_in_serve_mode.png"
+	width="517"
+	height="332"
+	srcset="/en/posts/esbuild/getting-started-with-esbuild/assets/The_bundler_in_serve_mode_hufbe5958bb968cfb436e804d762b42c9a_18295_480x0_resize_box_3.png 480w, /en/posts/esbuild/getting-started-with-esbuild/assets/The_bundler_in_serve_mode_hufbe5958bb968cfb436e804d762b42c9a_18295_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="The bundler in serve mode"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="155"
+		data-flex-basis="373px"
+	
+>
+</p>
+<p>Modify <code>input_typescript.ts</code> into the following code:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="s2">&#34;Hello, esbuild!&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">x</span><span class="o">:</span> <span class="nx">number</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now, refresh the browser or open <a class="link" href="http://127.0.0.1/8000/index_ts.html"  target="_blank" rel="noopener"
+    >http://127.0.0.1/8000/index_ts.html</a> again. You will see the following screen:</p>
+<p><img src="/en/posts/esbuild/getting-started-with-esbuild/assets/The_bundler_in_the_serve_mode.png"
+	width="515"
+	height="327"
+	srcset="/en/posts/esbuild/getting-started-with-esbuild/assets/The_bundler_in_the_serve_mode_huec988eb86f8e24851a33c2d46dfaecc6_21226_480x0_resize_box_3.png 480w, /en/posts/esbuild/getting-started-with-esbuild/assets/The_bundler_in_the_serve_mode_huec988eb86f8e24851a33c2d46dfaecc6_21226_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="The bundler in the serve mode"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="157"
+		data-flex-basis="377px"
+	
+>
+</p>
+<p>As you can see, the bundling process happened automatically.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this article, you’ve learned how to use esbuild to bundle TypeScript, React, CSS, image files, and SCSS files. You used esbuild tool via CLI and the build API. You executed esbuild with different options according to your needs.</p>
+<p><span class='ibakuman-inline-translation'>This article only scratches the surface of esbuild<sub> { 本文仅涉及 esbuild 的皮毛 }</sub></span>. There are many sides of esbuild that we haven’t covered, such as using sourcemap, injecting functions, and naming the assets. Please check <a class="link" href="https://esbuild.github.io/"  target="_blank" rel="noopener"
+    >the documentation</a> to learn more. The code for this article is available on <a class="link" href="https://github.com/arjunaskykok/esbuild-demo"  target="_blank" rel="noopener"
+    >this GitHub repository</a> .</p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a class="link" href="https://blog.logrocket.com/getting-started-esbuild/"  target="_blank" rel="noopener"
+    >The original article</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/build/">Build</a>
+        
+            <a href="/en/tags/go/">Go</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on May 05, 2023 20:26 CST
+        </span>
+    </section></footer>
+
+</article>
+
+
+    
+
+    
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#installing-esbuild">Installing esbuild</a></li>
+    <li><a href="#bundling-typescript-with-esbuild">Bundling TypeScript with esbuild</a></li>
+    <li><a href="#bundling-react-with-esbuild">Bundling React with esbuild</a></li>
+    <li><a href="#using-the-build-api">Using the build API</a></li>
+    <li><a href="#bundling-css-with-esbuild">Bundling CSS with esbuild</a></li>
+    <li><a href="#bundling-images">Bundling images</a></li>
+    <li><a href="#using-plugin">Using Plugin</a></li>
+    <li><a href="#watch-mode">Watch Mode</a></li>
+    <li><a href="#serve-mode">Serve mode</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#reference">Reference</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

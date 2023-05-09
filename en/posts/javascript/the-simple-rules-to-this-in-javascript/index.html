@@ -1,0 +1,777 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview A few rules determine what the &amp;rsquo;this’ keyword is inside a function Determining what this is is actually rather simple. The overarching { 首要的；支配一切的 } rule is that this is determined at the time a function is invoked by inspecting where it’s called, its call site. It'>
+<title>The Simple Rules to ‘this’ in Javascript</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/javascript/the-simple-rules-to-this-in-javascript/'><link rel="prev" href="https://ibakuman.github.io/en/posts/html/whitespace/" /><link rel="next" href="https://ibakuman.github.io/en/posts/javascript/how-javascript-event-delegation-works/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='The Simple Rules to ‘this’ in Javascript'>
+<meta property='og:description' content='Overview A few rules determine what the &amp;rsquo;this’ keyword is inside a function Determining what this is is actually rather simple. The overarching { 首要的；支配一切的 } rule is that this is determined at the time a function is invoked by inspecting where it’s called, its call site. It'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/javascript/the-simple-rules-to-this-in-javascript/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='this' /><meta property='article:published_time' content='2023-01-05T22:07:47&#43;08:00'/><meta property='article:modified_time' content='2023-01-05T22:07:47&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="The Simple Rules to ‘this’ in Javascript">
+<meta name="twitter:description" content="Overview A few rules determine what the &amp;rsquo;this’ keyword is inside a function Determining what this is is actually rather simple. The overarching { 首要的；支配一切的 } rule is that this is determined at the time a function is invoked by inspecting where it’s called, its call site. It"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/javascript/the-simple-rules-to-this-in-javascript/">
+                <img src="/gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_800x0_resize_q75_box.jpg 800w, /gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="534"
+                        loading="lazy"
+                        alt="Featured image of post The Simple Rules to ‘this’ in Javascript" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/javascript/" >
+                JavaScript
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/javascript/the-simple-rules-to-this-in-javascript/">The Simple Rules to ‘this’ in Javascript</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jan 05, 2023</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>A few rules determine what the &rsquo;this’ keyword is inside a function</p>
+<p>Determining what <code>this</code> is is actually rather simple. The <span class="ibakuman-inline-translation">overarching<sub> { 首要的；支配一切的 }</sub></span> rule is that <code>this</code> is determined at the time a function is invoked by inspecting where it’s called, its <em>call site</em>. It follows these rules, in order of precedence.</p>
+<h2 id="rules">Rules</h2>
+<ol>
+<li>
+<p>If the <code>new</code> keyword is used when calling the function, <code>this</code> inside the function is a brand new object.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">ConstructorExample</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">new</span> <span class="nx">ConstructorExample</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// -&gt; {}
+</span></span></span><span class="line"><span class="cl"><span class="c1">// -&gt; { value: 10 }
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>For more information about <code>new</code>, feel free to read my article <a class="link" href="https://codeburst.io/javascripts-new-keyword-explained-as-simply-as-possible-fec0d87b2741"  target="_blank" rel="noopener"
+    >Javascript’s “new” Keyword Explained as Simply as Possible  by Arnav Aggarwal  codeburst</a>.</p>
+</li>
+<li>
+<p>If <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply"  target="_blank" rel="noopener"
+    >apply</a>, <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call"  target="_blank" rel="noopener"
+    >call</a>, or <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind"  target="_blank" rel="noopener"
+    >bind</a> are used to call a function, <code>this</code> inside the function is the object that is passed in as the argument.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fn</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">value</span><span class="o">:</span> <span class="mi">5</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">boundFn</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">boundFn</span><span class="p">();</span>     <span class="c1">// -&gt; { value: 5 }
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fn</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>  <span class="c1">// -&gt; { value: 5 }
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fn</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span> <span class="c1">// -&gt; { value: 5 }
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>If a function is called as a method — that is, if dot notation is used to invoke the function — <code>this</code> is the object that the function is a property of. In other words, when a dot is to the left of a function invocation, <code>this</code> is the object to the left of the dot. (ƒ symbolizes function in the code blocks)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">value</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">printThis</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="nx">obj</span><span class="p">.</span><span class="nx">printThis</span><span class="p">();</span> <span class="c1">// -&gt; { value: 5, printThis: ƒ }
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>If a function is invoked as a <em>free function invocation</em>, meaning it was invoked without any of the conditions present above, <code>this</code> is the global object. In a browser, it’s <code>window</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fn</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// If called in browser:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fn</span><span class="p">();</span> <span class="c1">// -&gt; Window {stop: ƒ, open: ƒ, alert: ƒ, ...}
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Note that this rule is the same as rule 3 — the difference is that a function that is <em>not</em> declared as a method automatically becomes a property of the global object, <code>window</code>. This is therefore an implicit method invocation. When we call <code>fn()</code>, it’s interpreted as <code>window.fn()</code>, so <code>this</code> is <code>window</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">fn</span> <span class="o">===</span> <span class="nb">window</span><span class="p">.</span><span class="nx">fn</span><span class="p">);</span> <span class="c1">// -&gt; true
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>If multiple of the above rules apply, the rule that is higher wins and will set the <code>this</code> value.</p>
+</li>
+<li>
+<p>If the function is an ES2015 arrow function, it ignores all the rules above and receives the <code>this</code> value of its surrounding scope <strong>at the time it’s created</strong>. To determine <code>this</code>, go one line above the arrow function’s creation and see what the value of <code>this</code> is there. It will be the same in the arrow function.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;abc&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">createArrowFn</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">arrowFn</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">createArrowFn</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">arrowFn</span><span class="p">();</span> <span class="c1">// -&gt; { value: &#39;abc&#39;, createArrowFn: ƒ }
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Going back to the 3rd rule, when we call <code>obj.createArrowFn()</code>, <code>this</code> inside <code>createArrowFn</code> will be <code>obj</code>, as we’re calling it with dot notation. <code>obj</code> therefore gets bound to <code>this</code> in <code>arrowFn</code>. If we were to create an arrow function in the global scope, <code>this</code> would be <code>window</code>.</p>
+</li>
+</ol>
+<h2 id="applying-the-rules">Applying the Rules</h2>
+<p>Let’s go over a code example and apply our rules. Try figuring out what <code>this</code> will be with the two different function calls.</p>
+<h3 id="determining-which-rule-applies">Determining Which Rule Applies</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;hi&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">printThis</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">print</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">printThis</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">obj</span><span class="p">.</span><span class="nx">printThis</span><span class="p">();</span> <span class="c1">// -&gt; {value: &#34;hi&#34;, printThis: ƒ}
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">print</span><span class="p">();</span> <span class="c1">// -&gt; Window {stop: ƒ, open: ƒ, alert: ƒ, ...}
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>obj.printThis()</code> falls under rule 3 — invocation using dot notation. On the other hand, <code>print()</code> falls under rule 4 as a free function invocation. For <code>print()</code> we don’t use <code>new</code>, <code>bind/call/apply</code>, or dot notation when we invoke it, so we go to rule 4 and <code>this</code> is the global object, <code>window</code>.</p>
+<h3 id="when-multiple-rules-apply">When Multiple Rules Apply</h3>
+<p><span class="ibakuman-inline-note">When multiple rules apply, the rule higher on the list wins.</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;hi&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">print</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">value</span><span class="o">:</span> <span class="mi">17</span> <span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If rules 2 and 3 both apply, rule 2 takes precedence.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">obj1</span><span class="p">.</span><span class="nx">print</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj2</span><span class="p">);</span> <span class="c1">// -&gt; { value: 17 }
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>If rules 1 and 3 both apply, rule 1 takes precedence.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="k">new</span> <span class="nx">obj1</span><span class="p">.</span><span class="nx">print</span><span class="p">();</span> <span class="c1">// -&gt; {}
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="libraries">Libraries</h2>
+<p>Libraries will sometimes <span class="ibakuman-inline-translation">intentionally<sub> { 故意地，有意地 }</sub></span> bind the value of <code>this</code> inside their functions. <code>this</code> is bound to the most useful value for use in the function. jQuery, for example, binds <code>this</code> to the DOM element triggering an event in the callback to that event. If a library has an unexpected <code>this</code> value that doesn’t seem to follow the rules, check its documentation. It’s likely being bound using <code>bind</code>.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a class="link" href="https://codeburst.io/the-simple-rules-to-this-in-javascript-35d97f31bde3"  target="_blank" rel="noopener"
+    >The Simple Rules to ‘this’ in Javascript  by Arnav Aggarwal  codeburst</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/this/">this</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/javascript/8-different-places-this-can-point-to-in-javascript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/19.ce3d7e9ebc658f78912c63e56a8e08f1_hu3c9ceb46f3c27ef42abe81330e191c65_524406_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 8 Different Places “this” Can Point to in JavaScript"
+                        
+                        data-hash="md5-zj1&#43;nrxlj3iRLGPlao4I8Q==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">8 Different Places “this” Can Point to in JavaScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/javascript/how-javascript-event-delegation-works/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/11.2f093314f7144588c8c264fd8c5edd91_hudf52b8b325017a6d69e0e042062b02e2_3188398_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post How JavaScript Event Delegation Works"
+                        
+                        data-hash="md5-LwkzFPcURYjIwmT9jF7dkQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">How JavaScript Event Delegation Works</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/javascript/prototype-chaing/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/06.419dc574ac7e8c69f7dbc91968c103ef_hu81244abf406e14dcc233313eedffeb78_1696606_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Prototype Chaining"
+                        
+                        data-hash="md5-QZ3FdKx&#43;jGn328kZaMED7w==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Prototype Chaining</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/javascript/difference-between-module.exports-and-exports-in-the-commonjs-module-system/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/03.ddc26f6f90e7053d7d5aff4e1d970441_hua119d5172e80ee912c81cee3e4b607ac_783790_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Difference between module.exports and exports in the CommonJS Module System"
+                        
+                        data-hash="md5-3cJvb5DnBT19Wv9OHZcEQQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Difference between module.exports and exports in the CommonJS Module System</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#rules">Rules</a></li>
+    <li><a href="#applying-the-rules">Applying the Rules</a>
+      <ol>
+        <li><a href="#determining-which-rule-applies">Determining Which Rule Applies</a></li>
+        <li><a href="#when-multiple-rules-apply">When Multiple Rules Apply</a></li>
+      </ol>
+    </li>
+    <li><a href="#libraries">Libraries</a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

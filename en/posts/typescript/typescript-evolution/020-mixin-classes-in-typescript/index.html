@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview TypeScript aims to support common JavaScript patterns used in different frameworks and libraries. Starting with TypeScript 2.2, mixin classes are one such pattern that is now supported statically. This post briefly explains what mixins are and then goes on to { 接着，继续去 } show a few examples of how they can be used in TypeScript. Mixins in JavaScript/TypeScript A mixin class is a class'>
+<title>Mixin Classes in TypeScript</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/020-mixin-classes-in-typescript/'><link rel="prev" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/019-null-checking-for-expression-operands-in-typescript/" /><link rel="next" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/021-generic-parameter-defaults-in-typescript/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='Mixin Classes in TypeScript'>
+<meta property='og:description' content='Overview TypeScript aims to support common JavaScript patterns used in different frameworks and libraries. Starting with TypeScript 2.2, mixin classes are one such pattern that is now supported statically. This post briefly explains what mixins are and then goes on to { 接着，继续去 } show a few examples of how they can be used in TypeScript. Mixins in JavaScript/TypeScript A mixin class is a class'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/020-mixin-classes-in-typescript/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2023-01-01T17:39:54&#43;08:00'/><meta property='article:modified_time' content='2023-01-01T17:39:54&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="Mixin Classes in TypeScript">
+<meta name="twitter:description" content="Overview TypeScript aims to support common JavaScript patterns used in different frameworks and libraries. Starting with TypeScript 2.2, mixin classes are one such pattern that is now supported statically. This post briefly explains what mixins are and then goes on to { 接着，继续去 } show a few examples of how they can be used in TypeScript. Mixins in JavaScript/TypeScript A mixin class is a class"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/typescript/typescript-evolution/020-mixin-classes-in-typescript/">
+                <img src="/gallery/landscape/05_hub432477bc07843360148c20e5d960cbf_635143_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/05_hub432477bc07843360148c20e5d960cbf_635143_800x0_resize_q75_box.jpg 800w, /gallery/landscape/05_hub432477bc07843360148c20e5d960cbf_635143_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="450"
+                        loading="lazy"
+                        alt="Featured image of post Mixin Classes in TypeScript" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/typescript/" >
+                TypeScript
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/typescript/typescript-evolution/020-mixin-classes-in-typescript/">Mixin Classes in TypeScript</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jan 01, 2023</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>TypeScript aims to support common JavaScript patterns used in different frameworks and libraries. Starting with TypeScript 2.2, mixin classes are one such pattern that is now supported statically. This post briefly explains what mixins are and then <span class="ibakuman-inline-translation">goes on to<sub> { 接着，继续去 }</sub></span> show a few examples of how they can be used in TypeScript.</p>
+<h2 id="mixins-in-javascripttypescript">Mixins in JavaScript/TypeScript</h2>
+<p>A mixin class is a class that implements a distinct aspect of functionality. Other classes can then <em>include</em> the mixin and access its methods and properties. That way, mixins provide a form of code reuse that is based on <em>composing behavior</em>.</p>
+<blockquote>
+<p>[A mixin is] a function that</p>
+<ol>
+<li>takes a constructor,</li>
+<li>declares a class that extends that constructor,</li>
+<li>adds members to that new class, and</li>
+<li>returns the class itself.</li>
+</ol>
+<p><a class="link" href="https://blogs.msdn.microsoft.com/typescript/2017/02/02/announcing-typescript-2-2-rc/"  target="_blank" rel="noopener"
+    >Announcing TypeScript 2.2 RC</a></p>
+</blockquote>
+<p><span class="ibakuman-inline-translation">With the definition out of the way<sub> { 了解了定义之后 }</sub></span>, let&rsquo;s dive into some code. Here&rsquo;s a <code>Timestamped</code> mixin that tracks the creation date of an object in a <code>timestamp</code> property:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Constructor</span><span class="p">&lt;</span><span class="nt">T</span> <span class="err">=</span> <span class="p">{}&gt;</span> <span class="o">=</span> <span class="k">new</span> <span class="p">(...</span><span class="nx">args</span>: <span class="kt">any</span><span class="p">[])</span> <span class="o">=&gt;</span> <span class="nx">T</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Timestamped</span><span class="p">&lt;</span><span class="nt">TBase</span> <span class="na">extends</span> <span class="na">Constructor</span><span class="p">&gt;(</span><span class="nx">Base</span>: <span class="kt">TBase</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="kr">class</span> <span class="kr">extends</span> <span class="nx">Base</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">timestamp</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>There are quite a few things happening here. Let&rsquo;s start off by dissecting the type alias at the top:</p>
+<blockquote>
+<p>这里发生了很多事情。让我们从分析顶部的类型别名开始:</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Constructor</span><span class="p">&lt;</span><span class="nt">T</span> <span class="err">=</span> <span class="p">{}&gt;</span> <span class="o">=</span> <span class="k">new</span> <span class="p">(...</span><span class="nx">args</span>: <span class="kt">any</span><span class="p">[])</span> <span class="o">=&gt;</span> <span class="nx">T</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The type <code>Constructor&lt;T&gt;</code> is an alias for the <em>construct signature</em> that describes a type which can construct objects of the generic type <code>T</code> and whose constructor function accepts an arbitrary number of parameters of any type. It uses a <a class="link" href="https://mariusschulz.com/blog/generic-parameter-defaults-in-typescript"  target="_blank" rel="noopener"
+    >generic parameter default</a> (introduced with TypeScript 2.3) to specify that <code>T</code> should be treated as the <code>{}</code> type unless specified otherwise.</p>
+<p>Next, let&rsquo;s look at the mixin function itself:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Timestamped</span><span class="p">&lt;</span><span class="nt">TBase</span> <span class="na">extends</span> <span class="na">Constructor</span><span class="p">&gt;(</span><span class="nx">Base</span>: <span class="kt">TBase</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="kr">class</span> <span class="kr">extends</span> <span class="nx">Base</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">timestamp</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here we have a function called <code>Timestamped</code> that accepts a parameter called <code>Base</code> of the generic type <code>TBase</code>. Note that <code>TBase</code> is constrained to be compatible with <code>Constructor</code>, that is, the type must be able to construct <em>something</em>.</p>
+<p>Within the body of the function, we create and return a new class that derives from <code>Base</code>. This syntax might look a little strange at first. We&rsquo;re creating a <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#Class_expressions"  target="_blank" rel="noopener"
+    >class expression</a> rather than a <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#Class_declarations"  target="_blank" rel="noopener"
+    >class declaration</a>, the more common way of defining classes. Our new class defines a single property called <code>timestamp</code> and immediately assigns the number of milliseconds elapsed since the UNIX epoch.</p>
+<p>Note that the class expression returned from the mixin function is an <em>unnamed class expression</em> because the <code>class</code> keyword is not followed by a name. In contrast to class declarations, class expressions don&rsquo;t have to be named. You could optionally add a name which would be local to the class&rsquo; body and would allow the class to refer to itself:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Timestamped</span><span class="p">&lt;</span><span class="nt">TBase</span> <span class="na">extends</span> <span class="na">Constructor</span><span class="p">&gt;(</span><span class="nx">Base</span>: <span class="kt">TBase</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="kr">class</span> <span class="nx">Timestamped</span> <span class="kr">extends</span> <span class="nx">Base</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">timestamp</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now that we&rsquo;ve covered the two type aliases and the declaration of the mixin function, let&rsquo;s see how we can include the mixin in another class:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">User</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">constructor</span><span class="p">(</span><span class="nx">name</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Create a new class by mixing `Timestamped` into `User`
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">TimestampedUser</span> <span class="o">=</span> <span class="nx">Timestamped</span><span class="p">(</span><span class="nx">User</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Instantiate the new `TimestampedUser` class
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TimestampedUser</span><span class="p">(</span><span class="s2">&#34;John Doe&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// We can now access properties from both the `User` class
+</span></span></span><span class="line"><span class="cl"><span class="c1">// and our `Timestamped` mixin in a type-safe manner
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">timestamp</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The TypeScript compiler understands that we&rsquo;ve created and used a mixin here. Everything is fully statically typed and we get the usual tooling support such as autocompletion and refactorings.</p>
+<h2 id="mixins-with-a-constructor">Mixins with a Constructor</h2>
+<p>Now, let&rsquo;s move on to a slightly more advanced mixin. This time, we&rsquo;re going to define a constructor within our mixin class:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Tagged</span><span class="p">&lt;</span><span class="nt">TBase</span> <span class="na">extends</span> <span class="na">Constructor</span><span class="p">&gt;(</span><span class="nx">Base</span>: <span class="kt">TBase</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="kr">class</span> <span class="kr">extends</span> <span class="nx">Base</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">tag</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">constructor</span><span class="p">(...</span><span class="nx">args</span>: <span class="kt">any</span><span class="p">[])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">super</span><span class="p">(...</span><span class="nx">args</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="nx">tag</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">If you define a constructor function in a mixin class, it must have a single rest parameter of type <code>any[]</code></span>. The reason for this is that the mixin should not be tied to a specific class with known constructor parameters; therefore the mixin should accept an arbitrary number of arbitrary values as constructor parameters. All of the parameters are passed to the constructor of <code>Base</code>, and then the mixin does its thing. In our case, it initializes the <code>tag</code> property.</p>
+<p>We would use the <code>Tagged</code> mixin in the same way that we used <code>Timestamped</code> before:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="c1">// Create a new class by mixing `Tagged` into `User`
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">TaggedUser</span> <span class="o">=</span> <span class="nx">Tagged</span><span class="p">(</span><span class="nx">User</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Instantiate the new `TaggedUser` class
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TaggedUser</span><span class="p">(</span><span class="s2">&#34;John Doe&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// We can now assign values to any property defined in either
+</span></span></span><span class="line"><span class="cl"><span class="c1">// the `User` class or our `Tagged` mixin in a type-safe manner.
+</span></span></span><span class="line"><span class="cl"><span class="c1">// TypeScript will type-check those assignments!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s2">&#34;Jane Doe&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">user</span><span class="p">.</span><span class="nx">tag</span> <span class="o">=</span> <span class="s2">&#34;janedoe&#34;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="mixins-with-methods">Mixins with Methods</h2>
+<p>Up until now, we&rsquo;ve only added data properties in our mixins. Let&rsquo;s now look at a mixin that additionally implements two methods:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Activatable</span><span class="p">&lt;</span><span class="nt">TBase</span> <span class="na">extends</span> <span class="na">Constructor</span><span class="p">&gt;(</span><span class="nx">Base</span>: <span class="kt">TBase</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="kr">class</span> <span class="kr">extends</span> <span class="nx">Base</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">isActivated</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">activate() {</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="nx">isActivated</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">deactivate() {</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="nx">isActivated</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We&rsquo;re returning a regular ES2015 class from our mixin function. This means you can make use of all supported class features, such as constructors, properties, methods, getters/setters, static members, and so on.</p>
+<p>One more time, here&rsquo;s how we would use the <code>Activatable</code> mixin with our <code>User</code> class:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">ActivatableUser</span> <span class="o">=</span> <span class="nx">Activatable</span><span class="p">(</span><span class="nx">User</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Instantiate the new `ActivatableUser` class
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActivatableUser</span><span class="p">(</span><span class="s2">&#34;John Doe&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Initially, the `isActivated` property is false
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">isActivated</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Activate the user
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">user</span><span class="p">.</span><span class="nx">activate</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Now, `isActivated` is true
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">isActivated</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="composing-multiple-mixins">Composing Multiple Mixins</h2>
+<p>The flexibility of mixins becomes apparent once you start <em>composing</em> them. A class can include as many mixins as you like! To demonstrate this, let&rsquo;s compose all the mixins we&rsquo;ve seen in this post:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SpecialUser</span> <span class="o">=</span> <span class="nx">Activatable</span><span class="p">(</span><span class="nx">Tagged</span><span class="p">(</span><span class="nx">Timestamped</span><span class="p">(</span><span class="nx">User</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SpecialUser</span><span class="p">(</span><span class="s2">&#34;John Doe&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now, I&rsquo;m not sure whether the <code>SpecialUser</code> class is <span class="ibakuman-inline-translation">terribly<sub> { 很，非常 }</sub></span> useful, but the point is, TypeScript statically understands this sort of mixin composition. The compiler can type-check all usages and suggest available members within the autocompletion list:</p>
+<p><img src="/en/posts/typescript/typescript-evolution/020-mixin-classes-in-typescript/assets/TypeScript_autocompletion_list_of_mixed-in_members.png"
+	width="1166"
+	height="520"
+	srcset="/en/posts/typescript/typescript-evolution/020-mixin-classes-in-typescript/assets/TypeScript_autocompletion_list_of_mixed-in_members_hu09c24b95c6d3f5d35389c77fde94869b_37830_480x0_resize_box_3.png 480w, /en/posts/typescript/typescript-evolution/020-mixin-classes-in-typescript/assets/TypeScript_autocompletion_list_of_mixed-in_members_hu09c24b95c6d3f5d35389c77fde94869b_37830_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="TypeScript autocompletion list of mixed-in members"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="224"
+		data-flex-basis="538px"
+	
+>
+</p>
+<p>Contrast this with class inheritance and you&rsquo;ll see the difference: A class can only have a single base class. Inheriting from multiple base classes is not possible in JavaScript and therefore, neither in TypeScript.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><a class="link" href="https://github.com/Microsoft/TypeScript/wiki/What%27s-new-in-TypeScript#support-for-mix-in-classes"  target="_blank" rel="noopener"
+    >What&rsquo;s new in TypeScript</a>: Support for Mix-in classes</li>
+<li><a class="link" href="https://github.com/Microsoft/TypeScript/pull/13743"  target="_blank" rel="noopener"
+    >Pull request: &ldquo;Mixin classes&rdquo;</a> by Anders Hejlsberg</li>
+<li><a class="link" href="https://justinfagnani.com/2015/12/21/real-mixins-with-javascript-classes/"  target="_blank" rel="noopener"
+    >&ldquo;Real&rdquo; Mixins with JavaScript Classes</a> by Justin Fagnani</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a class="link" href="https://mariusschulz.com/blog/mixin-classes-in-typescript"  target="_blank" rel="noopener"
+    >Mixin Classes in TypeScript — Marius Schulz</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/046-string-literal-types-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/04.0d227eb193cd808efb3e41cf0214a573_hu21e79f1310d133228b33f735d4ec0be8_1556942_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post String Literal Types in TypeScript"
+                        
+                        data-hash="md5-DSJ&#43;sZPNgI77PkHPAhSlcw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">String Literal Types in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/045-assertion-functions-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Assertion Functions in TypeScript"
+                        
+                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Assertion Functions in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/044-optional-chaining-the-operator-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/14.f042bee33f5598c65efdcb121a2971b6_hu408d85e3d6fd20da711d14997ee2c37d_918594_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Optional Chaining: The ?. Operator in TypeScript"
+                        
+                        data-hash="md5-8EK&#43;4z9VmMZe/csSGilxtg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Optional Chaining: The ?. Operator in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/043-nullish-coalescing-the-operator-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/20.1bee3eecff8df8a9e2cb815d1108b2e8_hu04c80cb06f0b716a920690442f749887_1496648_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Nullish Coalescing: The ?? Operator in TypeScript"
+                        
+                        data-hash="md5-G&#43;4&#43;7P&#43;N&#43;Kniy4FdEQiy6A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Nullish Coalescing: The ?? Operator in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/042-the-omit-helper-type-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/18.1d6c831bbe3ac5066415b0e3b01e7d47_hu7a8b922ea914ad8a12e0fc01dcf809f5_223556_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post The Omit Helper Type in TypeScript"
+                        
+                        data-hash="md5-HWyDG746xQZkFbDjsB59Rw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">The Omit Helper Type in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#mixins-in-javascripttypescript">Mixins in JavaScript/TypeScript</a></li>
+    <li><a href="#mixins-with-a-constructor">Mixins with a Constructor</a></li>
+    <li><a href="#mixins-with-methods">Mixins with Methods</a></li>
+    <li><a href="#composing-multiple-mixins">Composing Multiple Mixins</a></li>
+    <li><a href="#further-reading">Further Reading</a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

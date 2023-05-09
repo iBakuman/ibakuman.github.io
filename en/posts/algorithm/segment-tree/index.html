@@ -1,0 +1,960 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview A Segment Tree is a data structure that stores information about array intervals as a tree. This allows answering range queries over an array efficiently, while still being flexible enough to allow quick modification of the array. This includes finding the sum of consecutive array elements $a[l \dots r]$ , or finding the minimum element in a such a range in $O(\log n)$ time. Between answering such queries, the Segment Tree allows modifying the array by replacing one element, or even changing the elements of a whole subsegment (e.'>
+<title>Segment Tree</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/algorithm/segment-tree/'><link rel="prev" href="https://ibakuman.github.io/en/posts/english/algorithm/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='Segment Tree'>
+<meta property='og:description' content='Overview A Segment Tree is a data structure that stores information about array intervals as a tree. This allows answering range queries over an array efficiently, while still being flexible enough to allow quick modification of the array. This includes finding the sum of consecutive array elements $a[l \dots r]$ , or finding the minimum element in a such a range in $O(\log n)$ time. Between answering such queries, the Segment Tree allows modifying the array by replacing one element, or even changing the elements of a whole subsegment (e.'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/algorithm/segment-tree/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Segment Tree' /><meta property='article:published_time' content='2023-05-05T10:29:19&#43;08:00'/><meta property='article:modified_time' content='2023-05-06T13:51:21&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="Segment Tree">
+<meta name="twitter:description" content="Overview A Segment Tree is a data structure that stores information about array intervals as a tree. This allows answering range queries over an array efficiently, while still being flexible enough to allow quick modification of the array. This includes finding the sum of consecutive array elements $a[l \dots r]$ , or finding the minimum element in a such a range in $O(\log n)$ time. Between answering such queries, the Segment Tree allows modifying the array by replacing one element, or even changing the elements of a whole subsegment (e."><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/algorithm/segment-tree/">
+                <img src="/gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_800x0_resize_q75_box.jpg 800w, /gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="534"
+                        loading="lazy"
+                        alt="Featured image of post Segment Tree" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/data-structure/" >
+                Data Structure
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/algorithm/segment-tree/">Segment Tree</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">May 05, 2023</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    19 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>A Segment Tree is a data structure that stores information about array intervals as a tree. This allows answering range queries over an array efficiently, while still being flexible enough to allow quick modification of the array. This includes finding the sum of consecutive array elements  
+$a[l \dots r]$ , or finding the minimum element in a such a range in  
+$O(\log n)$  time. Between answering such queries, the Segment Tree allows modifying the array by replacing one element, or even changing the elements of a whole subsegment (e.g. assigning all elements  
+$a[l \dots r]$  to any value, or adding a value to all element in the subsegment).</p>
+<p>In general, a Segment Tree is a very flexible data structure, and a huge number of problems can be solved with it. Additionally, it is also possible to apply more complex operations and answer more complex queries (see Advanced versions of Segment Trees). In particular the Segment Tree can be easily generalized to larger dimensions. For instance, with a two-dimensional Segment Tree you can answer sum or minimum queries over some subrectangle of a given matrix in only  
+$O(\log^2 n)$  time.</p>
+<p>One important property of Segment Trees is that they require only a linear amount of memory.
+<span class="ibakuman-inline-note">The standard Segment Tree requires  $4n$  vertices for working on an array of size $n$ .</span></p>
+<h2 id="simplest-form-of-a-segment-tree">Simplest form of a Segment Tree</h2>
+<p>To start easy, we consider the simplest form of a Segment Tree. We want to answer sum queries efficiently. The formal definition of our task is: Given an array  
+$a[0 \dots n-1]$ , the Segment Tree must be able to find the sum of elements between the indices  
+$l$  and  
+$r$  (i.e. computing the sum  
+$\sum_{i=l}^r a[i]$ ), and also handle changing values of the elements in the array (i.e. perform assignments of the form  
+$a[i] = x$ ). The Segment Tree should be able to process both queries in  
+$O(\log n)$  time.</p>
+<p>This is an improvement over the simpler approaches. A <a class="link" href="../../english/algorithm/#naive" >naive</a> array implementation - just using a simple array - can update elements in  
+$O(1)$ , but requires  
+$O(n)$  to compute each sum query. And precomputed prefix sums can compute sum queries in  
+$O(1)$ , but updating an array element requires  
+$O(n)$  changes to the prefix sums.</p>
+<h3 id="structure-of-the-segment-tree">Structure of the Segment Tree</h3>
+<p>We can take a divide-and-conquer approach when it comes to array segments. We compute and store the sum of the elements of the whole array, i.e. the sum of the segment  
+$a[0 \dots n-1]$ . We then split the array into two halves  
+$a[0 \dots n/2-1]$  and  
+$a[n/2 \dots n-1]$  and compute the sum of each halve and store them. Each of these two halves in turn are split in half, and so on until all segments reach size  $1$ .</p>
+<p>We can view these segments as forming a binary tree: the root of this tree is the segment  
+$a[0 \dots n-1]$ , and each vertex (except leaf vertices) has exactly two child vertices. This is why the data structure is called &ldquo;Segment Tree&rdquo;, even though in most implementations the tree is not constructed explicitly (see Implementation).</p>
+<p>Here is a visual representation of such a Segment Tree over the array  
+$a = [1, 3, -2, 8, -7]$ :</p>
+<p><img src="/en/posts/algorithm/segment-tree/assets/https!cp-algorithms.com!data_structures!sum-segment-tree.png"
+	width="516"
+	height="380"
+	srcset="/en/posts/algorithm/segment-tree/assets/https!cp-algorithms.com!data_structures!sum-segment-tree_hud67195a2b7fa20941dd8e5e45457a05c_9829_480x0_resize_box_3.png 480w, /en/posts/algorithm/segment-tree/assets/https!cp-algorithms.com!data_structures!sum-segment-tree_hud67195a2b7fa20941dd8e5e45457a05c_9829_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="https://cp-algorithms.com/data_structures/sum-segment-tree.png"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="135"
+		data-flex-basis="325px"
+	
+>
+</p>
+<p>From this short description of the data structure, we can already conclude that a Segment Tree only requires a linear number of vertices. The first level of the tree contains a single node (the root), the second level will contain two vertices, in the third it will contain four vertices, until the number of vertices reaches  
+$n$ . Thus the number of vertices in the worst case can be estimated by the sum  
+$1 + 2 + 4 + \dots + 2^{\lceil\log_2 n\rceil} \lt 2^{\lceil\log_2 n\rceil + 1} \lt 4n$ .</p>
+<p><a class="link" href="../../english/algorithm/#it-is-worth-noting" >It is worth noting</a> that whenever
+$n$  is not a power of two, not all levels of the Segment Tree will be completely filled. We can see that behavior in the image. For now we can forget about this fact, but it will become important later during the implementation.</p>
+<p>The height of the Segment Tree is  
+$O(\log n)$ , because when going down from the root to the leaves the size of the segments decreases approximately by half.</p>
+<h3 id="construction">Construction</h3>
+<p>Before constructing the segment tree, we need to decide:</p>
+<ol>
+<li>the value that gets stored at each node of the segment tree. For example, in a sum segment tree, a node would store the sum of the elements in its range $[l, r]$ .</li>
+<li>the merge operation that merges two siblings in a segment tree. For example, in a sum segment tree, the two nodes corresponding to the ranges  
+$a[l_1 \dots r_1]$  and  
+$a[l_2 \dots r_2]$  would be merged into a node corresponding to the range  
+$a[l_1 \dots r_2]$  by adding the values of the two nodes.</li>
+</ol>
+<p>Note that a vertex is a &ldquo;leaf vertex&rdquo;, if its corresponding segment covers only one value in the original array. It is present at the lowermost level of a segment tree. Its value would be equal to the (corresponding) element  
+$a[i]$ .</p>
+<p>Now, for construction of the segment tree, we start at the bottom level (the leaf vertices) and assign them their respective values. On the basis of these values, we can compute the values of the previous level, using the merge function. And on the basis of those, we can compute the values of the previous, and repeat the procedure until we reach the root vertex.</p>
+<p>It is convenient to describe this operation recursively in the other direction, i.e., from the root vertex to the leaf vertices. The construction procedure, if called on a non-leaf vertex, does the following:</p>
+<ol>
+<li>recursively construct the values of the two child vertices</li>
+<li>merge the computed values of these children.</li>
+</ol>
+<p>We start the construction at the root vertex, and hence, we are able to compute the entire segment tree.</p>
+<p>The time complexity of this construction is  
+$O(n)$ , assuming that the merge operation is constant time (the merge operation gets called  
+$n$  times, which is equal to the number of internal nodes in the segment tree).</p>
+<h3 id="sum-queries">Sum queries</h3>
+<p>For now we are going to answer sum queries. As an input we receive two integers  
+$l$  and  
+$r$ , and we have to compute the sum of the segment  
+$a[l \dots r]$  in  
+$O(\log n)$  time.</p>
+<p>To do this, we will traverse the Segment Tree and use the precomputed sums of the segments. Let&rsquo;s assume that we are currently at the vertex that covers the segment  
+$a[tl \dots tr]$ . There are three possible cases.</p>
+<p>The easiest case is when the segment  
+$a[l \dots r]$  is equal to the corresponding segment of the current vertex (i.e.  
+$a[l \dots r] = a[tl \dots tr]$ ), then we are finished and can return the precomputed sum that is stored in the vertex.</p>
+<p>Alternatively the segment of the query can fall completely into the domain of either the left or the right child. Recall that the left child covers the segment  
+$a[tl \dots tm]$  and the right vertex covers the segment  
+$a[tm + 1 \dots tr]$  with  
+$tm = (tl + tr) / 2$ . In this case we can simply go to the child vertex, which corresponding segment covers the query segment, and execute the algorithm described here with that vertex.</p>
+<p>And then there is the last case, the query segment intersects with both children. In this case we have no other option as to make two recursive calls, one for each child. First we go to the left child, compute a partial answer for this vertex (i.e. the sum of values of the intersection between the segment of the query and the segment of the left child), then go to the right child, compute the partial answer using that vertex, and then combine the answers by adding them. In other words, since the left child represents the segment  
+$a[tl \dots tm]$  and the right child the segment  
+$a[tm+1 \dots tr]$ , we compute the sum query  
+$a[l \dots tm]$  using the left child, and the sum query  
+$a[tm+1 \dots r]$  using the right child.</p>
+<p>So processing a sum query is a function that recursively calls itself once with either the left or the right child (without changing the query boundaries), or twice, once for the left and once for the right child (by splitting the query into two subqueries). And the recursion ends, whenever the boundaries of the current query segment <a class="link" href="../../english/algorithm/#coincide-with" >coincides with</a> the boundaries of the segment of the current vertex. In that case the answer will be the precomputed value of the sum of this segment, which is stored in the tree.</p>
+<p>In other words, the calculation of the query is a traversal of the tree, which <a class="link" href="../../english/algorithm/#spread-through" >spreads through</a> all necessary branches of the tree, and uses the precomputed sum values of the segments in the tree.</p>
+<p>Obviously we will start the traversal from the root vertex of the Segment Tree.</p>
+<p>The procedure is illustrated in the following image. Again the array  
+$a = [1, 3, -2, 8, -7]$  is used, and here we want to compute the sum  
+$\sum_{i=2}^4 a[i]$ . The colored vertices will be visited, and we will use the precomputed values of the green vertices. This gives us the result  
+$-2 + 1 = -1$ .</p>
+<p><img src="/en/posts/algorithm/segment-tree/assets/https!cp-algorithms.com!data_structures!sum-segment-tree-query.png"
+	width="516"
+	height="380"
+	srcset="/en/posts/algorithm/segment-tree/assets/_hu2e4e4afd55b021ab8521bb12b82fff87_10766_111cbec8a5a6da7082aa649a73e99052.png 480w, /en/posts/algorithm/segment-tree/assets/_hu2e4e4afd55b021ab8521bb12b82fff87_10766_978669620bb63f64a69ea2365796a22f.png 1024w"
+	loading="lazy"
+	
+		alt="https://cp-algorithms.com/data_structures/sum-segment-tree-query.png"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="135"
+		data-flex-basis="325px"
+	
+>
+</p>
+<p>Why is the complexity of this algorithm  
+$O(\log n)$ ? To show this complexity we look at each level of the tree. It turns out, that for each level we only visit not more than four vertices. And since the height of the tree is  
+$O(\log n)$ , we receive the desired running time.</p>
+<p>We can show that this <a class="link" href="../../english/algorithm/#proposition" >proposition</a> (at most four vertices each level) is true by <a class="link" href="../../english/algorithm/#iduction" >induction</a>. At the first level, we only visit one vertex, the root vertex, so here we visit less than four vertices. Now let&rsquo;s look at an arbitrary level. By induction <a class="link" href="../../english/algorithm/#hypothesis" >hypothesis</a>, we visit at most four vertices. If we only visit at most two vertices, the next level has at most four vertices. That trivial, because each vertex can only cause at most two recursive calls. So let&rsquo;s assume that we visit three or four vertices in the current level. From those vertices, we will analyze the vertices in the middle more carefully. Since the sum query asks for the sum of a continuous subarray, we know that segments corresponding to the visited vertices in the middle will be completely covered by the segment of the sum query. Therefore these vertices will not make any recursive calls. So only the most left, and the most right vertex will have the potential to make recursive calls. And those will only create at most four recursive calls, so also the next level will satisfy the assertion. We can say that one branch approaches the left boundary of the query, and the second branch approaches the right one.</p>
+<p>Therefore we visit at most  
+$4 \log n$  vertices in total, and that is equal to a running time of  
+$O(\log n)$ .</p>
+<p><a class="link" href="../../english/algorithm/#in-conclusion" >In conclusion</a> the query works by dividing the input segment into several sub-segments for which all the sums are already precomputed and stored in the tree. And if we stop partitioning whenever the query segment coincides with the vertex segment, then we only need  
+$O(\log n)$  such segments, which gives the effectiveness of the Segment Tree.</p>
+<h3 id="update-queries">Update queries</h3>
+<p>Now we want to modify a specific element in the array, let&rsquo;s say we want to do the assignment  
+$a[i] = x$ . And we have to rebuild the Segment Tree, such that it correspond to the new, modified array.</p>
+<p>This query is easier than the sum query. Each level of a Segment Tree forms a partition of the array. Therefore an element  
+$a[i]$  only contributes to one segment from each level. Thus only  
+$O(\log n)$  vertices need to be updated.</p>
+<p>It is easy to see, that the update request can be implemented using a recursive function. The function gets passed the current tree vertex, and it recursively calls itself with one of the two child vertices (the one that contains  
+$a[i]$  in its segment), and after that recomputes its sum value, similar how it is done in the build method (that is as the sum of its two children).</p>
+<p>Again here is a visualization using the same array. Here we perform the update  
+$a[2] = 3$ . The green vertices are the vertices that we visit and update.</p>
+<p><img src="/en/posts/algorithm/segment-tree/assets/https!cp-algorithms.com!data_structures!sum-segment-tree-update.png"
+	width="516"
+	height="380"
+	srcset="/en/posts/algorithm/segment-tree/assets/_hud8d547bf297055f0bf072e5fb99aeec3_10439_49d569e1b40b13aa2492f52f92ac9336.png 480w, /en/posts/algorithm/segment-tree/assets/_hud8d547bf297055f0bf072e5fb99aeec3_10439_fde17185fcdd3703a656ae2ace79faa4.png 1024w"
+	loading="lazy"
+	
+		alt="https://cp-algorithms.com/data_structures/sum-segment-tree-update.png"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="135"
+		data-flex-basis="325px"
+	
+>
+</p>
+<h3 id="implementation">Implementation</h3>
+<p>The <a class="link" href="../../english/algorithm/#main-consideration" >main consideration</a> is how to store the Segment Tree. Of course we can define a  
+$\text{Vertex}$  struct and create objects, that store the boundaries of the segment, its sum and additionally also pointers to its child vertices. However, this requires storing a lot of redundant information in the form of pointers. We will use a simple trick to make this a lot more efficient by using an implicit data structure: Only storing the sums in an array. (A similar method is used for binary heaps). The sum of the root vertex at index 1, the sums of its two child vertices at indices 2 and 3, the sums of the children of those two vertices at indices 4 to 7, and so on. With 1-indexing, conveniently the left child of a vertex at index  
+$i$  is stored at index  
+$2i$ , and the right one at index  
+$2i + 1$ . Equivalently, the parent of a vertex at index  
+$i$  is stored at  
+$i/2$  (integer division).</p>
+<p>This simplifies the implementation a lot. We don&rsquo;t need to store the structure of the tree in memory. It is defined implicitly. We only need one array which contains the sums of all segments.</p>
+<p>As noted before, we need to store at most  
+$4n$  vertices. It might be less, but for convenience we always allocate an array of size  
+$4n$ . There will be some elements in the sum array, that will not correspond to any vertices in the actual tree, but this doesn&rsquo;t complicate the implementation.</p>
+<p><span class="ibakuman-inline-note">So, we store the Segment Tree simply as an array $t[]$ with a size of four times the input size $n$ :</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">MAXN</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The procedure for constructing the Segment Tree from a given array  
+$a[\ ]$  looks like this: it is a recursive function with the parameters  
+$a[\ ]$  (the input array),  
+$v$  (the index of the current vertex), and the boundaries  
+$tl$  and  
+$tr$  of the current segment. In the main program this function will be called with the parameters of the root vertex:  
+$v = 1$ ,  
+$tl = 0$ , and  
+$tr = n - 1$ .</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">build</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tl</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">tl</span> <span class="o">==</span> <span class="n">tr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">tl</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">tm</span> <span class="o">=</span> <span class="p">(</span><span class="n">tl</span> <span class="o">+</span> <span class="n">tr</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">build</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">tl</span><span class="p">,</span> <span class="n">tm</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">build</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Further the function for answering sum queries is also a recursive function, which receives as parameters information about the current vertex/segment (i.e. the index  
+$v$  and the boundaries  
+$tl$  and  
+$tr$ ) and also the information about the boundaries of the query,  
+$l$  and  
+$r$ . In order to simplify the code, this function always does two recursive calls, even if only one is necessary - in that case the <a class="link" href="../../english/algorithm/#superfluous" >superfluous</a> recursive call will have  
+$l &gt; r$ , and this can easily be caught using an additional check at the beginning of the function.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">sum</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tl</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">l</span><span class="p">,</span> <span class="kt">int</span> <span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">==</span> <span class="n">tl</span> <span class="o">&amp;&amp;</span> <span class="n">r</span> <span class="o">==</span> <span class="n">tr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">tm</span> <span class="o">=</span> <span class="p">(</span><span class="n">tl</span> <span class="o">+</span> <span class="n">tr</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">sum</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">tl</span><span class="p">,</span> <span class="n">tm</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">min</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">tm</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">           <span class="o">+</span> <span class="n">sum</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">max</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">tm</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">r</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Finally the update query. The function will also receive information about the current vertex/segment, and additionally also the parameter of the update query (i.e. the position of the element and its new value).</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">update</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tl</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">int</span> <span class="n">new_val</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">tl</span> <span class="o">==</span> <span class="n">tr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">tm</span> <span class="o">=</span> <span class="p">(</span><span class="n">tl</span> <span class="o">+</span> <span class="n">tr</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">pos</span> <span class="o">&lt;=</span> <span class="n">tm</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">tl</span><span class="p">,</span> <span class="n">tm</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">new_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">new_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="memory-efficient-implementation">Memory efficient implementation</h3>
+<p>Most people use the implementation from the previous section. If you look at the array t you can see that it follows the numbering of the tree nodes in the order of a BFS traversal (level-order traversal). Using this traversal the children of vertex  
+$v$  are  
+$2v$  and  
+$2v + 1$  respectively. However if  
+$n$  is not a power of two, this method will skip some indices and leave some parts of the array t unused. The memory consumption is limited by  
+$4n$ , even though a Segment Tree of an array of  
+$n$  elements requires only  
+$2n - 1$  vertices.</p>
+<p>However it can be reduced. We renumber the vertices of the tree in the order of an Euler tour traversal (pre-order traversal), and we write all these vertices next to each other.</p>
+<p>Lets look at a vertex at index  
+$v$ , and let him be responsible for the segment  
+$[l, r]$ , and let  
+$mid = \dfrac{l + r}{2}$ . It is obvious that the left child will have the index  
+$v + 1$ . The left child is responsible for the segment  
+$[l, mid]$ , i.e. in total there will be  
+$2 * (mid - l + 1) - 1$  vertices in the left child&rsquo;s subtree. Thus we can compute the index of the right child of  
+$v$ . The index will be  
+$v + 2 * (mid - l + 1)$ . By this numbering we achieve a reduction of the necessary memory to  
+$2n$ .</p>
+<h2 id="advanced-versions-of-segment-trees">Advanced versions of Segment Trees</h2>
+<p>A Segment Tree is a very flexible data structure, and allows variations and extensions in many different directions. Let&rsquo;s try to categorize them below.</p>
+<h3 id="more-complex-queries">More complex queries</h3>
+<p>It can be quite easy to change the Segment Tree in a direction, such that it computes different queries (e.g. computing the minimum / maximum instead of the sum), but it also can be very nontrivial.</p>
+<h4 id="finding-the-maximum">Finding the maximum</h4>
+<p>Let us slightly change the condition of the problem described above: instead of querying the sum, we will now make maximum queries.</p>
+<p>The tree will have exactly the same structure as the tree described above. We only need to change the way  
+$t[v]$  is computed in the  
+$\text{build}$  and  
+$\text{update}$  functions.  
+$t[v]$  will now store the maximum of the corresponding segment. And we also need to change the calculation of the returned value of the  
+$\text{sum}$  function (replacing the summation by the maximum).</p>
+<p>Of course this problem can be easily changed into computing the minimum instead of the maximum.</p>
+<p>Instead of showing an implementation to this problem, the implementation will be given to a more complex version of this problem in the next section.</p>
+<h4 id="finding-the-maximum-and-the-number-of-times-it-appears">Finding the maximum and the number of times it appears</h4>
+<p>This task is very similar to the previous one. In addition of finding the maximum, we also have to find the number of occurrences of the maximum.</p>
+<p>To solve this problem, we store a pair of numbers at each vertex in the tree: In addition to the maximum we also store the number of occurrences of it in the corresponding segment. Determining the correct pair to store at  
+$t[v]$  can still be done in constant time using the information of the pairs stored at the child vertices. Combining two such pairs should be done in a separate function, since this will be an operation that we will do while building the tree, while answering maximum queries and while performing modifications.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">t</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">MAXN</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">combine</span><span class="p">(</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">first</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">first</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">first</span> <span class="o">&gt;</span> <span class="n">a</span><span class="p">.</span><span class="n">first</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nf">make_pair</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">first</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">second</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">build</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tl</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">tl</span> <span class="o">==</span> <span class="n">tr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_pair</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">tl</span><span class="p">],</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">tm</span> <span class="o">=</span> <span class="p">(</span><span class="n">tl</span> <span class="o">+</span> <span class="n">tr</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">build</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">tl</span><span class="p">,</span> <span class="n">tm</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">build</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">combine</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">get_max</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tl</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">l</span><span class="p">,</span> <span class="kt">int</span> <span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">make_pair</span><span class="p">(</span><span class="o">-</span><span class="n">INF</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">==</span> <span class="n">tl</span> <span class="o">&amp;&amp;</span> <span class="n">r</span> <span class="o">==</span> <span class="n">tr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">tm</span> <span class="o">=</span> <span class="p">(</span><span class="n">tl</span> <span class="o">+</span> <span class="n">tr</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nf">combine</span><span class="p">(</span><span class="n">get_max</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">tl</span><span class="p">,</span> <span class="n">tm</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">min</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">tm</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">get_max</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">max</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">tm</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">r</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">update</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tl</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">int</span> <span class="n">new_val</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">tl</span> <span class="o">==</span> <span class="n">tr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_pair</span><span class="p">(</span><span class="n">new_val</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">tm</span> <span class="o">=</span> <span class="p">(</span><span class="n">tl</span> <span class="o">+</span> <span class="n">tr</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">pos</span> <span class="o">&lt;=</span> <span class="n">tm</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">tl</span><span class="p">,</span> <span class="n">tm</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">new_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">new_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">combine</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="compute-the-greatest-common-divisor--least-common-multiple">Compute the greatest common divisor / least common multiple</h4>
+<p>In this problem we want to compute the GCD / LCM of all numbers of given ranges of the array.</p>
+<p>This interesting variation of the Segment Tree can be solved in exactly the same way as the Segment Trees we derived for sum / minimum / maximum queries: it is enough to store the GCD / LCM of the corresponding vertex in each vertex of the tree. Combining two vertices can be done by computing the GCD / LCM of both vertices.</p>
+<h4 id="counting-the-number-of-zeros-searching-for-the-k-th-zero">Counting the number of zeros, searching for the k-th zero</h4>
+<p>In this problem we want to find the number of zeros in a given range, and additionally find the index of the  
+$k$ -th zero using a second function.</p>
+<p>Again we have to change the store values of the tree a bit: This time we will store the number of zeros in each segment in  
+$t[]$ . It is pretty clear, how to implement the  
+$\text{build}$ ,  
+$\text{update}$  and  
+$\text{count\_zero}$  functions, we can simply use the ideas from the sum query problem. Thus we solved the first part of the problem.</p>
+<p>Now we learn how to solve the problem of finding the  
+$k$ -th zero in the array  
+$a[]$ . To do this task, we will descend the Segment Tree, starting at the root vertex, and moving each time to either the left or the right child, depending on which segment contains the  
+$k$ -th zero. In order to decide to which child we need to go, it is enough to look at the number of zeros appearing in the segment corresponding to the left vertex. If this precomputed count is greater or equal to  
+$k$ , it is necessary to descend to the left child, and otherwise descent to the right child. Notice, if we chose the right child, we have to subtract the number of zeros of the left child from  
+$k$ .</p>
+<p>In the implementation we can handle the special case,  
+$a[]$  containing less than  
+$k$  zeros, by returning -1.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/segment-tree/">Segment Tree</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on May 06, 2023 13:51 CST
+        </span>
+    </section></footer>
+
+</article>
+
+
+    
+
+    
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#simplest-form-of-a-segment-tree">Simplest form of a Segment Tree</a>
+      <ol>
+        <li><a href="#structure-of-the-segment-tree">Structure of the Segment Tree</a></li>
+        <li><a href="#construction">Construction</a></li>
+        <li><a href="#sum-queries">Sum queries</a></li>
+        <li><a href="#update-queries">Update queries</a></li>
+        <li><a href="#implementation">Implementation</a></li>
+        <li><a href="#memory-efficient-implementation">Memory efficient implementation</a></li>
+      </ol>
+    </li>
+    <li><a href="#advanced-versions-of-segment-trees">Advanced versions of Segment Trees</a>
+      <ol>
+        <li><a href="#more-complex-queries">More complex queries</a>
+          <ol>
+            <li><a href="#finding-the-maximum">Finding the maximum</a></li>
+            <li><a href="#finding-the-maximum-and-the-number-of-times-it-appears">Finding the maximum and the number of times it appears</a></li>
+            <li><a href="#compute-the-greatest-common-divisor--least-common-multiple">Compute the greatest common divisor / least common multiple</a></li>
+            <li><a href="#counting-the-number-of-zeros-searching-for-the-k-th-zero">Counting the number of zeros, searching for the k-th zero</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

@@ -1,0 +1,1008 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview TypeScript 1.8 introduced string literal types for restricting variables to a finite set of possible string values. With TypeScript 2.0, literal types are no longer restricted to string literals. The following literal types have been added to the type system: Boolean literal types Numeric literal types Enum literal types In the following sections, we&amp;rsquo;re going to be looking at a practical example for each of these new literal types.'>
+<title>More Literal Types in TypeScript</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/'><link rel="prev" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/005-tagged-union-types-in-typescript/" /><link rel="next" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='More Literal Types in TypeScript'>
+<meta property='og:description' content='Overview TypeScript 1.8 introduced string literal types for restricting variables to a finite set of possible string values. With TypeScript 2.0, literal types are no longer restricted to string literals. The following literal types have been added to the type system: Boolean literal types Numeric literal types Enum literal types In the following sections, we&amp;rsquo;re going to be looking at a practical example for each of these new literal types.'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='literal type' /><meta property='article:published_time' content='2022-12-26T10:16:44&#43;08:00'/><meta property='article:modified_time' content='2022-12-26T10:16:44&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="More Literal Types in TypeScript">
+<meta name="twitter:description" content="Overview TypeScript 1.8 introduced string literal types for restricting variables to a finite set of possible string values. With TypeScript 2.0, literal types are no longer restricted to string literals. The following literal types have been added to the type system: Boolean literal types Numeric literal types Enum literal types In the following sections, we&amp;rsquo;re going to be looking at a practical example for each of these new literal types."><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/">
+                <img src="/gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_800x0_resize_q75_box.jpg 800w, /gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="534"
+                        loading="lazy"
+                        alt="Featured image of post More Literal Types in TypeScript" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/typescript/" >
+                TypeScript
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/">More Literal Types in TypeScript</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Dec 26, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>TypeScript 1.8 introduced <a class="link" href="https://mariusschulz.com/blog/string-literal-types-in-typescript"  target="_blank" rel="noopener"
+    >string literal types</a> for restricting variables to a finite set of possible string values.<span class="ibakuman-inline-note"> With TypeScript 2.0, literal types are no longer restricted to string literals</span>. The following literal types have been added to the type system:</p>
+<ul>
+<li><a class="link" href="https://mariusschulz.com/blog/more-literal-types-in-typescript#boolean-literal-types"  target="_blank" rel="noopener"
+    >Boolean literal types</a></li>
+<li><a class="link" href="https://mariusschulz.com/blog/more-literal-types-in-typescript#numeric-literal-types"  target="_blank" rel="noopener"
+    >Numeric literal types</a></li>
+<li><a class="link" href="https://mariusschulz.com/blog/more-literal-types-in-typescript#enum-literal-types"  target="_blank" rel="noopener"
+    >Enum literal types</a></li>
+</ul>
+<p>In the following sections, we&rsquo;re going to be looking at a practical example for each of these new literal types.</p>
+<h2 id="boolean-literal-types">Boolean Literal Types</h2>
+<p>The following example defines two constants, <code>TRUE</code> and <code>FALSE</code>, which hold the values <code>true</code> and <code>false</code>, respectively:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">TRUE</span>: <span class="kt">true</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">FALSE</span>: <span class="kt">false</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span> <span class="c1">// OK
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Trying to assign the opposite boolean value to each of the local variables results in a type error:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">TRUE</span>: <span class="kt">true</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Error: Type &#39;false&#39; is not assignable to type &#39;true&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">FALSE</span>: <span class="kt">false</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Error: Type &#39;true&#39; is not assignable to type &#39;false&#39;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>With the introduction of boolean literal types, the predefined <code>boolean</code> type is now equivalent to the <code>true | false</code> union type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">value</span>: <span class="kt">true</span> <span class="o">|</span> <span class="kc">false</span><span class="p">;</span> <span class="c1">// Type boolean
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>While boolean literal types are rarely useful in isolation, they work great in conjunction with <a class="link" href="https://mariusschulz.com/blog/tagged-union-types-in-typescript"  target="_blank" rel="noopener"
+    >tagged union types</a> and <a class="link" href="https://mariusschulz.com/blog/control-flow-based-type-analysis-in-typescript"  target="_blank" rel="noopener"
+    >control flow based type analysis</a>. For instance, a generic <code>Result&lt;T&gt;</code> type that either holds a value of type <code>T</code> or an error message of type <code>string</code> can be defined as follows:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Result</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">  <span class="o">|</span> <span class="p">{</span> <span class="nx">success</span>: <span class="kt">true</span><span class="p">;</span> <span class="nx">value</span>: <span class="kt">T</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">|</span> <span class="p">{</span> <span class="nx">success</span>: <span class="kt">false</span><span class="p">;</span> <span class="nx">error</span>: <span class="kt">string</span> <span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here&rsquo;s a function that accepts a parameter .</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">parseEmailAddress</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">input</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">|</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span><span class="o">:</span> <span class="nx">Result</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// If the input is null, undefined, or the empty string
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// (all of which are falsy values), we return early.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">input</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">success</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;The email address cannot be empty.&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// We&#39;re only checking that the input matches the pattern
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">//   &lt;something&gt; @ &lt;something&gt; DOT &lt;something&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// to keep it simple. Properly validating email addresses
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// via regex is hard, so let&#39;s not even try here.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="sr">/^\S+@\S+\.\S+$/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">input</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">success</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;The email address has an invalid format.&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// At this point, control flow based type analysis
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// has determined that the input has type string.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// Thus, we can assign input to the value property.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">success</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">value</span>: <span class="kt">input</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Note that with the <code>strictNullChecks</code> option enabled, <code>string</code> is a <a class="link" href="https://mariusschulz.com/blog/non-nullable-types-in-typescript"  target="_blank" rel="noopener"
+    >non-nullable type</a>. In order for the function to accept a value of a nullable type for its <code>input</code> parameter, the <code>null</code> and <code>undefined</code> types must explicitly be included in the union type.</p>
+<p>We can now call the <code>parseEmailFunction</code> as follows:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">parsed</span> <span class="o">=</span> <span class="nx">parseEmailAddress</span><span class="p">(</span><span class="s2">&#34;example@example.com&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">parsed</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">parsed</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">parsed</span><span class="p">.</span><span class="nx">error</span><span class="p">;</span> <span class="c1">// Error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">parsed</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span> <span class="c1">// Error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">parsed</span><span class="p">.</span><span class="nx">error</span><span class="p">;</span> <span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here&rsquo;s a screenshot of <a class="link" href="https://code.visualstudio.com/"  target="_blank" rel="noopener"
+    >Visual Studio Code</a> rendering the above code snippet. Notice that some property access expressions are underlined with red squigglies:</p>
+<p><img src="/en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/assets/typescript_boolean_literal_discriminant_property-2x.p4d5gfznrb.imm.png"
+	width="924"
+	height="634"
+	srcset="/en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/assets/_huf1e1cd7a0d22a57a3e02f6fe46d9f68c_51377_5605b505f741876280e009868c043971.png 480w, /en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/assets/_huf1e1cd7a0d22a57a3e02f6fe46d9f68c_51377_c81550bbaa0189b20f354e1a2ce4e4de.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="145"
+		data-flex-basis="349px"
+	
+>
+</p>
+<p>What&rsquo;s great about this is that the compiler only lets us the <code>value</code> or <code>error</code> properties after we&rsquo;ve checked <code>parsed.success</code>, our <a class="link" href="https://mariusschulz.com/blog/tagged-union-types-in-typescript"  target="_blank" rel="noopener"
+    >discriminant property</a>:</p>
+<ul>
+<li>If <code>parsed.success</code> is <code>true</code>, <code>parsed</code> must have type <code>{ success: true; value: string }</code>. We can access <code>value</code> in this case, but not <code>error</code>.</li>
+<li>If <code>parsed.success</code> is <code>false</code>, <code>parsed</code> must have type <code>{ success: false; error: string }</code>. We can access <code>error</code> in this case, but not <code>value</code>.</li>
+</ul>
+<p>By the way, did you notice that the only TypeScript artifacts in this entire code example are the declaration of <code>Result&lt;T&gt;</code> and the type annotations in the function signature? The remainder of the code is plain, <span class="ibakuman-inline-translation">idiomatic<sub> { （语言）自然地道的 }</sub></span> JavaScript that is still fully typed due to control flow based type analysis.</p>
+<h2 id="numeric-literal-types">Numeric Literal Types</h2>
+<p>Similar to <a class="link" href="https://mariusschulz.com/blog/string-literal-types-in-typescript"  target="_blank" rel="noopener"
+    >string literal types</a>, we can restrict numeric variables to a finite set of known values:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">zeroOrOne</span>: <span class="kt">0</span> <span class="o">|</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">zeroOrOne</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="nx">zeroOrOne</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="nx">zeroOrOne</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Error: Type &#39;2&#39; is not assignable to type &#39;0 | 1&#39;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>In practice, we could use a numeric literal when working with port numbers, for example. Unsecured HTTP uses port 80, while HTTPS uses port 443. We can write a <code>getPort</code> function and encode the only two possible return values in its function signature:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getPort</span><span class="p">(</span><span class="nx">scheme</span><span class="o">:</span> <span class="s2">&#34;http&#34;</span> <span class="o">|</span> <span class="s2">&#34;https&#34;</span><span class="p">)</span><span class="o">:</span> <span class="mi">80</span> <span class="o">|</span> <span class="mi">443</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span> <span class="p">(</span><span class="nx">scheme</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;http&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;https&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="mi">443</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">httpPort</span> <span class="o">=</span> <span class="nx">getPort</span><span class="p">(</span><span class="s2">&#34;http&#34;</span><span class="p">);</span> <span class="c1">// Type 80 | 443
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>It gets even more interesting if we combine literal types with <a class="link" href="https://mariusschulz.com/blog/function-overloads-in-typescript"  target="_blank" rel="noopener"
+    >TypeScript&rsquo;s function overloads</a>. That way, we can give more specific types to different overloads of the <code>getPort</code> function:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getPort</span><span class="p">(</span><span class="nx">scheme</span><span class="o">:</span> <span class="s2">&#34;http&#34;</span><span class="p">)</span><span class="o">:</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getPort</span><span class="p">(</span><span class="nx">scheme</span><span class="o">:</span> <span class="s2">&#34;https&#34;</span><span class="p">)</span><span class="o">:</span> <span class="mi">443</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getPort</span><span class="p">(</span><span class="nx">scheme</span><span class="o">:</span> <span class="s2">&#34;http&#34;</span> <span class="o">|</span> <span class="s2">&#34;https&#34;</span><span class="p">)</span><span class="o">:</span> <span class="mi">80</span> <span class="o">|</span> <span class="mi">443</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span> <span class="p">(</span><span class="nx">scheme</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;http&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;https&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="mi">443</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">httpPort</span> <span class="o">=</span> <span class="nx">getPort</span><span class="p">(</span><span class="s2">&#34;http&#34;</span><span class="p">);</span> <span class="c1">// Type 80
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">httpsPort</span> <span class="o">=</span> <span class="nx">getPort</span><span class="p">(</span><span class="s2">&#34;https&#34;</span><span class="p">);</span> <span class="c1">// Type 443
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now, the compiler can help us when it detects conditions that are always return the value <code>false</code>, for example when comparing <code>httpPort</code> to the value <code>443</code>:</p>
+<p><img src="/en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/assets/typescript_control_flow_contradiction-2x.kpi7hrylto.imm.png"
+	width="642"
+	height="260"
+	srcset="/en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/assets/typescript_control_flow_contradiction-2x.kpi7hrylto.imm_hu0a0ead2c73f20d66b00e743086240d8b_11300_480x0_resize_box_3.png 480w, /en/posts/typescript/typescript-evolution/006-more-literal-types-in-typescript/assets/typescript_control_flow_contradiction-2x.kpi7hrylto.imm_hu0a0ead2c73f20d66b00e743086240d8b_11300_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="246"
+		data-flex-basis="592px"
+	
+>
+</p>
+<p>Since <code>httpPort</code> has type <code>80</code>, it always contains the value 80, which of course is never equal to the value 443. In cases like these, the TypeScript compiler can help you detect both buggy logic and dead code.</p>
+<h2 id="enum-literal-types">Enum Literal Types</h2>
+<p>Finally, we can also use enumerations as literal types. Continuing our example from before, we&rsquo;ll be implementing a function that maps from a given port (80 or 443) to the corresponding scheme (HTTP or HTTPS, respectively). To do that, we&rsquo;ll first declare a <a class="link" href="https://www.typescriptlang.org/docs/handbook/enums.html"  target="_blank" rel="noopener"
+    >const enum</a> which models the two port numbers:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="kr">enum</span> <span class="nx">HttpPort</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Http</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Https</span> <span class="o">=</span> <span class="mi">443</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now comes our <code>getScheme</code> function, again using function overloads for specialized type annotations:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getScheme</span><span class="p">(</span><span class="nx">port</span>: <span class="kt">HttpPort.Http</span><span class="p">)</span><span class="o">:</span> <span class="s2">&#34;http&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getScheme</span><span class="p">(</span><span class="nx">port</span>: <span class="kt">HttpPort.Https</span><span class="p">)</span><span class="o">:</span> <span class="s2">&#34;https&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getScheme</span><span class="p">(</span><span class="nx">port</span>: <span class="kt">HttpPort</span><span class="p">)</span><span class="o">:</span> <span class="s2">&#34;http&#34;</span> <span class="o">|</span> <span class="s2">&#34;https&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span> <span class="p">(</span><span class="nx">port</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nx">HttpPort.Http</span>:
+</span></span><span class="line"><span class="cl">      <span class="kt">return</span> <span class="s2">&#34;http&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nx">HttpPort.Https</span>:
+</span></span><span class="line"><span class="cl">      <span class="kt">return</span> <span class="s2">&#34;https&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">scheme</span> <span class="o">=</span> <span class="nx">getScheme</span><span class="p">(</span><span class="nx">HttpPort</span><span class="p">.</span><span class="nx">Http</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Type &#34;http&#34;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">Constant enumerations have no runtime manifestation</span> (unless you provide the <code>preserveConstEnums</code> compiler option) — that is, the constant values of the enum cases will be inlined wherever they are used. Here&rsquo;s the compiled JavaScript code, with comments removed:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getScheme</span><span class="p">(</span><span class="nx">port</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span> <span class="p">(</span><span class="nx">port</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="mi">80</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="s2">&#34;http&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="mi">443</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="s2">&#34;https&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">scheme</span> <span class="o">=</span> <span class="nx">getScheme</span><span class="p">(</span><span class="mi">80</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Super clean, isn&rsquo;t it?</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a class="link" href="https://mariusschulz.com/blog/more-literal-types-in-typescript"  target="_blank" rel="noopener"
+    >More Literal Types in TypeScript — Marius Schulz</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/literal-type/">literal type</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/046-string-literal-types-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/04.0d227eb193cd808efb3e41cf0214a573_hu21e79f1310d133228b33f735d4ec0be8_1556942_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post String Literal Types in TypeScript"
+                        
+                        data-hash="md5-DSJ&#43;sZPNgI77PkHPAhSlcw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">String Literal Types in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/045-assertion-functions-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Assertion Functions in TypeScript"
+                        
+                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Assertion Functions in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/044-optional-chaining-the-operator-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/14.f042bee33f5598c65efdcb121a2971b6_hu408d85e3d6fd20da711d14997ee2c37d_918594_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Optional Chaining: The ?. Operator in TypeScript"
+                        
+                        data-hash="md5-8EK&#43;4z9VmMZe/csSGilxtg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Optional Chaining: The ?. Operator in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/043-nullish-coalescing-the-operator-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/20.1bee3eecff8df8a9e2cb815d1108b2e8_hu04c80cb06f0b716a920690442f749887_1496648_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Nullish Coalescing: The ?? Operator in TypeScript"
+                        
+                        data-hash="md5-G&#43;4&#43;7P&#43;N&#43;Kniy4FdEQiy6A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Nullish Coalescing: The ?? Operator in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/042-the-omit-helper-type-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/18.1d6c831bbe3ac5066415b0e3b01e7d47_hu7a8b922ea914ad8a12e0fc01dcf809f5_223556_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post The Omit Helper Type in TypeScript"
+                        
+                        data-hash="md5-HWyDG746xQZkFbDjsB59Rw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">The Omit Helper Type in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#boolean-literal-types">Boolean Literal Types</a></li>
+    <li><a href="#numeric-literal-types">Numeric Literal Types</a></li>
+    <li><a href="#enum-literal-types">Enum Literal Types</a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

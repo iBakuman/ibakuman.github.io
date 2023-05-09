@@ -1,0 +1,2151 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview In this article, we will discuss the Java Regex API and how regular expressions can be used in Java programming language. In the world of regular expressions, there are many different flavors to choose from, such as grep, Perl, Python, PHP, awk and much more. This means that a regular expression that works in one programming language may not work in another. The regular expression syntax in the Java'>
+<title>A Guide To Java Regular Expressions API</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/regex/a-guide-to-java-regular-expressions-api/'><link rel="prev" href="https://ibakuman.github.io/en/posts/algorithm/learn-data-structures-and-algorithms/" /><link rel="next" href="https://ibakuman.github.io/en/posts/regex/guide-to-escaping-characters-in-java-regexps/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='A Guide To Java Regular Expressions API'>
+<meta property='og:description' content='Overview In this article, we will discuss the Java Regex API and how regular expressions can be used in Java programming language. In the world of regular expressions, there are many different flavors to choose from, such as grep, Perl, Python, PHP, awk and much more. This means that a regular expression that works in one programming language may not work in another. The regular expression syntax in the Java'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/regex/a-guide-to-java-regular-expressions-api/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2022-11-12T12:11:44&#43;08:00'/><meta property='article:modified_time' content='2022-11-12T12:11:44&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="A Guide To Java Regular Expressions API">
+<meta name="twitter:description" content="Overview In this article, we will discuss the Java Regex API and how regular expressions can be used in Java programming language. In the world of regular expressions, there are many different flavors to choose from, such as grep, Perl, Python, PHP, awk and much more. This means that a regular expression that works in one programming language may not work in another. The regular expression syntax in the Java"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/regex/a-guide-to-java-regular-expressions-api/">
+                <img src="/gallery/landscape/03_hua119d5172e80ee912c81cee3e4b607ac_783790_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/03_hua119d5172e80ee912c81cee3e4b607ac_783790_800x0_resize_q75_box.jpg 800w, /gallery/landscape/03_hua119d5172e80ee912c81cee3e4b607ac_783790_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="533"
+                        loading="lazy"
+                        alt="Featured image of post A Guide To Java Regular Expressions API" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/regex/" >
+                Regex
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/regex/a-guide-to-java-regular-expressions-api/">A Guide To Java Regular Expressions API</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 12, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    10 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overviewhttpswwwbaeldungcomregular-expressions-javaoverview"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Overview"  target="_blank" rel="noopener"
+    >Overview</a></h2>
+<p>In this article, we will discuss the Java Regex API and how regular expressions can be used in Java programming language.</p>
+<p>In the world of regular expressions, there are many different flavors to choose from, such as grep, Perl, Python, PHP, awk and much more.</p>
+<p>This means that a regular expression that works in one programming language may not work in another. <span class="ibakuman-inline-note">The regular expression syntax in the Java is most similar to that found in Perl.</span></p>
+<h2 id="setuphttpswwwbaeldungcomregular-expressions-javasetup"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Setup"  target="_blank" rel="noopener"
+    >Setup</a></h2>
+<p>To use regular expressions in Java, we do not need any special setup. The JDK contains a special package <em>java.util.regex</em> totally <span class='ibakuman-inline-translation'>dedicated<sub> { 专用的 }</sub></span> to regex operations. We only need to import it into our code.</p>
+<p>Moreover, the <em>java.lang.String</em> class also has inbuilt regex support that we commonly use in our code.</p>
+<h2 id="java-regex-packagehttpswwwbaeldungcomregular-expressions-javapackage"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Package"  target="_blank" rel="noopener"
+    >Java Regex Package</a></h2>
+<p>The <em>java.util.regex</em> package consists of three classes: <em>Pattern, Matcher</em> and <em>PatternSyntaxException:</em></p>
+<ul>
+<li><em>Pattern</em> object is a compiled regex. The <em>Pattern</em> class provides no public constructors. To create a pattern, <span class="ibakuman-inline-note">we must first invoke one of its public static compile methods</span>, which will then return a <em>Pattern</em> object. These methods accept a regular expression as the first argument.</li>
+<li><em>Matcher</em> object <span class='ibakuman-inline-translation'>interprets<sub> { 解析 }</sub></span> the pattern and performs match operations against an input <em>String</em>. It also defines no public constructors. <span class="ibakuman-inline-note">We obtain a Matcher object by invoking the matcher method on a Pattern object.</span></li>
+<li><em>PatternSyntaxException</em> object is an <span class="ibakuman-inline-note">unchecked exception</span> that indicates a syntax error in a regular expression pattern.</li>
+</ul>
+<p>We will explore these classes in detail; however, we must first understand how a regex is constructed in Java.</p>
+<p>If you are already familiar with regex from a different environment, you may find certain differences, but they are minimal.</p>
+<h2 id="simple-examplehttpswwwbaeldungcomregular-expressions-javasimple"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Simple"  target="_blank" rel="noopener"
+    >Simple Example</a></h2>
+<p>Let&rsquo;s start with the simplest use case for a regex. As we noted earlier, when a regex is applied to a String, it may match zero or more times.</p>
+<p>The most basic form of pattern matching supported by the <em>java.util.regex</em> API is the match of a <em>String</em> literal. For example, if the regular expression is <em>foo</em> and the input <em>String</em> is <em>foo</em>, the match will succeed because the <em>Strings</em> are identical:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenText_whenSimpleRegexMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;foo&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="s">&#34;foo&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We first create a <em>Pattern</em> object by calling its static <em>compile</em> method and passing it a pattern we want to use.</p>
+<p>Then we create a <em>Matcher</em> object be calling the <em>Pattern</em> object&rsquo;s <em>matcher</em> method and passing it the text we want to check for matches.</p>
+<p>After that, we call the method <em>find</em> in the Matcher object.</p>
+<p>The <em>find</em> method keeps advancing through the input text and returns true for every match, so we can use it to find the match count as well:</p>
+<blockquote>
+<p>find 方法在输入文本中不断前进，对每一个匹配都返回true，所以我们也可以用它来查找匹配数。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenText_whenSimpleRegexMatchesTwice_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;foo&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="s">&#34;foofoo&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">matches</span><span class="o">++;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Since we will be running more tests, we can abstract the logic for finding number of matches in a method called <em>runTest</em>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">runTest</span><span class="o">(</span><span class="n">String</span> <span class="n">regex</span><span class="o">,</span> <span class="n">String</span> <span class="n">text</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="n">regex</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">text</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">matches</span><span class="o">++;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">matches</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>When we get 0 matches, the test should fail, otherwise, it should pass.</p>
+<h2 id="meta-charactershttpswwwbaeldungcomregular-expressions-javacharacters"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Characters"  target="_blank" rel="noopener"
+    >Meta Characters</a></h2>
+<p>Meta characters affect the way a pattern is matched, in a way adding logic to the search pattern. The Java API supports several metacharacters, the most straightforward being the dot <em>“.”</em> which matches any character:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenText_whenMatchesWithDotMetach_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;.&#34;</span><span class="o">,</span> <span class="s">&#34;foo&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Considering the previous example where regex <em>foo</em> matched the text <em>foo</em> as well as <em>foofoo</em> two times. If we used the dot metacharacter in the regex, we would not get two matches in the second case:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRepeatedText_whenMatchesOnceWithDotMetach_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span><span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;foo.&#34;</span><span class="o">,</span> <span class="s">&#34;foofoo&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Notice the dot after the <em>foo</em> in the regex. The matcher matches every text that is preceded by <em>foo</em> since the last dot part means any character after. So after finding the first <em>foo</em>, the rest is seen as any character. That is why there is only a single match.</p>
+<p>The API supports several other meta characters <code>&lt;([{\^-=$!|]})?*+.&gt;</code> which we will be looking into further in this article.</p>
+<h2 id="character-classeshttpswwwbaeldungcomregular-expressions-javaclasses"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Classes"  target="_blank" rel="noopener"
+    >Character Classes</a></h2>
+<p>Browsing through the official <em><a class="link" href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/regex/Pattern.html"  target="_blank" rel="noopener"
+    >Pattern</a></em> class specification, we will discover summaries of supported regex constructs. Under character classes, we have about 6 constructs.</p>
+<h3 id="or-classhttpswwwbaeldungcomregular-expressions-java1-or-class"><a class="link" href="https://www.baeldung.com/regular-expressions-java#1-or-class"  target="_blank" rel="noopener"
+    >OR Class</a></h3>
+<p>Constructed as <em>[abc]</em>. Any of the elements in the set is matched:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenORSet_whenMatchesAny_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;[abc]&#34;</span><span class="o">,</span> <span class="s">&#34;b&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If they all appear in the text, <span class="ibakuman-inline-note">each is matched separately with no regard to order</span>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenORSet_whenMatchesAnyAndAll_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;[abc]&#34;</span><span class="o">,</span> <span class="s">&#34;cab&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>They can also be alternated as part of a <em>String</em>. In the following example, when we create different words by alternating the first letter with each element of the set, they are all matched:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenORSet_whenMatchesAllCombinations_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;[bcr]at&#34;</span><span class="o">,</span> <span class="s">&#34;bat cat rat&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="nor-classhttpswwwbaeldungcomregular-expressions-java2-nor-class"><a class="link" href="https://www.baeldung.com/regular-expressions-java#2-nor-class"  target="_blank" rel="noopener"
+    >NOR Class</a></h3>
+<p>The above set is negated by adding a <span class='ibakuman-inline-translation'>caret<sub> { 脱字号 }</sub></span> as the first element:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenNORSet_whenMatchesNon_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;[^abc]&#34;</span><span class="o">,</span> <span class="s">&#34;g&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Another case:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenNORSet_whenMatchesAllExceptElements_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;[^bcr]at&#34;</span><span class="o">,</span> <span class="s">&#34;sat mat eat&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="range-classhttpswwwbaeldungcomregular-expressions-java3-range-class"><a class="link" href="https://www.baeldung.com/regular-expressions-java#3-range-class"  target="_blank" rel="noopener"
+    >Range Class</a></h3>
+<p>We can define a class that specifies a range within which the matched text should fall using a <span class='ibakuman-inline-translation'>hyphen<sub> { 连字符 }</sub></span>(-), <span class='ibakuman-inline-translation'>likewise<sub> { 同样地；也；类似地；还 }</sub></span>, we can also negate a range.</p>
+<p>Matching uppercase letters:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenUpperCaseRange_whenMatchesUpperCase_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;[A-Z]&#34;</span><span class="o">,</span> <span class="s">&#34;Two Uppercase alphabets 34 overall&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Matching lowercase letters:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenLowerCaseRange_whenMatchesLowerCase_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;[a-z]&#34;</span><span class="o">,</span> <span class="s">&#34;Two Uppercase alphabets 34 overall&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">26</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Matching both upper case and lower case letters:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenBothLowerAndUpperCaseRange_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">whenMatchesAllLetters_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;[a-zA-Z]&#34;</span><span class="o">,</span> <span class="s">&#34;Two Uppercase alphabets 34 overall&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">28</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Matching a given range of numbers:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenNumberRange_whenMatchesAccurately_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;[1-5]&#34;</span><span class="o">,</span> <span class="s">&#34;Two Uppercase alphabets 34 overall&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Matching another range of numbers:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenNumberRange_whenMatchesAccurately_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">thenCorrect2</span><span class="o">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;3[0-5]&#34;</span><span class="o">,</span> <span class="s">&#34;Two Uppercase alphabets 34 overall&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="union-class">Union Class</h3>
+<p>A union character class is a result of combining two or more character classes:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenTwoSets_whenMatchesUnion_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;[1-3[7-9]]&#34;</span><span class="o">,</span> <span class="s">&#34;123456789&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">6</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">The above test will only match 6 out of the 9 integers because the union set skips 4, 5, and 6.</span></p>
+<h3 id="intersection-classhttpswwwbaeldungcomregular-expressions-java5-intersection-class"><a class="link" href="https://www.baeldung.com/regular-expressions-java#5-intersection-class"  target="_blank" rel="noopener"
+    >Intersection Class</a></h3>
+<p>Similar to the union class, this class results from picking common elements between two or more sets. To apply intersection, we use the <em>&amp;&amp;</em>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenTwoSets_whenMatchesIntersection_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;[1-6&amp;&amp;[3-9]]&#34;</span><span class="o">,</span> <span class="s">&#34;123456789&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">4</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">We get 4 matches because the intersection of the two sets has only 4 elements.</span></p>
+<h3 id="subtraction-classhttpswwwbaeldungcomregular-expressions-java6-subtraction-class"><a class="link" href="https://www.baeldung.com/regular-expressions-java#6-subtraction-class"  target="_blank" rel="noopener"
+    >Subtraction Class</a></h3>
+<p><span class="ibakuman-inline-note">We can use subtraction to negate one or more character classes, for example matching a set of odd decimal numbers:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenSetWithSubtraction_whenMatchesAccurately_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;[0-9&amp;&amp;[^2468]]&#34;</span><span class="o">,</span> <span class="s">&#34;123456789&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">5</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Only <em>1,3,5,7,9</em> will be matched.</p>
+<h2 id="predefined-character-classeshttpswwwbaeldungcomregular-expressions-javapredefined"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Predefined"  target="_blank" rel="noopener"
+    >Predefined Character Classes</a></h2>
+<p>The Java regex API also accepts predefined character classes. Some of the above character classes can be expressed in shorter form though making the code less <span class='ibakuman-inline-translation'>intuitive<sub> { 直观的 }</sub></span> . One special aspect of the Java version of this regex is the escape character.</p>
+<p>As we will see, most characters will start with a backslash, which has a special meaning in Java. For these to be compiled by the <em>Pattern</em> class – the leading backslash must be escaped i.e. <code>\d</code> becomes <code>\\d</code>.</p>
+<p>Matching digits, equivalent to <code>[0-9]</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenDigits_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\d&#34;</span><span class="o">,</span> <span class="s">&#34;123&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Matching non-digits, equivalent to <code>[^0-9]</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenNonDigits_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">mathces</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\D&#34;</span><span class="o">,</span> <span class="s">&#34;a6c&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Matching white space:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenWhiteSpace_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\s&#34;</span><span class="o">,</span> <span class="s">&#34;a c&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Matching non-white space:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenNonWhiteSpace_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\S&#34;</span><span class="o">,</span> <span class="s">&#34;a c&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">Matching a word character, equivalent to</span> <code>[a-zA-Z_0-9]</code> (<span class="ibakuman-inline-note">Note the underline</span>)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenWordCharacter_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\w&#34;</span><span class="o">,</span> <span class="s">&#34;hi!&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Matching a non-word character:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenNonWordCharacter_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\W&#34;</span><span class="o">,</span> <span class="s">&#34;hi!&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="quantifiershttpswwwbaeldungcomregular-expressions-javaquantifiers"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Quantifiers"  target="_blank" rel="noopener"
+    >Quantifiers</a></h2>
+<p>The Java regex API also allows us to use <span class='ibakuman-inline-translation'>quantifiers<sub> { 限量词 }</sub></span> . These enable us to further <span class='ibakuman-inline-translation'>tweak<sub> { 轻微调整 }</sub></span> the match&rsquo;s behavior by specifying the number of occurrences to match against.</p>
+<p><span class="ibakuman-inline-note">To match a text zero or one time</span>, we use the <em>?</em> quantifier:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenZeroOrOneQuantifier_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\a?&#34;</span><span class="o">,</span> <span class="s">&#34;hi&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Alternatively, we can use the brace syntax, also supported by the Java regex API:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenZeroOrOneQuantifier_whenMatches_thenCorrect2</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\a{0,1}&#34;</span><span class="o">,</span> <span class="s">&#34;hi&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This example introduces the concept of zero-length matches. It so happens that if a quantifier&rsquo;s <span class='ibakuman-inline-translation'>threshold<sub> { 起点；开端 }</sub></span> for matching is zero, it always matches everything in the text including an empty <em>String</em> at the end of every input. <span class="ibakuman-inline-note">This means that even if the input is empty, it will return one zero-length match.</span></p>
+<p><span class="ibakuman-inline-note">This explains why we get 3 matches in the above example despite having a String of length two. The third match is zero-length empty String.</span></p>
+<p>To match a text zero or limitless times, we us <code>*</code> quantifier, it is just similar to ?:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenZeroOrManyQuantifier_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">     <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\a*&#34;</span><span class="o">,</span> <span class="s">&#34;hi&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">     <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Supported alternative:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenZeroOrManyQuantifier_whenMatches_thenCorrect2</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\a{0,}&#34;</span><span class="o">,</span> <span class="s">&#34;hi&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The quantifier with a difference is +, it has a matching threshold of 1. If the required <em>String</em> does not occur at all, there will be no match, not even a zero-length <em>String</em>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenOneOrManyQuantifier_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\a+&#34;</span><span class="o">,</span> <span class="s">&#34;hi&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Supported alternative:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenOneOrManyQuantifier_whenMatches_thenCorrect2</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\a{1,}&#34;</span><span class="o">,</span> <span class="s">&#34;hi&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class='ibakuman-inline-translation'>As it is in Perl and other languages<sub> { 正如在 Perl 和其他语言中一样 }</sub></span>, the brace syntax can be used to match a given text a number of times:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenBraceQuantifier_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;a{3}&#34;</span><span class="o">,</span> <span class="s">&#34;aaaaaa&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In the above example, we get two matches since a match occurs only if <em>a</em> appears three times in a row. However, in the next test we won&rsquo;t get a match since the text only appears two times in a row:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenBraceQuantifier_whenFailsToMatch_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;a{3}&#34;</span><span class="o">,</span> <span class="s">&#34;aa&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">When we use a range in the brace, the match will be greedy, matching from the higher end of the range:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenBraceQuantifierWithRange_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;a{2,3}&#34;</span><span class="o">,</span> <span class="s">&#34;aaaa&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We&rsquo;ve specified at least two occurrences but not exceeding three, so we get a single match instead where the matcher sees a single <em>aaa</em> and <em>a</em> lone a which can&rsquo;t be matched.</p>
+<p>However, the API allows us to specify a lazy or <span class='ibakuman-inline-translation'>reluctant<sub> { 不情愿的；勉强的 }</sub></span> approach such that the matcher can start from the lower end of the range in which case matching two occurrences as <em>aa</em> and <em>aa</em>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenBraceQuantifierWithRange_whenMatchesLazily_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;a{2,3}?&#34;</span><span class="o">,</span> <span class="s">&#34;aaaa&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="capturing-groupshttpswwwbaeldungcomregular-expressions-javacapturing"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Capturing"  target="_blank" rel="noopener"
+    >Capturing Groups</a></h2>
+<p>The API also allows us to treat multiple characters as a single unit through capturing groups.</p>
+<p>It will attache numbers to the capturing groups and allow back referencing using these numbers.</p>
+<p>In this section, we will see a few examples on how to use capturing groups in Java regex API.</p>
+<p>Let&rsquo;s use a capturing group that matches only when an input text contains two digits next to each other:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenCapturingGroup_whenMatches_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">maches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(\\d\\d)&#34;</span><span class="o">,</span> <span class="s">&#34;12&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The number attached to the above match is <em>1</em>, using a back reference to tell the matcher that we want to match another occurrence of the matched portion of the text. This way, instead of:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenCapturingGroup_whenMatches_thenCorrect2</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(\\d\\d)&#34;</span><span class="o">,</span> <span class="s">&#34;1212&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Where there are two separate matches for the input, we can have one match but propagating the same regex match to span the entire length of the input using back referencing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenCapturingGroup_whenMatchesWithBackReference_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(\\d\\d)\\1&#34;</span><span class="o">,</span> <span class="s">&#34;1212&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Where we would have to repeat the regex without back referencing to achieve the same result:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenCapturingGroup_whenMatches_thenCorrect3</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(\\d\\d)(\\d\\d)&#34;</span><span class="o">,</span> <span class="s">&#34;1212&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Similarly, for any other number of repetitions, back referencing can make the matcher see the input as a single match:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenCapturingGroup_whenMatchesWithBackReference_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">thenCorrect2</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(\\d\\d)\\1\\1\\1&#34;</span><span class="o">,</span> <span class="s">&#34;12121212&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="n">matches</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>But if you change even the last digit, the match will fail:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenCapturingGroupAndWrongInput_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">whenMatchFailsWithBackReference_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(\\d\\d)\\1&#34;</span><span class="o">,</span> <span class="s">&#34;1213&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">It is important not to forget the escape backslashes, this is crucial in Java syntax.</span></p>
+<h2 id="boundary-matchershttpswwwbaeldungcomregular-expressions-javaboundary"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Boundary"  target="_blank" rel="noopener"
+    >Boundary Matchers</a></h2>
+<p>The Java regex API also supports boundary matching. If we care about where exactly in the input text the match should occur, then this is what we are looking for. With the previous examples, all we cared about was whether a match was found or not.</p>
+<p>To match only when the required regex is true at the beginning of the text, we use the caret <em>^.</em></p>
+<p>This test will fail since the text <em>dog</em> can be found at the beginning:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenText_whenMatchesAtBeginning_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;^dog&#34;</span><span class="o">,</span> <span class="s">&#34;dogs are friendly&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The following test will fail:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenTextAndWrongInput_whenMatchFailsAtBeginning_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;^dog&#34;</span><span class="o">,</span> <span class="s">&#34;are dogs are friendly?&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To match only when the required regex is true at the end of the text, we use the dollar character <em>$.</em> A match will be found in the following case:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenText_whenMatchesAtEnd_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;dog$&#34;</span><span class="o">,</span> <span class="s">&#34;Man&#39;s best friend is a dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>And no match will be found here:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenTextAndWrongInput_whenMatchFailsAtEnd_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;dog$&#34;</span><span class="o">,</span> <span class="s">&#34;is a dog man&#39;s best friend?&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If we want a match only when the required text is found at a word boundary, we use <code>\\b</code> regex at the beginning and end of the regex:</p>
+<p>Space is a word boundary:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenText_whenMatchesAtWordBoundary_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\bdog\\b&#34;</span><span class="o">,</span> <span class="s">&#34;a dog is friendly&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">The empty string at the beginning of a line is also a word boundary:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenText_whenMatchesAtWordBoundary_thenCorrect2</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\bdog\\b&#34;</span><span class="o">,</span> <span class="s">&#34;dog is man&#39;s best friend&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>These tests pass because the beginning of a <em>String</em>, as well as space between one text and another, marks a word boundary, however, the following test shows the opposite:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenWrongText_whenMatchFailsAtWordBoundary_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\bdog\\b&#34;</span><span class="o">,</span> <span class="s">&#34;snoop dogg is a rapper&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Two-word characters appearing in a row does not mark a word boundary, <span class="ibakuman-inline-note">but we can make it pass by changing the end of the regex to look for a non-word boundary:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenText_whenMatchesAtWordAndNonBoundary_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\\bdog\\B&#34;</span><span class="o">,</span> <span class="s">&#34;snoop dogg is a rapper&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="pattern-class-methodshttpswwwbaeldungcomregular-expressions-javapattern"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Pattern"  target="_blank" rel="noopener"
+    >Pattern Class Methods</a></h2>
+<p>Previously, we have only created <em>Pattern</em> objects in a basic way. However, this class has another variant of the <em>compile</em> method that accepts a set of flags alongside the regex argument affecting the way the pattern is matched.</p>
+<p>These flags are simply abstracted integer values. Let&rsquo;s overload the <em>runTest</em> method in the test class so that it can take a flag as the third argument:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">runTest</span><span class="o">(</span><span class="n">String</span> <span class="n">regex</span><span class="o">,</span> <span class="n">String</span> <span class="n">text</span><span class="o">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="n">regex</span><span class="o">,</span> <span class="n">flags</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">text</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">()){</span>
+</span></span><span class="line"><span class="cl">        <span class="n">matches</span><span class="o">++;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">matches</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In this section, we will look at the different supported flags and how they are used.</p>
+<h3 id="patterncanon_eq">Pattern.CANON_EQ</h3>
+<p>This flag enables canonical equivalence. When specified, two characters will be considered to match if, and only if, their full canonical decompositions match.</p>
+<p>Consider the <span class='ibakuman-inline-translation'>accented<sub> { 重音 }</sub></span> Unicode character <em>é</em>. Its composite code point is <em>u00E9</em>. However, Unicode also has a separate code point for its component characters <em>e</em>, <em>u0065</em> and the acute accent, <em>u0301</em>. In this case, composite character <em>u00E9</em> is <span class='ibakuman-inline-translation'>indistinguishable<sub> { 无法分辨的 }</sub></span> from the two character sequence u0065 u0301.</p>
+<p>By default, matching does not take canonical equivalence into account:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegexWithoutCanonEq_whenMatchFailsOnEquivalentUnicode_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\u00E9&#34;</span><span class="o">,</span> <span class="s">&#34;\u0065\u0301&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>But if we add the flag, then the test will pass:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegexWithCanonEq_whenMatchesOnEquivalentUnicode_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;\u00E9&#34;</span><span class="o">,</span> <span class="s">&#34;\u0065\u0301&#34;</span><span class="o">,</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">CANON_EQ</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="patterncase_insensitive">Pattern.CASE_INSENSITIVE</h3>
+<p>This flag enables matching regardless of case. By default matching takes case into account:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegexWithDefaultMatcher_whenMatchFailsOnDifferentCases_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;dog&#34;</span><span class="o">,</span> <span class="s">&#34;This is a Dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>So using this flag, we can change the default behavior:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenRegexWithCaseInsensitiveMatcher</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">_whenMatchesOnDifferentCases_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;dog&#34;</span><span class="o">,</span> <span class="s">&#34;This is a Dog&#34;</span><span class="o">,</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">CASE_INSENSITIVE</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">We can also use the equivalent, embedded flag expression to achieve the same result:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenRegexWithEmbeddedCaseInsensitiveMatcher</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">_whenMatchesOnDifferentCases_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(?i)dog&#34;</span><span class="o">,</span> <span class="s">&#34;This is a Dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="patterncomments">Pattern.COMMENTS</h3>
+<p>The Java API allows one to include comments using # in the regex. <span class="ibakuman-inline-note">This can help in documenting complex regex that may not be immediately obvious to another programmer.</span></p>
+<p>The comments flag makes the matcher ignore any white space or comments in the regex and only consider the pattern. In the default matching mode the following test would fail:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegexWithComments_whenMatchFailsWithoutFlag_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;dog$  #check for word dog at end of text&#34;</span><span class="o">,</span> <span class="s">&#34;This is a dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This is because the matcher will look for the entire regex in the input text, including the spaces and the # character. But when we use the flag, it will ignore the extra spaces and the every text starting with # will be seen as a comment to be ignored for each line:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegexWithComments_whenMatchesWithFlag_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;dog$  #check end of text&#34;</span><span class="o">,</span><span class="s">&#34;This is a dog&#34;</span><span class="o">,</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">COMMENTS</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">There is also an alternative embedded flag expression for this:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegexWithComments_whenMatchesWithEmbeddedFlag_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;(?x)dog$  #check end of text&#34;</span><span class="o">,</span> <span class="s">&#34;This is a dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="patterndotall">Pattern.DOTALL</h3>
+<p>By default, when we use the dot “.” expression in regex, <span class="ibakuman-inline-note">we are matching every character in the input String until we encounter a new line character.</span></p>
+<p>Using this flag, the match will include the line terminator as well. We will understand better with the following examples. These examples will be a little different. Since we are interested in asserting against the matched <em>String</em>, we will use <em>matcher</em>‘s <em>group</em> method which returns the previous match.</p>
+<p>First, we will see the default behavior:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegexWithLineTerminator_whenMatchFails_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;(.*)&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;this is a text&#34;</span> <span class="o">+</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">+</span> <span class="s">&#34; continued on another line&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="s">&#34;this is a text&#34;</span><span class="o">,</span> <span class="n">matcher</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As we can see, only the first part of the input before the line terminator is matched.</p>
+<p>Now in <em>dotall</em> mode, the entire text including the line terminator will be matched:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegexWithLineTerminator_whenMatchesWithDotall_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;(.*)&#34;</span><span class="o">,</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">DOTALL</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;this is a text&#34;</span> <span class="o">+</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">+</span> <span class="s">&#34; continued on another line&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;this is a text&#34;</span> <span class="o">+</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">+</span> <span class="s">&#34; continued on another line&#34;</span><span class="o">,</span> <span class="n">matcher</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">We can also use an embedded flag expression to enable dotall mode:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenRegexWithLineTerminator_whenMatchesWithEmbeddedDotall</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;(?s)(.*)&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;this is a text&#34;</span> <span class="o">+</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">+</span> <span class="s">&#34; continued on another line&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;this is a text&#34;</span> <span class="o">+</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">+</span> <span class="s">&#34; continued on another line&#34;</span><span class="o">,</span> <span class="n">matcher</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="patternliteral">Pattern.LITERAL</h3>
+<p>When in this mode, matcher gives no special meaning to any metacharacters, escape characters or regex syntax. Without this flag, the matcher will match the following regex against any input <em>String</em>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegex_whenMatchesWithoutLiteralFlag_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(.*)&#34;</span><span class="o">,</span> <span class="s">&#34;text&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This is the default behavior we have been seeing in all the examples. However, with this flag, no match will be found, since the matcher will be looking for <code>(. *)</code>instead of interpreting it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegex_whenMatchFailsWithLiteralFlag_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(.*)&#34;</span><span class="o">,</span> <span class="s">&#34;text&#34;</span><span class="o">,</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">LITERAL</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now if we add the required string, the test will pass:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegex_whenMatchesWithLiteralFlag_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span><span class="s">&#34;(.*)&#34;</span><span class="o">,</span> <span class="s">&#34;text(.*)&#34;</span><span class="o">,</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">LITERAL</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>There is no embedded flag character for enabling literal parsing.</p>
+<h3 id="patternmultiline">Pattern.MULTILINE</h3>
+<p>By default <em>^</em> and <em>$</em> metacharacters match absolutely at the beginning and at the end respectively of the entire input <em>String</em>. The matcher disregards any line terminators:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegex_whenMatchFailsWithoutMultilineFlag_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;dog$&#34;</span><span class="o">,</span> <span class="s">&#34;This is a dog&#34;</span> <span class="o">+</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="o">+</span> <span class="s">&#34;this is a fox&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The match fails because the matcher searches for <em>dog</em> at the end of the entire <em>String</em> but the <em>dog</em> is present at the end of the first line of the string.</p>
+<p>However, with the flag, the same test will pass since the matcher now takes into account line terminators. So the String <em>dog</em> is found just before the line terminates, hence success:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenRegex_whenMatchesWithMultilineFlag_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;dog$&#34;</span><span class="o">,</span> <span class="s">&#34;This is a dog&#34;</span> <span class="o">+</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="o">+</span> <span class="s">&#34;this is a fox&#34;</span><span class="o">,</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">MULTILINE</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">Here is the embedded flag version:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="n">givenRegex_whenMatchesWithEmbeddedMultilineFlag_</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">matches</span> <span class="o">=</span> <span class="n">runTest</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;(?m)dog$&#34;</span><span class="o">,</span> <span class="s">&#34;This is a dog&#34;</span> <span class="o">+</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="o">+</span> <span class="s">&#34;this is a fox&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="matcher-class-methodshttpswwwbaeldungcomregular-expressions-javamatcher">Matcher Class Methods<a class="link" href="https://www.baeldung.com/regular-expressions-java#Matcher"  target="_blank" rel="noopener"
+    ></a></h2>
+<p>In this section, we will look at some useful methods of the <em>Matcher</em> class. <span class='ibakuman-inline-translation'>We will group them according to functionality for clarity.<sub> { 我们将根据功能对它们进行分组。 }</sub></span></p>
+<h3 id="index-methodshttpswwwbaeldungcomregular-expressions-java121-index-methods"><a class="link" href="https://www.baeldung.com/regular-expressions-java#121-index-methods"  target="_blank" rel="noopener"
+    >Index Methods</a></h3>
+<p>Index methods provide useful index values that show precisely where the match was found in the input <em>String</em> . In the following test, we will confirm the start and end indices of the match for <em>dog</em> in the input <em>String</em> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">givenMatch_whenGetsIndices_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="s">&#34;This dog is mine&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">matcher</span><span class="o">.</span><span class="na">start</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="mi">8</span><span class="o">,</span> <span class="n">matcher</span><span class="o">.</span><span class="na">end</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="study-methodshttpswwwbaeldungcomregular-expressions-java122-study-methods"><a class="link" href="https://www.baeldung.com/regular-expressions-java#122-study-methods"  target="_blank" rel="noopener"
+    >Study Methods</a></h3>
+<p>Study methods go through the input <em>String</em> and return a boolean indicating whether or not the pattern is found. Commonly used are <em>matches</em> and <em>lookingAt</em> methods.</p>
+<p>The <em>matches</em> and <em>lookingAt</em> methods both attempt to match an input sequence against a pattern. <span class="ibakuman-inline-note">The difference, is that matches requires the entire input sequence to be matched, while lookingAt does not.</span></p>
+<p><span class="ibakuman-inline-note">Both methods start at the beginning of the input String :</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">whenStudyMethodsWork_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="s">&#34;dogs are friendly&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">lookingAt</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="n">assertFalse</span><span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">matches</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The matches method will return true in a case like so:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">whenMatchesStudyMethodWorks_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="s">&#34;dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertTrue</span><span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">matches</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="replacement-methodshttpswwwbaeldungcomregular-expressions-java123-replacement-methods"><a class="link" href="https://www.baeldung.com/regular-expressions-java#123-replacement-methods"  target="_blank" rel="noopener"
+    >Replacement Methods</a></h3>
+<p>Replacement methods are useful to replace text in an input string. The common ones are <em>replaceFirst</em> and <em>replaceAll</em>.</p>
+<p>The <em>replaceFirst</em> and <em>replaceAll</em> methods replace the text that matches a given regular expression. As their names indicate, <em>replaceFirst</em> replaces the first occurrence, and <em>replaceAll</em> replaces all occurrences:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">whenReplaceFirstWorks_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;dogs are domestic animals, dogs are friendly&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">newStr</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="na">replaceFirst</span><span class="o">(</span><span class="s">&#34;cat&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;cats are domestic animals, dogs are friendly&#34;</span><span class="o">,</span> <span class="n">newStr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Replace all occurrences:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">whenReplaceAllWorks_thenCorrect</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;dog&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;dogs are domestic animals, dogs are friendly&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">newStr</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="na">replaceAll</span><span class="o">(</span><span class="s">&#34;cat&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">assertEquals</span><span class="o">(</span><span class="s">&#34;cats are domestic animals, cats are friendly&#34;</span><span class="o">,</span> <span class="n">newStr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <em>replaceAll</em> method allows us to <span class='ibakuman-inline-translation'>substitute<sub> { 取代 }</sub></span> all matches with the same replacement. If we want to <span class='ibakuman-inline-translation'>replace matches on a case by basis<sub> { 逐一替换匹配 }</sub></span>, we&rsquo;d need a <a class="link" href="https://www.baeldung.com/java-regex-token-replacement"  target="_blank" rel="noopener"
+    >token replacement technique</a>.</p>
+<h2 id="conclusionhttpswwwbaeldungcomregular-expressions-javaconclusion"><a class="link" href="https://www.baeldung.com/regular-expressions-java#Conclusion"  target="_blank" rel="noopener"
+    >Conclusion</a></h2>
+<p>In this article, we have learned how to use regular expressions in Java and also explored the most important features of the <em>java.util.regex</em> package.</p>
+<p>The full source code for the project including all the code samples used here can be found in the <a class="link" href="https://github.com/eugenp/tutorials/tree/master/core-java-modules/core-java-regex"  target="_blank" rel="noopener"
+    >GitHub project</a>.</p>
+<h2 id="references">References</h2>
+<p><a class="link" href="https://www.baeldung.com/regular-expressions-java#121-index-methods"  target="_blank" rel="noopener"
+    >A Guide To Java Regular Expressions API</a></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/regex/lookahead-and-lookbehind/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/16.939adf57434b8b256e488a22d644b448_hu0ea51e27a440094cf104de9d9c751749_432111_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 正则表达式的先行断言 (lookahead) 和后行断言 (lookbehind)"
+                        
+                        data-hash="md5-k5rfV0NLiyVuSIoi1kS0SA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">正则表达式的先行断言 (lookahead) 和后行断言 (lookbehind)</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/regex/how-to-use-regular-expressions-to-replace-tokens-in-strings-in-java/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/19.ce3d7e9ebc658f78912c63e56a8e08f1_hu3c9ceb46f3c27ef42abe81330e191c65_524406_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post How to Use Regular Expressions to Replace Tokens in Strings in Java"
+                        
+                        data-hash="md5-zj1&#43;nrxlj3iRLGPlao4I8Q==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">How to Use Regular Expressions to Replace Tokens in Strings in Java</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/regex/guide-to-escaping-characters-in-java-regexps/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/09.ac6a519f1202ec664435105ea711f181_hu8c633d2cf76ab6635d2135cc8fe71c52_994828_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Guide to Escaping Characters in Java RegExps"
+                        
+                        data-hash="md5-rGpRnxIC7GZENRBepxHxgQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Guide to Escaping Characters in Java RegExps</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overviewhttpswwwbaeldungcomregular-expressions-javaoverview"><a href="https://www.baeldung.com/regular-expressions-java#Overview">Overview</a></a></li>
+    <li><a href="#setuphttpswwwbaeldungcomregular-expressions-javasetup"><a href="https://www.baeldung.com/regular-expressions-java#Setup">Setup</a></a></li>
+    <li><a href="#java-regex-packagehttpswwwbaeldungcomregular-expressions-javapackage"><a href="https://www.baeldung.com/regular-expressions-java#Package">Java Regex Package</a></a></li>
+    <li><a href="#simple-examplehttpswwwbaeldungcomregular-expressions-javasimple"><a href="https://www.baeldung.com/regular-expressions-java#Simple">Simple Example</a></a></li>
+    <li><a href="#meta-charactershttpswwwbaeldungcomregular-expressions-javacharacters"><a href="https://www.baeldung.com/regular-expressions-java#Characters">Meta Characters</a></a></li>
+    <li><a href="#character-classeshttpswwwbaeldungcomregular-expressions-javaclasses"><a href="https://www.baeldung.com/regular-expressions-java#Classes">Character Classes</a></a>
+      <ol>
+        <li><a href="#or-classhttpswwwbaeldungcomregular-expressions-java1-or-class"><a href="https://www.baeldung.com/regular-expressions-java#1-or-class">OR Class</a></a></li>
+        <li><a href="#nor-classhttpswwwbaeldungcomregular-expressions-java2-nor-class"><a href="https://www.baeldung.com/regular-expressions-java#2-nor-class">NOR Class</a></a></li>
+        <li><a href="#range-classhttpswwwbaeldungcomregular-expressions-java3-range-class"><a href="https://www.baeldung.com/regular-expressions-java#3-range-class">Range Class</a></a></li>
+        <li><a href="#union-class">Union Class</a></li>
+        <li><a href="#intersection-classhttpswwwbaeldungcomregular-expressions-java5-intersection-class"><a href="https://www.baeldung.com/regular-expressions-java#5-intersection-class">Intersection Class</a></a></li>
+        <li><a href="#subtraction-classhttpswwwbaeldungcomregular-expressions-java6-subtraction-class"><a href="https://www.baeldung.com/regular-expressions-java#6-subtraction-class">Subtraction Class</a></a></li>
+      </ol>
+    </li>
+    <li><a href="#predefined-character-classeshttpswwwbaeldungcomregular-expressions-javapredefined"><a href="https://www.baeldung.com/regular-expressions-java#Predefined">Predefined Character Classes</a></a></li>
+    <li><a href="#quantifiershttpswwwbaeldungcomregular-expressions-javaquantifiers"><a href="https://www.baeldung.com/regular-expressions-java#Quantifiers">Quantifiers</a></a></li>
+    <li><a href="#capturing-groupshttpswwwbaeldungcomregular-expressions-javacapturing"><a href="https://www.baeldung.com/regular-expressions-java#Capturing">Capturing Groups</a></a></li>
+    <li><a href="#boundary-matchershttpswwwbaeldungcomregular-expressions-javaboundary"><a href="https://www.baeldung.com/regular-expressions-java#Boundary">Boundary Matchers</a></a></li>
+    <li><a href="#pattern-class-methodshttpswwwbaeldungcomregular-expressions-javapattern"><a href="https://www.baeldung.com/regular-expressions-java#Pattern">Pattern Class Methods</a></a>
+      <ol>
+        <li><a href="#patterncanon_eq">Pattern.CANON_EQ</a></li>
+        <li><a href="#patterncase_insensitive">Pattern.CASE_INSENSITIVE</a></li>
+        <li><a href="#patterncomments">Pattern.COMMENTS</a></li>
+        <li><a href="#patterndotall">Pattern.DOTALL</a></li>
+        <li><a href="#patternliteral">Pattern.LITERAL</a></li>
+        <li><a href="#patternmultiline">Pattern.MULTILINE</a></li>
+      </ol>
+    </li>
+    <li><a href="#matcher-class-methodshttpswwwbaeldungcomregular-expressions-javamatcher">Matcher Class Methods<a href="https://www.baeldung.com/regular-expressions-java#Matcher"></a></a>
+      <ol>
+        <li><a href="#index-methodshttpswwwbaeldungcomregular-expressions-java121-index-methods"><a href="https://www.baeldung.com/regular-expressions-java#121-index-methods">Index Methods</a></a></li>
+        <li><a href="#study-methodshttpswwwbaeldungcomregular-expressions-java122-study-methods"><a href="https://www.baeldung.com/regular-expressions-java#122-study-methods">Study Methods</a></a></li>
+        <li><a href="#replacement-methodshttpswwwbaeldungcomregular-expressions-java123-replacement-methods"><a href="https://www.baeldung.com/regular-expressions-java#123-replacement-methods">Replacement Methods</a></a></li>
+      </ol>
+    </li>
+    <li><a href="#conclusionhttpswwwbaeldungcomregular-expressions-javaconclusion"><a href="https://www.baeldung.com/regular-expressions-java#Conclusion">Conclusion</a></a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

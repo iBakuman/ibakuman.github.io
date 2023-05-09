@@ -1,0 +1,1295 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='前端模块化是前端工程化的基石。时下，大前端时代中对模块的运用更是无处不在，而放眼未来，es6 中所提出的 import 和 export 的形式似乎将统一前后端的模块化加'>
+<title>一篇文章帮你弄懂 ES6 模块化</title><link rel='canonical' href='https://ibakuman.github.io/posts/javascript/an-article-to-help-you-understand-es6-module-system/'><link rel="prev" href="https://ibakuman.github.io/posts/hugo/the-full-partial-series-part-1-caching/" /><link rel="next" href="https://ibakuman.github.io/posts/sass/tutorial/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='一篇文章帮你弄懂 ES6 模块化'>
+<meta property='og:description' content='前端模块化是前端工程化的基石。时下，大前端时代中对模块的运用更是无处不在，而放眼未来，es6 中所提出的 import 和 export 的形式似乎将统一前后端的模块化加'>
+<meta property='og:url' content='https://ibakuman.github.io/posts/javascript/an-article-to-help-you-understand-es6-module-system/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='ES6' /><meta property='article:tag' content='Modular' /><meta property='article:tag' content='Common JS' /><meta property='article:published_time' content='2022-10-04T17:32:28&#43;08:00'/><meta property='article:modified_time' content='2022-10-04T17:32:28&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="一篇文章帮你弄懂 ES6 模块化">
+<meta name="twitter:description" content="前端模块化是前端工程化的基石。时下，大前端时代中对模块的运用更是无处不在，而放眼未来，es6 中所提出的 import 和 export 的形式似乎将统一前后端的模块化加"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/%E5%85%B3%E4%BA%8E/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>关于</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>归档</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>搜索</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/%E9%93%BE%E6%8E%A5/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>链接</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" selected>中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" >English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/posts/javascript/an-article-to-help-you-understand-es6-module-system/">
+                <img src="/gallery/landscape/02_huf55d0eff1680a905d0940d9535d13b2a_2828685_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/02_huf55d0eff1680a905d0940d9535d13b2a_2828685_800x0_resize_q75_box.jpg 800w, /gallery/landscape/02_huf55d0eff1680a905d0940d9535d13b2a_2828685_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="534"
+                        loading="lazy"
+                        alt="Featured image of post 一篇文章帮你弄懂 ES6 模块化" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/javascript/" >
+                JavaScript
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/posts/javascript/an-article-to-help-you-understand-es6-module-system/">一篇文章帮你弄懂 ES6 模块化</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2022/10/04 17:32:28</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 7 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <blockquote>
+<p>前端模块化是前端工程化的基石。时下，大前端时代中对模块的运用更是无处不在，而放眼未来，es6 中所提出的 import 和 export 的形式似乎将统一前后端的模块化加载。</p>
+</blockquote>
+<h2 id="概述">概述</h2>
+<blockquote>
+<p>隔离不同的 JavaScript 文件，仅暴露当前模块所需要的其他模块，这就是模块化思想。</p>
+</blockquote>
+<p>在学习 ES6 的模块化之前先复习一下之前出现的模块化，比较常用的有三种规范定义：CommonJS、AMD、CMD。</p>
+<p>它们的特点与相互间的区别是：</p>
+<ol>
+<li><strong>CommonJS 适用于服务端</strong>，写法为：</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">clock</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;clock.js&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">clock</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>上例表示，<code>clock</code> 的调用必须等待 <code>clock.js</code> 请求加载成功，换句话说，是<strong>同步</strong>操作，而这也导致了 CommonJS 广泛应用于服务端而不是客户端（服务器读取模块都是在本地磁盘，加载速度快，而如果是在客户端则容易出现‘假死’状态）那么能不能用异步加载模块呢？</p>
+</blockquote>
+<ol start="2">
+<li><strong>AMD (Asynchronous Module Definition) 就是异步加载模块，多用于浏览器</strong>（ <strong>require.js 应用了这一规范</strong>），写法为：</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">require</span><span class="p">([</span><span class="nx">module</span><span class="p">],</span><span class="nx">callback</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// eg
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">require</span><span class="p">([</span><span class="s1">&#39;clock.js&#39;</span><span class="p">],</span><span class="kd">function</span><span class="p">(</span><span class="nx">clock</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">clock</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>虽然实现了异步加载，规避了浏览器的“假死”问题，但是也存在缺点：<strong>一开始就把所有依赖写出来是不符合逻辑顺序的</strong>。那么，能不能像 <strong>CommonJS 一样用的时候才 require，然后还能支持异步加载后执行呢</strong>？</p>
+</blockquote>
+<ol start="3">
+<li><strong>CMD (Common Module Definition) 则是依赖就近，用的时候再 require</strong>（ <strong>sea.js 推崇的规范</strong> ），写法为：</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">define</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span><span class="nx">exports</span><span class="p">,</span><span class="nx">module</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">clock</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;clock.js&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">clock</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>AMD 和 CMD 的区别是对依赖模块的执行时机不同</strong>，而不是加载处理方式不同，二者皆为异步加载模块。</p>
+<p><strong>AMD 依赖前置</strong>，<strong>JavaScript 可以方便地清楚依赖模块有哪些</strong>，立即加载；</p>
+<p><strong>CMD 就近依赖</strong>，开发者可以在需要用到依赖的时候再 require，但是对于 JavaScript 处理器来说，需要把代码处理为字符串解析一遍才知道依赖了哪些模块，即<strong>牺牲性能来获得开发的便利</strong>，虽然实际上解析的时间短到可以忽略，但是也有很多人诟病 CMD 这一点。</p>
+<p>ES6 的模块化设计思想是尽量静态化，使得编译时就能确定模块的依赖关系。</p>
+<p>对比 CommonJS 和 ES6 模块：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// CommonJS
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="p">{</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">exists</span><span class="p">,</span> <span class="nx">readFile</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 相当于
+</span></span></span><span class="line"><span class="cl"><span class="c1">// let _fs = require(&#39;fs&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="c1">// let start = _fs.start, exists = _fs.exists, readFile = _fs.readFile
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// ES6
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">exists</span><span class="p">,</span> <span class="nx">readFile</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;fs&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上述例子中，<strong>CommonJS 的实质是整体加载</strong> fs 模块生成一个 <code>_fs</code> 对象，之后再从对象中分别读取 3 个方法，称为“<strong>运行时加载</strong>”。而 <strong>ES6 模块是加载 3 个方法</strong>，称为“<strong>编译时加载</strong>”</p>
+<h2 id="es6-模块化的语法规范">ES6 模块化的语法规范</h2>
+<h3 id="严格模式">严格模式</h3>
+<p>在 ES6 模块中自动采用严格模式。规定：</p>
+<ul>
+<li>变量必须先声明</li>
+<li>函数参数不能有同名属性</li>
+<li>不能使用 <code>with</code></li>
+<li>对只读属性赋值、<code>delete</code> 不可删除属性直接报错</li>
+<li>不可删除变量 <code>delete prop</code>、只能删除属性 <code>delete global[prop]</code></li>
+<li><code>eval</code> 不会在外层作用域引入变量</li>
+<li><code>eval</code> 和 <code>arguments</code> 不可重新赋值</li>
+<li><code>arguments</code> 不会自动反应函数参数变化</li>
+<li>禁止 <code>this</code> 指向全局</li>
+<li>增加保留字：static、interface、protected 等。</li>
+</ul>
+<blockquote>
+<p>注意：在 ES6 模块中，顶层 <code>this</code> 为 <code>undefined</code>，不应该被使用。</p>
+</blockquote>
+<h3 id="export-命令">export 命令</h3>
+<p>第一种：分别暴露</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="s1">&#39;123&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">_b</span> <span class="o">=</span> <span class="s1">&#39;2323&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">let</span> <span class="nx">c</span> <span class="o">=</span> <span class="s1">&#39;2222&#39;</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>第二种：统一暴露</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="s1">&#39;123&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">_b</span> <span class="o">=</span> <span class="s1">&#39;2323&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">c</span> <span class="o">=</span> <span class="s1">&#39;2222&#39;</span> 
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span><span class="nx">a</span><span class="p">,</span> <span class="nx">_b</span><span class="p">,</span> <span class="nx">c</span><span class="p">};</span> <span class="c1">// 推荐
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>第三种：(第二种基础上加上 as 关键词重命名)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="s1">&#39;123&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">_b</span> <span class="o">=</span> <span class="s1">&#39;2323&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">c</span> <span class="o">=</span> <span class="s1">&#39;2222&#39;</span> 
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">a</span> <span class="nx">as</span> <span class="nx">stream1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">_b</span> <span class="nx">as</span> <span class="nx">stream2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">c</span> <span class="nx">as</span> <span class="nx">stream3</span> <span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>注意：</p>
+<ol>
+<li>
+<p><strong>export 语句输出的接口是对应值的引用</strong>，也就是一种<strong>动态绑定</strong>关系，通过该接口可以获取模块内部实时的值。</p>
+<p>对比 CommonJS 规范：<strong>CommonJS 模块输出的是值的缓存</strong>，不存在动态更新。</p>
+</li>
+<li>
+<p><strong>export 命令规定要处于模块顶层</strong>，一旦出现在块级作用域内，就会报错，<strong>import 同理</strong>。</p>
+</li>
+</ol>
+</blockquote>
+<h3 id="import-命令">import 命令</h3>
+<p>第一种</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span><span class="nx">a</span><span class="p">,</span> <span class="nx">_b</span> <span class="p">,</span><span class="nx">c</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./profile&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>变量名 a、b、c 为暴露时取的标识符，不能随意更改。</p>
+<p>第二种</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span><span class="nx">stream1</span> <span class="nx">as</span> <span class="nx">firstVal</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./profile&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>引入时进行重命名。</p>
+<p>import 是<strong>静态执行</strong>，不可以应用表达式、变量和 if 结构。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kr">import</span> <span class="p">{</span> <span class="nx">foo</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;module1&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">import 语句是 Singleton 模式</span>：虽然 <code>foo</code> 和 <code>bar</code> 在两个语句中加载，但是对应的是同一个 <code>my_module</code> 实例。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">foo</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./module1&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">bar</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./module1&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 相当于
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span><span class="nx">foo</span><span class="p">,</span><span class="nx">bar</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./module1&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="模块的整体加载">模块的整体加载</h3>
+<p>可以使用*来指定一个对象，所有输出值都加载到这个对象上：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="nx">as</span> <span class="nx">circle</span> <span class="nx">from</span> <span class="s1">&#39;./module1&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">circle</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">circle</span><span class="p">.</span><span class="nx">bar</span><span class="p">();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">由于模块整体加载所在的对象都是可以静态分析的，所以不允许运行时改变。</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="nx">as</span> <span class="nx">circle</span> <span class="nx">from</span> <span class="s1">&#39;./module1&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 下面两行都是不允许的
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">circle</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="mi">123</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">circle</span><span class="p">.</span><span class="nx">bar</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="默认导出">默认导出</h3>
+<p>export default 命令可以为模块默认输出</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// module2.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;123&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 相当于
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">function</span> <span class="nx">a</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;123&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span><span class="nx">a</span> <span class="nx">as</span> <span class="k">default</span><span class="p">};</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>import 命令可以为匿名函数指定任意名字</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">defaultFn</span> <span class="nx">from</span> <span class="s1">&#39;./module2&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 相当于
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span><span class="k">default</span> <span class="nx">as</span> <span class="nx">defaultFn</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./module2&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="export-和-import-的复合写法">export 和 import 的复合写法</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span><span class="nx">foo</span><span class="p">,</span> <span class="nx">bar</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;my_module&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 等同于
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span><span class="nx">foo</span><span class="p">,</span><span class="nx">bar</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;my_module&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span><span class="p">{</span><span class="nx">foo</span><span class="p">,</span><span class="nx">bar</span><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span><span class="nx">es6</span> <span class="nx">as</span> <span class="k">default</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./someModule&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 等同于
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span><span class="nx">es6</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./someModule&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">es6</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="import--方法">import( ) 方法</h3>
+<p>前面提到过，require 是动态加载，即可以在用的时候再 require；而 import 是静态执行，只能处于代码最顶层，不可以存在于块级作用域中。这导致 import 无法在运行中执行（类似于 AMD 的缺点）。 于是就有了一种提案：引入 import( ) 函数，类似于 Node 的 require 函数（CommonJS），但是它实现了异步加载。</p>
+<p>定义：import( ) 函数接收与 import 相同的参数，返回一个 Promise 对象，加载获取到的值作为 then 方法的回调参数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">main</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span><span class="p">(</span><span class="sb">`./section-modules/</span><span class="si">${</span><span class="nx">someVariable</span><span class="si">}</span><span class="sb">.js`</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">module</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">module</span><span class="p">.</span><span class="nx">loadPageInto</span><span class="p">(</span><span class="nx">main</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">err</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	  <span class="nx">main</span><span class="p">.</span><span class="nx">textContext</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// 加载获得接口参数：
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span><span class="p">(</span><span class="s1">&#39;./module1.js&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="nx">then</span><span class="p">(({</span><span class="k">default</span><span class="o">:</span><span class="nx">defaultFn</span><span class="p">,</span><span class="nx">foo</span><span class="p">,</span><span class="nx">bar</span><span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">defaultFn</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// 同时加载多个模块并应用于 sync 函数中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">async</span> <span class="kd">function</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">myModule</span> <span class="o">=</span> <span class="kr">await</span> <span class="kr">import</span><span class="p">(</span><span class="s1">&#39;./myModule.js&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span><span class="nx">export1</span><span class="p">,</span> <span class="nx">export2</span><span class="p">}</span> <span class="o">=</span> <span class="kr">await</span> <span class="kr">import</span><span class="p">(</span><span class="s1">&#39;./myModule.js&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">module1</span><span class="p">,</span> <span class="nx">module2</span><span class="p">,</span> <span class="nx">module3</span><span class="p">]</span> <span class="o">=</span> 
+</span></span><span class="line"><span class="cl">        <span class="kr">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">import</span><span class="p">(</span><span class="s1">&#39;./module1.js&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">import</span><span class="p">(</span><span class="s1">&#39;./module2.js&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">import</span><span class="p">(</span><span class="s1">&#39;./module3.js&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">main</span><span class="p">();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="不同规范间加载">不同规范间加载</h2>
+<h3 id="import-加载-commonjs-模块">import 加载 CommonJS 模块</h3>
+<ul>
+<li>使用 import 命令加载 CommonJS 模块，<span class="ibakuman-inline-note">Node 会自动将 module.exports 属性当做模块的默认输出，即等同于 export default</span>。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// a.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;hello&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">bar</span><span class="o">:</span> <span class="s1">&#39;world&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 在 import 引入时等同于
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;hello&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">bar</span><span class="o">:</span> <span class="s1">&#39;world&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>CommonJS 模块是运行时确定输出接口，所以采用 import 命令加载 CommonJS 模块时，只能使用整体输入（*）。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span><span class="nx">readfile</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;fs&#39;</span> <span class="c1">//当 fs 为 CommonJS 模块时错误
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 整体输入
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="o">*</span> <span class="nx">as</span> <span class="nx">express</span> <span class="nx">from</span> <span class="s1">&#39;express&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">.</span><span class="k">default</span><span class="p">();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="require-加载-es6-模块">require 加载 ES6 模块</h3>
+<ul>
+<li>require 命令加载 ES6 模块时，所有的输出接口都会成为输入对象的属性。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// es.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">foo</span> <span class="o">=</span> <span class="p">{</span><span class="nx">bar</span> <span class="o">:</span> <span class="s1">&#39;my-default&#39;</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="nx">exxport</span> <span class="k">default</span> <span class="nx">foo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">foo</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// cjs.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">es_namespace</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./es&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">es_namespace</span><span class="p">.</span><span class="k">default</span><span class="p">);</span><span class="c1">// {bar:&#39;my-default&#39;}
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="对比-commonjs">对比 CommonJS</h2>
+<blockquote>
+<p>有了新欢也不能忘了旧爱，让我们再来继续对比 CommonJS 和 ES6 模块化的区别，进一步体会理解 ES6 模块化的特性。</p>
+</blockquote>
+<h3 id="输出值的复制">输出值的复制</h3>
+<p>CommonJS 模块输出的是一个值的复制，ES6 输出的是值的引用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// lib.js 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">num</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">changeNum</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">num</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">num</span><span class="o">:</span> <span class="nx">num</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">changeNum</span><span class="o">:</span> <span class="nx">changeNum</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//main.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">mod</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib.js&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">mod</span><span class="p">.</span><span class="nx">num</span><span class="p">);</span> <span class="c1">// 3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">mod</span><span class="p">.</span><span class="nx">changeNum</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">mod</span><span class="p">.</span><span class="nx">num</span><span class="p">);</span> <span class="c1">// 3
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是由于，mod.num 是一个原始类型的值，会被缓存。可以通过写成一个函数，来得到内部修改后的值：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// lib.js 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">num</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">changeNum</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">num</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">get</span> <span class="nx">num</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">num</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">changeNum</span><span class="o">:</span> <span class="nx">changeNum</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//main.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">mod</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib.js&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">mod</span><span class="p">.</span><span class="nx">num</span><span class="p">);</span> <span class="c1">// 3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">mod</span><span class="p">.</span><span class="nx">changeNum</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">mod</span><span class="p">.</span><span class="nx">num</span><span class="p">);</span> <span class="c1">// 4
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>对比 ES6 模块：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// lib.js 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kd">let</span> <span class="nx">num</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">changeNum</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">num</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//main.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span><span class="nx">num</span><span class="p">,</span><span class="nx">changeNum</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./lib.js&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">num</span><span class="p">);</span> <span class="c1">// 3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">changeNum</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">num</span><span class="p">);</span> <span class="c1">// 4
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="commonjs-的循环加载">CommonJS 的循环加载</h3>
+<h4 id="421-加载原理">4.2.1 加载原理</h4>
+<p>CommonJS 一个模块对应一个脚本文件，require 命令每次加载一个模块就会执行整个脚本，然后生成一个对象。这个对象一旦生成，以后再次执行相同的 require 命令都会直接到缓存中取值。也就是说：<span class="ibakuman-inline-note">CommonJS 模块无论加载多少次，都只会在第一次加载时运行一次，以后再加载时就返回第一次运行的结果，除非手动清除系统缓存</span>。</p>
+<h4 id="422-循环加载">4.2.2 循环加载</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// a.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./b.js&#39;</span><span class="p">);</span> <span class="c1">// 1. a.js 暂停执行，转到执行 b.js, b.js完毕后回来，b:{done:true}
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;在 a.js 中，b.done=%j&#39;</span><span class="p">,</span><span class="nx">b</span><span class="p">.</span><span class="nx">done</span><span class="p">);</span> <span class="c1">// 5. &#39;在a.js中，b.done=true&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;a.js 执行完毕&#39;</span><span class="p">)</span> <span class="c1">// 6. &#39;a.js执行完毕&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// b.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./b.js&#39;</span><span class="p">)</span> <span class="c1">// 2. a:{done:false}
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;在 b.js 中，a.done=%j&#39;</span><span class="p">,</span><span class="nx">a</span><span class="p">.</span><span class="nx">done</span><span class="p">);</span> <span class="c1">// 3. &#39;在b.js中，a.done=false&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;b.js 执行完毕&#39;</span><span class="p">)</span> <span class="c1">// 4. &#39;b.js执行完毕&#39;，继续执行a.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// main.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./a.js&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./b.js&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;在 main.js 中，a.done=%j，b.done=%j&#39;</span><span class="p">,</span><span class="nx">a</span><span class="p">.</span><span class="nx">done</span><span class="p">,</span><span class="nx">b</span><span class="p">.</span><span class="nx">done</span><span class="p">);</span> <span class="c1">// 7.&#39;在main.js中，a.done=true，b.done=true&#39;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Output</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">在 b.js 中，a.done<span class="o">=</span><span class="nb">false</span>
+</span></span><span class="line"><span class="cl">b.js 执行完毕
+</span></span><span class="line"><span class="cl">在 a.js 中，b.done<span class="o">=</span><span class="nb">true</span>
+</span></span><span class="line"><span class="cl">a.js 执行完毕
+</span></span><span class="line"><span class="cl">在 main.js 中，a.done<span class="o">=</span>true，b.done<span class="o">=</span><span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Process finished with <span class="nb">exit</span> code <span class="m">0</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上面代码可以看到：</p>
+<ol>
+<li>在 b.js 中，a.js 没有执行完毕。</li>
+<li>当 main.js 执行到第二行时不会再次执行 b.js，而是输出缓存的 b.js 的执行结果，即它的第四行：<code>exports.done = true</code></li>
+</ol>
+<p>总结一下：</p>
+<ol>
+<li>CommonJS 模块遇到循环加载返回的是当前已经执行的部分的值，而不是代码全部执行后的值（上面的第 2 步注释）</li>
+<li>CommonJS 输出的是被输出值的缓存（复制），而非动态引用。</li>
+</ol>
+<p>对比：ES6 模块是动态引用，变量不会被缓存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// a.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span><span class="nx">bar</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./b.js&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">foo</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">bar</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;执行完毕&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">foo</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// b.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span><span class="nx">foo</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./a.js&#39;</span> <span class="c1">// 如果为 CommonJS，这里直接就返回 undefined 值且不会再更改
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kd">function</span> <span class="nx">bar</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">foo</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 执行结果可能为：foo bar 执行完毕
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 执行结果也可能为： foo bar foo bar 执行完毕 执行完毕
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="5-参考">5 参考</h2>
+<ul>
+<li><a class="link" href="https://juejin.cn/post/6844904003722018830"  target="_blank" rel="noopener"
+    >原文地址</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/es6/">ES6</a>
+        
+            <a href="/tags/modular/">Modular</a>
+        
+            <a href="/tags/common-js/">Common JS</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">相关文章</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/posts/javascript/third-arg-in-addeventlistener/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/10.ef9e193870ade10ddbc208c402c60540_hucf27c6ee6e299e97a870b7c7ce3b8818_623029_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 关于 JavaScript 的 addEventListener 函数第三个参数的作用"
+                        
+                        data-hash="md5-754ZOHCt4Q3bwgjEAsYFQA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">关于 JavaScript 的 addEventListener 函数第三个参数的作用</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/javascript/demystifying-iife-syntax/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/02.22ff935b67faf208274d880305163ff4_huf55d0eff1680a905d0940d9535d13b2a_2828685_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 揭秘 IIFE 语法"
+                        
+                        data-hash="md5-Iv&#43;TW2f68ggnTYgDBRY/9A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">揭秘 IIFE 语法</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/javascript/implementing-promise-from-scratch/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/18.1d6c831bbe3ac5066415b0e3b01e7d47_hu7a8b922ea914ad8a12e0fc01dcf809f5_223556_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 手写 Promise"
+                        
+                        data-hash="md5-HWyDG746xQZkFbDjsB59Rw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">手写 Promise</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/javascript/promise/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/10.ef9e193870ade10ddbc208c402c60540_hucf27c6ee6e299e97a870b7c7ce3b8818_623029_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Promise 详解与实现（Promise/A&#43;规范）"
+                        
+                        data-hash="md5-754ZOHCt4Q3bwgjEAsYFQA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Promise 详解与实现（Promise/A&#43;规范）</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#概述">概述</a></li>
+    <li><a href="#es6-模块化的语法规范">ES6 模块化的语法规范</a>
+      <ol>
+        <li><a href="#严格模式">严格模式</a></li>
+        <li><a href="#export-命令">export 命令</a></li>
+        <li><a href="#import-命令">import 命令</a></li>
+        <li><a href="#模块的整体加载">模块的整体加载</a></li>
+        <li><a href="#默认导出">默认导出</a></li>
+        <li><a href="#export-和-import-的复合写法">export 和 import 的复合写法</a></li>
+        <li><a href="#import--方法">import( ) 方法</a></li>
+      </ol>
+    </li>
+    <li><a href="#不同规范间加载">不同规范间加载</a>
+      <ol>
+        <li><a href="#import-加载-commonjs-模块">import 加载 CommonJS 模块</a></li>
+        <li><a href="#require-加载-es6-模块">require 加载 ES6 模块</a></li>
+      </ol>
+    </li>
+    <li><a href="#对比-commonjs">对比 CommonJS</a>
+      <ol>
+        <li><a href="#输出值的复制">输出值的复制</a></li>
+        <li><a href="#commonjs-的循环加载">CommonJS 的循环加载</a>
+          <ol>
+            <li><a href="#421-加载原理">4.2.1 加载原理</a></li>
+            <li><a href="#422-循环加载">4.2.2 循环加载</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#5-参考">5 参考</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

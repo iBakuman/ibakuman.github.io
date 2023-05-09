@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Dev Env on iBakuman&#39;s Blog</title>
+        <link>https://ibakuman.github.io/en/tags/dev-env/</link>
+        <description>Recent content in Dev Env on iBakuman&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sun, 20 Nov 2022 09:27:54 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/en/tags/dev-env/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Run Multiple Instances of Same Linux Distro on WSL (Windows 10/11)</title>
+        <link>https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/</link>
+        <pubDate>Sun, 20 Nov 2022 09:27:54 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/</guid>
+        <description>&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;
+&lt;p&gt;Running Linux on Windows 10/11 via WSL is great, which allows you to fully utilize all the development and system tools available on Linux. Like everything in life, your enthusiasm for the new tools will catch up to you. Installing different tools and configuring your Linux environment to run these tools will result in an unstable Linux environment that will impact your day-to-day productivity.&lt;/p&gt;
+&lt;p&gt;You can alleviate the eventual degradation of your Linux environment by installing and running different Linux distros from Microsoft Store (for example, you can run Ubuntu, Ubuntu 18.04 LTS, Ubuntu 20.04 LTS, Kali Linux, and Debian at the same time), but you will find that some tools work differently in different Linux distro/version.&lt;/p&gt;
+&lt;p&gt;The solution is to run multiple instances of the same Linux Distro/Version on WSL. This article will provide step-by-step instructions on running multiple instances of the same Linux Distribution/Version on WSL.&lt;/p&gt;
+&lt;h2 id=&#34;step-by-step-instructions&#34;&gt;Step-by-Step Instructions&lt;/h2&gt;
+&lt;h3 id=&#34;reset-linux-distro-on-wsl&#34;&gt;Reset Linux Distro on WSL&lt;/h3&gt;
+&lt;p&gt;&lt;em&gt;The first step is to create a baseline of your Linux distro/version. This is needed so you can have a fresh start when your Linux environment becomes unstable.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Step 1.1: Open “Settings”&lt;/p&gt;
+&lt;p&gt;Step 1.2: Click on “Apps”&lt;/p&gt;
+&lt;p&gt;Step 1.3: Click on “Apps &amp;amp; features”&lt;/p&gt;
+&lt;p&gt;Step 1.4: Select Linux Distro Name — e.g., Ubuntu 20.04 LTS&lt;/p&gt;
+&lt;p&gt;Step 1.5: Click on “Advanced Options” link&lt;/p&gt;
+&lt;p&gt;Step 1.6: Click on “Reset” button to reset your Linux Distro (e.g., Ubuntu 20.04 LTS) to the initial install state. Please note that everything will be deleted.&lt;/p&gt;
+&lt;p&gt;Step 1.7: When the reset is completed, start your Linux Distro (e.g., Ubuntu 20.04 LTS) then set up your Linux Distro by entering username and password.&lt;/p&gt;
+&lt;p&gt;Step 1.8: Run “sudo apt-get update” (for Ubuntu 20.04 LTS) to retrieve information about what packages can be installed, including what updates to currently installed packages are available, from Internet sources.&lt;/p&gt;
+&lt;p&gt;Step 1.9: Run “sudo apt-get upgrade” (for Ubuntu 20.04 LTS) to install available upgrades of all packages currently installed on the system from Internet sources.&lt;/p&gt;
+&lt;h3 id=&#34;export-linux-distro-on-wsl&#34;&gt;Export Linux Distro on WSL&lt;/h3&gt;
+&lt;p&gt;&lt;em&gt;The second step is to create an export image of your Linux Distro. This image will be used to create multiple instances of the same Linux Distro.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Step 2.1: Open a new command prompt or a new Powershell.&lt;/p&gt;
+&lt;p&gt;Step 2.2: Run the command&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;-list&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;to view a list of Windows Subsystem for Linux Distributions installed on your computer. For example on my computer, it would be “Ubuntu-20.04”.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!mYslB1NVgBp0MOAkLu_FYA.png&#34;
+	width=&#34;700&#34;
+	height=&#34;397&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!mYslB1NVgBp0MOAkLu_FYA_huf77dc5162385dfa6acd32d92f0609ecc_14980_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!mYslB1NVgBp0MOAkLu_FYA_huf77dc5162385dfa6acd32d92f0609ecc_14980_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;176&#34;
+		data-flex-basis=&#34;423px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 2.3: Run the command&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;-export&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;DistributionName&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FileName&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;or&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;-export&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Ubuntu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;20.04&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rootfs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;tar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;gz&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;to export your Linux distros to a TAR file. This will create a file entitled “rootfs.tar.gz” on your computer. Keep this file safe since you will need this file to create a new instance of WSL Linux Distro.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!MwtY7w4d04QCedbXU8c83Q.png&#34;
+	width=&#34;700&#34;
+	height=&#34;398&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!MwtY7w4d04QCedbXU8c83Q_hub1a77c9c45eb615d5a71c3f541fc2fbe_9521_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!MwtY7w4d04QCedbXU8c83Q_hub1a77c9c45eb615d5a71c3f541fc2fbe_9521_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;175&#34;
+		data-flex-basis=&#34;422px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 2.4: Copy the newly created file named “rootfs.tar.gz” to your desired directory. For example on my computer, I have copied the file to &lt;code&gt;c: \linux\ubuntu-20.04.02&lt;/code&gt; directory.&lt;/p&gt;
+&lt;h3 id=&#34;install-new-instance-of-same-linux-distro-on-wsl&#34;&gt;Install New Instance of Same Linux Distro on WSL&lt;/h3&gt;
+&lt;p&gt;There are two options to install a new instance of the same Linux distro on WSL.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Option 1: Install without Launcher&lt;/li&gt;
+&lt;li&gt;Option 2: Install with Launcher (Convenient and flexible option using open source software)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;option-1-install-new-instance-of-same-linux-distro-on-wsl-without-launcher&#34;&gt;Option 1: Install New Instance of Same Linux Distro on WSL without Launcher&lt;/h4&gt;
+&lt;p&gt;Step 3.1.1. Open a new command prompt or a new Powershell then run the following command to import exported instance as a new instance of Linux in WSL.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;-import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DistroName&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;InstallationPath&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ExportedFileLocation&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;for example,&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;-import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Ubuntu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;20.04&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;02&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;C:&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;linux&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ubuntu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;20.04&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;02&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;C:&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;linux&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ubuntu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;20.04&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;02&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rootfs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;tar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;gz&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;em&gt;I have named DistroName as Ubuntu-20.04.02 to specify this is Ubuntu 20.04 Instance 2.&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For WSL1, the installation process should create \rootfs sub-directory with files under that sub-directory. Delete copied “rootfs.tar.gz” after the installation is completed.&lt;/li&gt;
+&lt;li&gt;For WSL2, the installation process should create “ext4.vhdx” file. Delete copied “rootfs.tar.gz” after the installation is completed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!2FHFehMegj29ff7Oo4M0BQ.png&#34;
+	width=&#34;700&#34;
+	height=&#34;164&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!2FHFehMegj29ff7Oo4M0BQ_huba0351353a76a374425ceb834f5a6d97_45883_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!2FHFehMegj29ff7Oo4M0BQ_huba0351353a76a374425ceb834f5a6d97_45883_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;426&#34;
+		data-flex-basis=&#34;1024px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 3.1.2. Run the newly imported Linux distro.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;-d&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DistroName&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;for example&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;-d&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Ubuntu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;20.04&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;02&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;This should start the new instance of Linux Distro in WSL.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!yAfr2b4hQrkaPLez-N8BtQ.png&#34;
+	width=&#34;700&#34;
+	height=&#34;441&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!yAfr2b4hQrkaPLez-N8BtQ_huc58d5f82a7fe63d268cf33476206d446_122747_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!yAfr2b4hQrkaPLez-N8BtQ_huc58d5f82a7fe63d268cf33476206d446_122747_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;158&#34;
+		data-flex-basis=&#34;380px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 3.1.3. Configure new Linux distro by creating &lt;code&gt;/etc/wsl.conf&lt;/code&gt; file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nano&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;etc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;conf&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;then enter the following to wsl.conf file then save the file. This is needed to replicate the default behavior of your default Linux distro instance on WSL where you are logged in as a specified user and mounted to its home directory.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;[user]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;default=sungkim
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;em&gt;Please note that you will have to change both Linux Distro name (e.g., Ubuntu-20.04.02) and username (e.g., sungkim).&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!KXTCzqa-I2XfCzjWKu9_hA.png&#34;
+	width=&#34;700&#34;
+	height=&#34;126&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!KXTCzqa-I2XfCzjWKu9_hA_hu9ae4ab345e7bb3187b735792c26d2acf_24406_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!KXTCzqa-I2XfCzjWKu9_hA_hu9ae4ab345e7bb3187b735792c26d2acf_24406_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;555&#34;
+		data-flex-basis=&#34;1333px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 3.1.4. Restart Linux Distro&lt;/p&gt;
+&lt;p&gt;Exit out of Linux Distro&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;then from either command prompt or PowerShell, enter&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;-shutdown&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;then&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;wsl&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;-d&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Ubuntu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;20.04&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;02&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;The Linux distro should start with you logged in, instead of root and default to your home directory. You have successfully created a new instance of the same Linux distro on WSL!&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!VWo3hYtEt6gIN2FlJJpNNw.png&#34;
+	width=&#34;700&#34;
+	height=&#34;496&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!VWo3hYtEt6gIN2FlJJpNNw_hu80a9808e96a3bc7332ca0fd82454bd2b_125431_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!VWo3hYtEt6gIN2FlJJpNNw_hu80a9808e96a3bc7332ca0fd82454bd2b_125431_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;141&#34;
+		data-flex-basis=&#34;338px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 3.1.5. If you are using Windows Terminal ([Get Windows Terminal — Microsoft Store](&lt;a class=&#34;link&#34; href=&#34;https://www.microsoft.com/en-us/p/windows-terminal/9n0dx20hk701?activetab=pivot&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.microsoft.com/en-us/p/windows-terminal/9n0dx20hk701?activetab=pivot&lt;/a&gt;: overviewtab)) then a new WSL instance will just show up in Windows Terminal. In Windows Terminal, click on drop-arrow then select the Linux distro name to start your new terminal session. In Windows 11, Windows Terminal is installed by default.&lt;/p&gt;
+&lt;p&gt;You should be able to run this new WSL instance using Windows Terminal.&lt;/p&gt;
+&lt;h4 id=&#34;option-2-install-new-instance-of-same-linux-distro-on-wsl-with-launcher&#34;&gt;Option 2: Install New Instance of Same Linux Distro on WSL with Launcher&lt;/h4&gt;
+&lt;p&gt;&lt;em&gt;The third step is to download, install and configure WSLDL. WSLDL is an open-source Advanced WSL Distribution Launcher / Installer that can be used to configure and launch the same Linux Distro as a different Linux instance.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Step 3.2.1. Download “wsldl.exe” from &lt;a class=&#34;link&#34; href=&#34;https://github.com/yuk7/wsldl&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/yuk7/wsldl&lt;/a&gt; and save the file to your desired directory. For example on my computer, I have saved the file to &lt;code&gt;C: \linux\ubuntu-20.04.02&lt;/code&gt; directory.&lt;/p&gt;
+&lt;p&gt;Step 3.2.2. Rename the file “wsldl.exe” to your desired Linux Distro name. For example on my computer, I have renamed to file to “Ubuntu-20.04.02.exe” to denote that this is Ubuntu 20.04 and appended “.02” for instance 2.&lt;/p&gt;
+&lt;p&gt;Step 3.2.3. To install WSLDL, open a new command prompt or a new Powershell then run the renamed file. For example on my computer, I have executed the file, entitled “Ubuntu-20.04.02.exe” in &lt;code&gt;C: \linux\ubuntu-20.04.02&lt;/code&gt; directory.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For WSL1, the installation process should create &lt;code&gt;\rootfs&lt;/code&gt; sub-directory with files under that sub-directory. Delete copied “rootfs.tar.gz” after the installation is completed.&lt;/li&gt;
+&lt;li&gt;For WSL2, the installation process should create “ext4.vhdx” file. Delete copied “rootfs.tar.gz” after the installation is completed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!XGiFjlHS_pYAKOdmwb2OSw.png&#34;
+	width=&#34;700&#34;
+	height=&#34;398&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!XGiFjlHS_pYAKOdmwb2OSw_huabffe645a2616ca0a1801a85ade5513c_40592_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!XGiFjlHS_pYAKOdmwb2OSw_huabffe645a2616ca0a1801a85ade5513c_40592_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;175&#34;
+		data-flex-basis=&#34;422px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/After_successful_installation_for_WSL1%e2%80%a6.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;After successful installation for WSL1…&#34;
+	
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/After_successful_installation_for_WSL2%e2%80%a6.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;After successful installation for WSL2…&#34;
+	
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 3.2.4. To configure WSLDL to default to your username when you run your Linux Distro on WSL, run the command in the same directory (e.g., &lt;code&gt;C:\linux\ubuntu-20.04.02&lt;/code&gt;)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;Ubuntu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;20.04&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;02&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;config&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;-default-user&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;username&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;For example on my computer, it would be :&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ps1&#34; data-lang=&#34;ps1&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;Ubuntu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;20.04&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;02&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;config&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;-default-user&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sungkim&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!agexw8Ub8KRDySn3Aj5TVw.png&#34;
+	width=&#34;700&#34;
+	height=&#34;397&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!agexw8Ub8KRDySn3Aj5TVw_huc2fd3fc48e17a135bcd2e25c60a5e67e_12389_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!agexw8Ub8KRDySn3Aj5TVw_huc2fd3fc48e17a135bcd2e25c60a5e67e_12389_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;176&#34;
+		data-flex-basis=&#34;423px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 3.2.5. To run a newly installed Linux Distro on WSL, just run the command “Ubuntu-20.04.02.exe” in &lt;code&gt;C:\linux\ubuntu-20.04.02&lt;/code&gt; directory from command prompt or Powershell.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!MbepR25npb_iIyF6ScedRQ.png&#34;
+	width=&#34;700&#34;
+	height=&#34;399&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!MbepR25npb_iIyF6ScedRQ_hub46ffa50a92142ba09b6200c5942d6dd_10529_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!MbepR25npb_iIyF6ScedRQ_hub46ffa50a92142ba09b6200c5942d6dd_10529_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;175&#34;
+		data-flex-basis=&#34;421px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 3.2.6: You can pin the new Linux Distro to the taskbar by selecting and right-clicking on the file “Ubuntu-20.04.02.exe” then selecting “Pin to taskbar” from the context menu. To change the icon, you can download the icon here (&lt;a class=&#34;link&#34; href=&#34;https://github.com/yuk7/wsldl/tree/main/res&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/yuk7/wsldl/tree/main/res&lt;/a&gt;) and change the icon to the appropriate Linux Distro.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;To install additional instances of the same Linux Distro on WSL, repeat step 3.2.2 to step 3.2.6 with a different name for “wsldl.exe” with a different directory name.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Step 3.2.7. Another option is to use Windows Terminal since every time you complete the process, a new WSL instance just shows up in Windows Terminal. I believe Windows Terminal comes with Windows 11. For Windows 10 users, install it from Microsoft Store.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In Windows Terminal, click on drop-arrow and select “Settings”.&lt;/li&gt;
+&lt;li&gt;On the left nav, select the WSL instance. For example, my WSL instance’s name is “Ubuntu-20.04.02&amp;quot;.&lt;/li&gt;
+&lt;li&gt;Change the “Starting directory” to &lt;code&gt;\\wsl.localhost\Ubuntu-20.04.02\home\sungkim&lt;/code&gt; where &lt;em&gt;Ubuntu-20.04.02&lt;/em&gt; is WSL instance name and &lt;em&gt;sungkim&lt;/em&gt; is your username as shown below.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!izq_w4m4hmjF1m5MAoVHZg.png&#34;
+	width=&#34;604&#34;
+	height=&#34;828&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!izq_w4m4hmjF1m5MAoVHZg_hu8bd12352f09a7bb541e3698c25ff9359_45897_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!izq_w4m4hmjF1m5MAoVHZg_hu8bd12352f09a7bb541e3698c25ff9359_45897_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;72&#34;
+		data-flex-basis=&#34;175px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;You have successfully created a new instance of the same Linux distro on WSL!&lt;/p&gt;
+&lt;h3 id=&#34;configure-your-new-linux-environment&#34;&gt;Configure your new Linux Environment&lt;/h3&gt;
+&lt;p&gt;The fourth and final step is to configure your new Linux environment so you can start being productive. You will need to change the setting of Windows Terminal though.&lt;/p&gt;
+&lt;p&gt;Step 4.1: Run “sudo apt-get update” then “sudo apt-get upgrade” to update your software.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!Krxwwrkpm-BDcOJmaulyeQ.png&#34;
+	width=&#34;700&#34;
+	height=&#34;401&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!Krxwwrkpm-BDcOJmaulyeQ_hu3fba0783a5d67a8f1479f63846e51761_93301_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!Krxwwrkpm-BDcOJmaulyeQ_hu3fba0783a5d67a8f1479f63846e51761_93301_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;174&#34;
+		data-flex-basis=&#34;418px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 4.2: Install Midnight Commander by running “sudo apt-get install mc”.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!8aCcAZGyaKogB9sugGtBvQ.png&#34;
+	width=&#34;700&#34;
+	height=&#34;403&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!8aCcAZGyaKogB9sugGtBvQ_hueaabd43894c283e28f8eaaac84b75e8e_55188_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!8aCcAZGyaKogB9sugGtBvQ_hueaabd43894c283e28f8eaaac84b75e8e_55188_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;173&#34;
+		data-flex-basis=&#34;416px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 4.3: Install Java by running “sudo apt install openjdk-11-jre-headless”.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!ZEpU2NM-y0mQh5KRX5UaBA.png&#34;
+	width=&#34;700&#34;
+	height=&#34;398&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!ZEpU2NM-y0mQh5KRX5UaBA_hu9d55946a02d8603de56760a1945db213_106369_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!ZEpU2NM-y0mQh5KRX5UaBA_hu9d55946a02d8603de56760a1945db213_106369_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;175&#34;
+		data-flex-basis=&#34;422px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 4.4: Install Go by running “sudo apt install golang-go”.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!Gz24H2EJ-QPmzE_D0pBezw.png&#34;
+	width=&#34;700&#34;
+	height=&#34;395&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!Gz24H2EJ-QPmzE_D0pBezw_huf62401f088531e118c13fedc36e8ee93_127586_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!Gz24H2EJ-QPmzE_D0pBezw_huf62401f088531e118c13fedc36e8ee93_127586_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;177&#34;
+		data-flex-basis=&#34;425px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 4.5: Install Rust by running “sudo apt install rustc”.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!JDtAPbEWrEtA6REMFykHOA.png&#34;
+	width=&#34;700&#34;
+	height=&#34;400&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!JDtAPbEWrEtA6REMFykHOA_hu746adaca8221f3f6c91e333fbce0150c_62698_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!JDtAPbEWrEtA6REMFykHOA_hu746adaca8221f3f6c91e333fbce0150c_62698_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;175&#34;
+		data-flex-basis=&#34;420px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Step 4.6: Install Visual Studio Code by running “code .”&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!GDJlckFE_-faMy_4R7yq7w.png&#34;
+	width=&#34;700&#34;
+	height=&#34;397&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!GDJlckFE_-faMy_4R7yq7w_hubf63f54252d810ba29b5efe6a52439c2_19916_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!GDJlckFE_-faMy_4R7yq7w_hubf63f54252d810ba29b5efe6a52439c2_19916_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;176&#34;
+		data-flex-basis=&#34;423px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Now, you can start developing in three Linux environments concurrently as shown below:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!r4acRgwkPtuLLGT_ZSgG1Q.png&#34;
+	width=&#34;700&#34;
+	height=&#34;533&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!r4acRgwkPtuLLGT_ZSgG1Q_hu2d57eb03061c691f746533162712466f_197271_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/1!r4acRgwkPtuLLGT_ZSgG1Q_hu2d57eb03061c691f746533162712466f_197271_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;131&#34;
+		data-flex-basis=&#34;315px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;I hope this tutorial is helpful for you. One tip I would like to leave you with is that whenever you start a WSL session, it will run in the background. You may want to execute “wsl — shutdown” in Powershell to terminate all running WSL instances.&lt;/p&gt;
+&lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://sungkim11.medium.com/why-you-should-use-multiple-instances-of-same-linux-distro-on-wsl-windows-10-f6f140f8ed88&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;The original article&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

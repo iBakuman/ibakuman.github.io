@@ -1,0 +1,1243 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview TypeScript 3.7 added support for the ?. operator, also known as the optional chaining operator. We can use optional chaining to descend into { 向下行；进去 } an object whose properties potentially hold the values null or undefined without writing any null checks for intermediate properties. Optional chaining is not a feature specific to TypeScript. The ?. operator got added to the ECMAScript standard as'>
+<title>Optional Chaining: The ?. Operator in TypeScript</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/044-optional-chaining-the-operator-in-typescript/'><link rel="prev" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/043-nullish-coalescing-the-operator-in-typescript/" /><link rel="next" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/045-assertion-functions-in-typescript/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='Optional Chaining: The ?. Operator in TypeScript'>
+<meta property='og:description' content='Overview TypeScript 3.7 added support for the ?. operator, also known as the optional chaining operator. We can use optional chaining to descend into { 向下行；进去 } an object whose properties potentially hold the values null or undefined without writing any null checks for intermediate properties. Optional chaining is not a feature specific to TypeScript. The ?. operator got added to the ECMAScript standard as'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/044-optional-chaining-the-operator-in-typescript/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2023-01-03T14:32:19&#43;08:00'/><meta property='article:modified_time' content='2023-01-03T14:32:19&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="Optional Chaining: The ?. Operator in TypeScript">
+<meta name="twitter:description" content="Overview TypeScript 3.7 added support for the ?. operator, also known as the optional chaining operator. We can use optional chaining to descend into { 向下行；进去 } an object whose properties potentially hold the values null or undefined without writing any null checks for intermediate properties. Optional chaining is not a feature specific to TypeScript. The ?. operator got added to the ECMAScript standard as"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/typescript/typescript-evolution/044-optional-chaining-the-operator-in-typescript/">
+                <img src="/gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_800x0_resize_q75_box.jpg 800w, /gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="532"
+                        loading="lazy"
+                        alt="Featured image of post Optional Chaining: The ?. Operator in TypeScript" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/typescript/" >
+                TypeScript
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/typescript/typescript-evolution/044-optional-chaining-the-operator-in-typescript/">Optional Chaining: The ?. Operator in TypeScript</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jan 03, 2023</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    5 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>TypeScript 3.7 added support for the <code>?.</code> operator, also known as the optional chaining operator. We can use optional chaining to <span class="ibakuman-inline-translation">descend into<sub> { 向下行；进去 }</sub></span> an object whose properties potentially hold the values <code>null</code> or <code>undefined</code> without writing any null checks for intermediate properties.</p>
+<p>Optional chaining is not a feature specific to TypeScript. The <code>?.</code> operator got added to the ECMAScript standard as part of <a class="link" href="https://262.ecma-international.org/11.0/"  target="_blank" rel="noopener"
+    >ES2020</a>. All modern browsers <a class="link" href="https://caniuse.com/mdn-javascript_operators_optional_chaining"  target="_blank" rel="noopener"
+    >natively support optional chaining</a> (not including IE11).</p>
+<p>In this post, I will go over the following three optional chaining operators and explain why we might want to use them in our TypeScript or JavaScript code:</p>
+<ul>
+<li><code>?.</code></li>
+<li><code>?.[]</code></li>
+<li><code>?.()</code></li>
+</ul>
+<h2 id="motivation">Motivation</h2>
+<p>Let&rsquo;s start by looking at a real-world example in which optional chaining <span class="ibakuman-inline-translation">comes in handy<sub> { 派上用途 }</sub></span>. I&rsquo;ve defined a <code>serializeJSON</code> function that takes in any value and serializes it as JSON. I&rsquo;m passing a user object with two properties to the function:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;Marius Schulz&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">twitter</span><span class="o">:</span> <span class="s2">&#34;mariusschulz&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">json</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The program prints the following output to the console:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;Marius Schulz&#34;</span><span class="p">,</span><span class="nt">&#34;twitter&#34;</span><span class="p">:</span><span class="s2">&#34;mariusschulz&#34;</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now let&rsquo;s say that we want to let callers of our function specify the indentation level. We&rsquo;ll define a <code>SerializationOptions</code> type and add an <code>options</code> parameter to the <code>serializeJSON</code> function. We&rsquo;ll retrieve the indentation level from the <code>options.formatting.indent</code> property:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">SerializationOptions</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">formatting</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">indent</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">options</span>: <span class="kt">SerializationOptions</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formatting</span><span class="p">.</span><span class="nx">indent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We can now specify an indentation level of two spaces when calling <code>serializeJSON</code> like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;Marius Schulz&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">twitter</span><span class="o">:</span> <span class="s2">&#34;mariusschulz&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">formatting</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">indent</span>: <span class="kt">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">json</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As we would expect, the resulting JSON is now indented with two spaces and broken across multiple lines:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Marius Schulz&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;twitter&#34;</span><span class="p">:</span> <span class="s2">&#34;mariusschulz&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Typically, <code>options</code> parameters like the one we introduced here are optional. Callers of the function may specify an options object, but they&rsquo;re not required to. Let&rsquo;s adjust our function signature accordingly and make the <code>options</code> parameter optional by appending a question mark to the parameter name:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">SerializationOptions</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formatting</span><span class="p">.</span><span class="nx">indent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Assuming we have the <a class="link" href="https://mariusschulz.com/blog/non-nullable-types-in-typescript#strict-null-checking"  target="_blank" rel="noopener"
+    ><code>--strictNullChecks</code> option</a> enabled in our TypeScript project (which is part of the <a class="link" href="https://mariusschulz.com/blog/the-strict-compiler-option-in-typescript"  target="_blank" rel="noopener"
+    ><code>--strict</code> family of compiler options</a>), TypeScript should now report the following type error in our <code>options.formatting.indent</code> expression:</p>
+<blockquote>
+<p>Object is possibly &lsquo;undefined&rsquo;.</p>
+</blockquote>
+<p>The <code>options</code> parameter is optional, and as a result it might hold the value <code>undefined</code>. We should first check whether <code>options</code> holds the value <code>undefined</code> before accessing <code>options.formatting</code>, otherwise we risk getting an error at runtime:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">SerializationOptions</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">!==</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">    <span class="o">?</span> <span class="nx">options.formatting.indent</span>
+</span></span><span class="line"><span class="cl">    : <span class="kt">undefined</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We could also use a slightly more generic null check instead that will check for both <code>null</code> and <code>undefined</code> — note that we&rsquo;re <span class="ibakuman-inline-translation">deliberately<sub> { 故意地 }</sub></span> using <code>!=</code> instead of <code>!==</code> in this case:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">SerializationOptions</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">!=</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">    <span class="o">?</span> <span class="nx">options.formatting.indent</span>
+</span></span><span class="line"><span class="cl">    : <span class="kt">undefined</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now the type error goes away. We can call the <code>serializeJSON</code> function and pass it an options object with an explicit indentation level:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">formatting</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">indent</span>: <span class="kt">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Or we can call it without specifying an options object, in which case the <code>indent</code> variable will hold the value <code>undefined</code> and <code>JSON.stringify</code> will use a default indentation level of zero:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Both function calls above are type-correct. However, what if we also wanted to be able to call our <code>serializeJSON</code> function like this?</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="p">{});</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This is another common pattern you&rsquo;ll see. Options objects tend to declare some or all of their properties as optional so that callers of the function can specify as many (or as few) options as needed. We need to make the <code>formatting</code> property in our <code>SerializationOptions</code> type optional in order to support this pattern:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">SerializationOptions</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">formatting</span><span class="o">?:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">indent</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Notice the question mark after the name of the <code>formatting</code> property. Now the <code>serializeJSON(user, {})</code> call is type-correct, but TypeScript reports another type error when accessing <code>options.formatting.indent</code>:</p>
+<blockquote>
+<p>Object is possibly &lsquo;undefined&rsquo;.</p>
+</blockquote>
+<p>We&rsquo;ll need to add another null check here given that <code>options.formatting</code> could now hold the value <code>undefined</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">SerializationOptions</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">!=</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">    <span class="o">?</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formatting</span> <span class="o">!=</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="nx">options.formatting.indent</span>
+</span></span><span class="line"><span class="cl">      : <span class="kt">undefined</span>
+</span></span><span class="line"><span class="cl">    <span class="o">:</span> <span class="kc">undefined</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This code is now type-correct, and it safely accesses the <code>options.formatting.indent</code> property. These nested null checks are getting pretty <span class="ibakuman-inline-translation">unwieldy<sub> { 笨拙的；笨重的 }</sub></span> though, so let&rsquo;s see how we can simplify this property access using the optional chaining operator.</p>
+<h2 id="the--operator-dot-notation">The <code>?.</code> Operator: Dot Notation</h2>
+<p>We can use the <code>?.</code> operator to access <code>options.formatting.indent</code> with checks for nullish values at every level of this property chain:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">SerializationOptions</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">formatting</span><span class="o">?</span><span class="p">.</span><span class="nx">indent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <a class="link" href="https://tc39.es/ecma262/multipage/"  target="_blank" rel="noopener"
+    >ECMAScript specification</a> describes optional chaining as follows:</p>
+<blockquote>
+<p>Optional chaining [is] a property access and function invocation operator that <span class="ibakuman-inline-translation">short-circuits<sub> { 使……不工作；短路 }</sub></span> if the value to access/invoke is nullish.</p>
+</blockquote>
+<p>The JavaScript runtime evaluates the <code>options?.formatting?.indent</code> expression as follows:</p>
+<ul>
+<li>If <code>options</code> holds the value <code>null</code> or <code>undefined</code>, produce the value <code>undefined</code>.</li>
+<li>Otherwise, if <code>options.formatting</code> holds the value <code>null</code> or <code>undefined</code>, produce the value <code>undefined</code>.</li>
+<li>Otherwise, produce the value of <code>options.formatting.indent</code>.</li>
+</ul>
+<p>Note that the <code>?.</code> operator always produces the value <code>undefined</code> when it stops descending into a property chain, even when it encounters the value <code>null</code>. TypeScript models this behavior in its type system. In the following example, TypeScript infers the <code>indent</code> local variable to be of type <code>number | undefined</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">SerializationOptions</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">formatting</span><span class="o">?</span><span class="p">.</span><span class="nx">indent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Thanks to optional chaining, this code is a lot more succinct and just as type-safe as before.</p>
+<h2 id="the--operator-bracket-notation">The <code>?.[]</code> Operator: Bracket Notation</h2>
+<p>Next, let&rsquo;s now look at the <code>?.[]</code> operator, another operator in the optional chaining family.</p>
+<p>Let&rsquo;s say that our <code>indent</code> property on the <code>SerializationOptions</code> type was called <code>indent-level</code> instead. <span class="ibakuman-inline-note">We&rsquo;ll need to use quotes to define a property that has a hyphen in its name:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">SerializationOptions</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">formatting</span><span class="o">?:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;indent-level&#34;</span><span class="o">:</span> <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We could now specify a value for the <code>indent-level</code> property like this when calling the <code>serializeJSON</code> function:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">formatting</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;indent-level&#34;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>However, the following attempt to access the <code>indent-level</code> property using optional chaining is a syntax error:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">formatting</span><span class="o">?</span><span class="p">.</span><span class="s2">&#34;indent-level&#34;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">We cannot use the <code>?.</code> operator directly followed by a string literal — that would be invalid syntax</span>. Instead, we can use the bracket notation of optional chaining and access the <code>indent-level</code> property using the <code>?.[]</code> operator:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">formatting</span><span class="o">?</span><span class="p">.[</span><span class="s2">&#34;indent-level&#34;</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here&rsquo;s our complete <code>serializeJSON</code> function:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">SerializationOptions</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">formatting</span><span class="o">?</span><span class="p">.[</span><span class="s2">&#34;indent-level&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>It&rsquo;s pretty much the same as before, aside from additional square brackets for the final property access.</p>
+<h2 id="the--operator-method-calls">The <code>?.()</code> Operator: Method Calls</h2>
+<p>The third and final operator in the optional chaining family is <code>?.()</code>. We can use the <code>?.()</code> operator to invoke a method which may not exist.</p>
+<p>To see when this operator is useful, let&rsquo;s change our <code>SerializationOptions</code> type once again. We&rsquo;ll replace the <code>indent</code> property (typed as a number) by a <code>getIndent</code> property (typed as a parameterless function returning a number):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">SerializationOptions</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">formatting</span><span class="o">?:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">getIndent</span><span class="o">?:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We can call our <code>serializeJSON</code> function and specify an indentation level of two as follows:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">formatting</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">getIndent</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To get the indentation level within our <code>serializeJSON</code> function, we can use the <code>?.()</code> operator to conditionally invoke the <code>getIndent</code> method if (and only if) it is defined:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">formatting</span><span class="o">?</span><span class="p">.</span><span class="nx">getIndent</span><span class="o">?</span><span class="p">.();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If the <code>getIndent</code> method is not defined, no attempt will be made to invoke it. The entire property chain will evaluate to <code>undefined</code> in that case, avoiding the <span class="ibakuman-inline-translation">infamous<sub> { 声名狼藉的 }</sub></span> &ldquo;getIndent is not a function&rdquo; error.</p>
+<p>Here&rsquo;s our complete <code>serializeJSON</code> function once again:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">SerializationOptions</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">formatting</span><span class="o">?</span><span class="p">.</span><span class="nx">getIndent</span><span class="o">?</span><span class="p">.();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="compiling-optional-chaining-to-older-javascript">Compiling Optional Chaining to Older JavaScript</h2>
+<p>Now that we&rsquo;ve seen how the optional chaining operators work and how they&rsquo;re type-checked, let&rsquo;s have a look at the compiled JavaScript which the TypeScript compiler emits when targeting older JavaScript versions.</p>
+<p>Here&rsquo;s the JavaScript code that the TypeScript compiler will emit, with whitespace adjusted for readability:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">_a</span><span class="p">,</span> <span class="nx">_b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">indent</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nx">_b</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nx">_a</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">options</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">options</span> <span class="o">===</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">          <span class="o">?</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">          <span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formatting</span><span class="p">)</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">_a</span> <span class="o">===</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="o">?</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="nx">_a</span><span class="p">.</span><span class="nx">getIndent</span><span class="p">)</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">_b</span> <span class="o">===</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">      <span class="o">:</span> <span class="nx">_b</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">_a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>There&rsquo;s <span class="ibakuman-inline-translation">quite a lot going on<sub> { 发生了很多事情 }</sub></span> in the assignment to the <code>indent</code> variable. Let&rsquo;s simplify the code step by step. We&rsquo;ll start by renaming the local variables <code>_a</code> and <code>_b</code> to <code>formatting</code> and <code>getIndent</code>, respectively:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">formatting</span><span class="p">,</span> <span class="nx">getIndent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">indent</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nx">getIndent</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nx">formatting</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">options</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">options</span> <span class="o">===</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">          <span class="o">?</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">          <span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formatting</span><span class="p">)</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">formatting</span> <span class="o">===</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="o">?</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="nx">formatting</span><span class="p">.</span><span class="nx">getIndent</span><span class="p">)</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">getIndent</span> <span class="o">===</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="k">void</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">      <span class="o">:</span> <span class="nx">getIndent</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">formatting</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Next, let&rsquo;s address the <code>void 0</code> expression. <span class="ibakuman-inline-note">The <code>void</code> operator always produces the value <code>undefined</code>, no matter what value it&rsquo;s applied to. We can replace the <code>void 0</code> expression by the value <code>undefined</code> directly:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">formatting</span><span class="p">,</span> <span class="nx">getIndent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">indent</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nx">getIndent</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nx">formatting</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">options</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">options</span> <span class="o">===</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">          <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">          <span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formatting</span><span class="p">)</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">formatting</span> <span class="o">===</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">        <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="nx">formatting</span><span class="p">.</span><span class="nx">getIndent</span><span class="p">)</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">getIndent</span> <span class="o">===</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">:</span> <span class="nx">getIndent</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">formatting</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Next, let&rsquo;s extract the assignment to the <code>formatting</code> variable into a separate statement:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">formatting</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">options</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">options</span> <span class="o">===</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formatting</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">getIndent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">indent</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nx">getIndent</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">formatting</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">formatting</span> <span class="o">===</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">        <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="nx">formatting</span><span class="p">.</span><span class="nx">getIndent</span><span class="p">)</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">getIndent</span> <span class="o">===</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">:</span> <span class="nx">getIndent</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">formatting</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s do the same with the assignment to <code>getIndent</code> and add some whitespace:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">formatting</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">options</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">options</span> <span class="o">===</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formatting</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">getIndent</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">formatting</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">formatting</span> <span class="o">===</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">:</span> <span class="nx">formatting</span><span class="p">.</span><span class="nx">getIndent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">indent</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">getIndent</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">getIndent</span> <span class="o">===</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">      <span class="o">:</span> <span class="nx">getIndent</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">formatting</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Lastly, let&rsquo;s combine the checks using <code>===</code> for the values <code>null</code> and <code>undefined</code> into a single check using the <code>==</code> operator. Unless we&rsquo;re dealing with the <a class="link" href="https://mariusschulz.com/blog/nullish-coalescing-the-operator-in-typescript/#compiled-output-checking-for-null-and-undefined"  target="_blank" rel="noopener"
+    >special <code>document.all</code> value in our null checks</a>, the two are equivalent:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">serializeJSON</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">formatting</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">==</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">    <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">    <span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formatting</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">getIndent</span> <span class="o">=</span> <span class="nx">formatting</span> <span class="o">==</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">    <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">    <span class="o">:</span> <span class="nx">formatting</span><span class="p">.</span><span class="nx">getIndent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">indent</span> <span class="o">=</span> <span class="nx">getIndent</span> <span class="o">==</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">    <span class="o">?</span> <span class="kc">undefined</span>
+</span></span><span class="line"><span class="cl">    <span class="o">:</span> <span class="nx">getIndent</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">formatting</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">indent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now the structure of the code is a lot more apparent. You can see that TypeScript is emitting the null checks that we would have written ourselves if we hadn&rsquo;t been able to use the optional chaining operators.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a class="link" href="https://mariusschulz.com/blog/optional-chaining-the-operator-in-typescript"  target="_blank" rel="noopener"
+    >Optional Chaining The . Operator in TypeScript — Marius Schulz</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/046-string-literal-types-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/04.0d227eb193cd808efb3e41cf0214a573_hu21e79f1310d133228b33f735d4ec0be8_1556942_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post String Literal Types in TypeScript"
+                        
+                        data-hash="md5-DSJ&#43;sZPNgI77PkHPAhSlcw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">String Literal Types in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/045-assertion-functions-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Assertion Functions in TypeScript"
+                        
+                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Assertion Functions in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/043-nullish-coalescing-the-operator-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/20.1bee3eecff8df8a9e2cb815d1108b2e8_hu04c80cb06f0b716a920690442f749887_1496648_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Nullish Coalescing: The ?? Operator in TypeScript"
+                        
+                        data-hash="md5-G&#43;4&#43;7P&#43;N&#43;Kniy4FdEQiy6A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Nullish Coalescing: The ?? Operator in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/042-the-omit-helper-type-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/18.1d6c831bbe3ac5066415b0e3b01e7d47_hu7a8b922ea914ad8a12e0fc01dcf809f5_223556_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post The Omit Helper Type in TypeScript"
+                        
+                        data-hash="md5-HWyDG746xQZkFbDjsB59Rw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">The Omit Helper Type in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/041-const-assertions-in-literal-expressions-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/11.2f093314f7144588c8c264fd8c5edd91_hudf52b8b325017a6d69e0e042062b02e2_3188398_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Const Assertions in Literal Expressions in TypeScript"
+                        
+                        data-hash="md5-LwkzFPcURYjIwmT9jF7dkQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Const Assertions in Literal Expressions in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#motivation">Motivation</a></li>
+    <li><a href="#the--operator-dot-notation">The <code>?.</code> Operator: Dot Notation</a></li>
+    <li><a href="#the--operator-bracket-notation">The <code>?.[]</code> Operator: Bracket Notation</a></li>
+    <li><a href="#the--operator-method-calls">The <code>?.()</code> Operator: Method Calls</a></li>
+    <li><a href="#compiling-optional-chaining-to-older-javascript">Compiling Optional Chaining to Older JavaScript</a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

@@ -1,0 +1,901 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview When we need to find or replace values in a string in Java, we usually use regular expressions. These allow us to determine if some or all of a string matches a pattern. We might easily apply the same replacement to multiple tokens in a string with the replaceAll method in both Matcher and String. In this tutorial, we&amp;rsquo;ll explore how to apply a different replacement for each token'>
+<title>How to Use Regular Expressions to Replace Tokens in Strings in Java</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/regex/how-to-use-regular-expressions-to-replace-tokens-in-strings-in-java/'><link rel="prev" href="https://ibakuman.github.io/en/posts/regex/guide-to-escaping-characters-in-java-regexps/" /><link rel="next" href="https://ibakuman.github.io/en/posts/regex/lookahead-and-lookbehind/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='How to Use Regular Expressions to Replace Tokens in Strings in Java'>
+<meta property='og:description' content='Overview When we need to find or replace values in a string in Java, we usually use regular expressions. These allow us to determine if some or all of a string matches a pattern. We might easily apply the same replacement to multiple tokens in a string with the replaceAll method in both Matcher and String. In this tutorial, we&amp;rsquo;ll explore how to apply a different replacement for each token'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/regex/how-to-use-regular-expressions-to-replace-tokens-in-strings-in-java/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2022-11-12T12:12:41&#43;08:00'/><meta property='article:modified_time' content='2022-11-12T12:12:41&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="How to Use Regular Expressions to Replace Tokens in Strings in Java">
+<meta name="twitter:description" content="Overview When we need to find or replace values in a string in Java, we usually use regular expressions. These allow us to determine if some or all of a string matches a pattern. We might easily apply the same replacement to multiple tokens in a string with the replaceAll method in both Matcher and String. In this tutorial, we&amp;rsquo;ll explore how to apply a different replacement for each token"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/regex/how-to-use-regular-expressions-to-replace-tokens-in-strings-in-java/">
+                <img src="/gallery/landscape/08_hufd4c43b663954d2f1b153b9f2254ca86_1202710_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/08_hufd4c43b663954d2f1b153b9f2254ca86_1202710_800x0_resize_q75_box.jpg 800w, /gallery/landscape/08_hufd4c43b663954d2f1b153b9f2254ca86_1202710_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="533"
+                        loading="lazy"
+                        alt="Featured image of post How to Use Regular Expressions to Replace Tokens in Strings in Java" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/regex/" >
+                Regex
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/regex/how-to-use-regular-expressions-to-replace-tokens-in-strings-in-java/">How to Use Regular Expressions to Replace Tokens in Strings in Java</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 12, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    5 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overviewhttpswwwbaeldungcomjava-regex-token-replacementoverview"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#overview"  target="_blank" rel="noopener"
+    >Overview</a></h2>
+<p>When we need to find or replace values in a string in Java, we usually use <a class="link" href="https://www.baeldung.com/regular-expressions-java"  target="_blank" rel="noopener"
+    >regular expressions</a>. These allow us to determine if <a class="link" href="https://www.baeldung.com/java-matcher-find-vs-matches"  target="_blank" rel="noopener"
+    >some or all of a string matches</a> a pattern. We might <strong>easily</strong> <strong>apply the same replacement to multiple tokens in a string with the <em>replaceAll</em> method</strong> in both <em>Matcher</em> and <em>String</em>.</p>
+<p>In this tutorial, we&rsquo;ll explore how to apply a different replacement for each token found in a string. This will make it easy for us to satisfy use cases like escaping certain characters or replacing placeholder values.</p>
+<p>We&rsquo;ll also look at a few <span class='ibakuman-inline-translation'>tricks<sub> { 技巧 }</sub></span> for <span class='ibakuman-inline-translation'>tuning<sub> { 调整 }</sub></span> our regular expressions to identify tokens correctly.</p>
+<h2 id="individually-processing-matcheshttpswwwbaeldungcomjava-regex-token-replacementindividuallyprocessing"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#individuallyprocessing"  target="_blank" rel="noopener"
+    >Individually Processing Matches</a></h2>
+<p>Before we can build our token-by-token replacement algorithm, we need to understand the Java API around regular expressions. Let&rsquo;s solve a <span class='ibakuman-inline-translation'>tricky<sub> { 复杂的；棘手的 }</sub></span> matching problem using capturing and non-capturing groups.</p>
+<h3 id="title-case-examplehttpswwwbaeldungcomjava-regex-token-replacement1-title-case-example"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#1-title-case-example"  target="_blank" rel="noopener"
+    >Title Case Example</a></h3>
+<p>Let&rsquo;s imagine we want to build an algorithm to process all the title words in a string. These words start with one uppercase character and then either end or continue with only lowercase characters.</p>
+<p>Our input might be:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="s">&#34;First 3 Capital Words! then 10 TLAs, I Found&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>From the definition of a title word, this contains the matches:</p>
+<ul>
+<li><em>First</em></li>
+<li><em>Capital</em></li>
+<li><em>Words</em></li>
+<li><em>I</em></li>
+<li><em>Found</em></li>
+</ul>
+<p>And a regular expression to recognize this pattern would be:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="s">&#34;(?&lt;=^|[^A-Za-z])([A-Z][a-z]*)(?=[^A-Za-z]|$)&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To understand this, let&rsquo;s break it down into its component parts. We&rsquo;ll start in the middle:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="o">[</span><span class="n">A</span><span class="o">-</span><span class="n">Z</span><span class="o">]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>will recognize a single uppercase letter.</p>
+<p>We allow single-character words or words followed by lowercase, so:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="o">[</span><span class="n">a</span><span class="o">-</span><span class="n">z</span><span class="o">]*</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>recognizes zero or more lowercase letters.</p>
+<p>In some cases, the above two character classes would be enough to recognize our tokens. Unfortunately, in our example text, there is a word that starts with multiple capital letters. Therefore, <span class="ibakuman-inline-note">we need to express that the single capital letter we find must be the first to appear after non-letters.</span></p>
+<p><span class="ibakuman-inline-note">Similarly, as we allow a single capital letter word, we need to express that the single capital letter we find must not be the first of a multi-capital letter word.</span></p>
+<p>The expression <code>[^A-Za-z]</code> means “no letters”. We have put one of these at the start of the expression in a non-capturing group:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="o">(?&lt;=^|[^</span><span class="n">A</span><span class="o">-</span><span class="n">Za</span><span class="o">-</span><span class="n">z</span><span class="o">])</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The non-capturing group, starting with <em>(?&lt;=,</em> does a <strong>look-behind to ensure the match appears at the correct boundary.</strong> Its <span class='ibakuman-inline-translation'>counterpart<sub> { someone or something that has the same job or purpose as another person or thing, but in a different country, time, situation, or organization }</sub></span> at the end does the same job for the characters that follow.</p>
+<p>However, if words touch the very start or end of the string, then we need to account for that, which is where we&rsquo;ve added ^| to the first group to make it mean “the start of the string or any non-letter characters”, and we&rsquo;ve added |$ on the end of the last non-capturing group to allow the end of the string to be a boundary.</p>
+<p><strong>Characters found in non-capturing groups do not appear in the match</strong> when we use <em>find</em>.</p>
+<p>We should note that even a simple use case like this can have many edge cases, so <strong>it&rsquo;s important to test our regular expressions</strong>. For this, we can write unit tests, use our IDE&rsquo;s built-in tools, or use an online tool like <a class="link" href="https://regexr.com/4vdaf"  target="_blank" rel="noopener"
+    >Regexr</a>.</p>
+<h3 id="testing-our-examplehttpswwwbaeldungcomjava-regex-token-replacement2-testing-our-example"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#2-testing-our-example"  target="_blank" rel="noopener"
+    >Testing Our Example</a></h3>
+<p>With our example text in a constant called <em>EXAMPLE_INPUT</em> and our regular expression in a <em>Pattern</em> called <em>TITLE_CASE_PATTERN</em>, let&rsquo;s use <em>find</em> on the <em>Matcher</em> class to extract all of our matches in a unit test:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">TITLE_CASE_PATTERN</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">EXAMPLE_INPUT</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">matches</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">matches</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">assertThat</span><span class="o">(</span><span class="n">matches</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">.</span><span class="na">containsExactly</span><span class="o">(</span><span class="s">&#34;First&#34;</span><span class="o">,</span> <span class="s">&#34;Capital&#34;</span><span class="o">,</span> <span class="s">&#34;Words&#34;</span><span class="o">,</span> <span class="s">&#34;I&#34;</span><span class="o">,</span> <span class="s">&#34;Found&#34;</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here we use the <em>matcher</em> function on <em>Pattern</em> to produce a <em>Matcher</em>. Then we use the <em>find</em> method in a loop until it stops returning <em>true</em> to iterate over all the matches.</p>
+<p><span class="ibakuman-inline-note">Each time find returns true, the Matcher object&rsquo;s state is set to represent the current match.</span> We can inspect the whole match with <em>group(0)</em> <strong>or inspect particular capturing groups with their 1-based index</strong>. In this case, there is a capturing group around the piece we want, so we use <em>group(1)</em> to add the match to our list.</p>
+<h3 id="inspecting-_matcher_-a-bit-morehttpswwwbaeldungcomjava-regex-token-replacement3-inspecting-matcher-a-bit-more"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#3-inspecting-matcher-a-bit-more"  target="_blank" rel="noopener"
+    >Inspecting <em>Matcher</em> a Bit More</a></h3>
+<p><span class='ibakuman-inline-translation'>We&rsquo;ve so far managed to find the words we want to process.<sub> { 到目前为止，我们已经设法找到了我们想要处理的单词 }</sub></span></p>
+<p>However, if each of these words were a token that we wanted to replace, we would need to have more information about the match in order to build the resulting string. <strong>Let&rsquo;s look at some other properties of <em>Matcher</em></strong> that might help us:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="k">while</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;Match: &#34;</span> <span class="o">+</span> <span class="n">matcher</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;Start: &#34;</span> <span class="o">+</span> <span class="n">matcher</span><span class="o">.</span><span class="na">start</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;End: &#34;</span> <span class="o">+</span> <span class="n">matcher</span><span class="o">.</span><span class="na">end</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This code will show us where each match is. It also shows us the <em>group(0)</em> match, which is everything captured:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nl">Match:</span> <span class="n">First</span>
+</span></span><span class="line"><span class="cl"><span class="nl">Start:</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="nl">End:</span> <span class="mi">5</span>
+</span></span><span class="line"><span class="cl"><span class="nl">Match:</span> <span class="n">Capital</span>
+</span></span><span class="line"><span class="cl"><span class="nl">Start:</span> <span class="mi">8</span>
+</span></span><span class="line"><span class="cl"><span class="nl">End:</span> <span class="mi">15</span>
+</span></span><span class="line"><span class="cl"><span class="nl">Match:</span> <span class="n">Words</span>
+</span></span><span class="line"><span class="cl"><span class="nl">Start:</span> <span class="mi">16</span>
+</span></span><span class="line"><span class="cl"><span class="nl">End:</span> <span class="mi">21</span>
+</span></span><span class="line"><span class="cl"><span class="nl">Match:</span> <span class="n">I</span>
+</span></span><span class="line"><span class="cl"><span class="nl">Start:</span> <span class="mi">37</span>
+</span></span><span class="line"><span class="cl"><span class="nl">End:</span> <span class="mi">38</span>
+</span></span><span class="line"><span class="cl"><span class="o">...</span> <span class="n">more</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here we can see that each match contains only the words we&rsquo;re expecting. <strong>The <em>start</em> property shows the zero-based index of the match</strong> within the string. The <em>end</em> shows the index of the character just after. <span class="ibakuman-inline-note">This means we could use substring(start, end-start) to extract each match from the original string. This is essentially how the group method does that for us.</span></p>
+<p>Now that we can use <em>find</em> to iterate over matches, let&rsquo;s process our tokens.</p>
+<h2 id="replacing-matches-one-by-onehttpswwwbaeldungcomjava-regex-token-replacementreplaceonebyone"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#replaceonebyone"  target="_blank" rel="noopener"
+    >Replacing Matches One by One</a></h2>
+<p>Let&rsquo;s continue our example by using our algorithm to replace each title word in the original string with its lowercase equivalent. This means our test string will be converted to:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">&#34;first 3 capital words! then 10 TLAs, i found&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <em>Pattern</em> and <em>Matcher</em> class can&rsquo;t do this for us, so we need to construct an algorithm.</p>
+<h3 id="the-replacement-algorithmhttpswwwbaeldungcomjava-regex-token-replacement1-the-replacement-algorithm"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#1-the-replacement-algorithm"  target="_blank" rel="noopener"
+    >The Replacement Algorithm</a></h3>
+<p>Here is the pseudo-code for the algorithm:</p>
+<ul>
+<li>Start with an empty output string</li>
+<li>For each match:
+<ul>
+<li><span class='ibakuman-inline-translation'>Add to the output anything<sub> { 添加任何字符到 output  }</sub></span> that came before the match and after any previous match</li>
+<li>Process this match and add that to the output</li>
+<li>Continue until all matches are processed</li>
+<li>Add anything left after the last match to the output</li>
+</ul>
+</li>
+</ul>
+<p>We should note that the aim of this algorithm is to <strong>find all non-matched areas and add them to the output</strong>, as well as adding the processed matches.</p>
+<h3 id="the-token-replacer-in-javahttpswwwbaeldungcomjava-regex-token-replacement2-the-token-replacer-in-java"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#2-the-token-replacer-in-java"  target="_blank" rel="noopener"
+    >The Token Replacer in Java</a></h3>
+<p>We want to convert each word to lowercase, so we can write a simple conversion method:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">convert</span><span class="o">(</span><span class="n">String</span> <span class="n">token</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">token</span><span class="o">.</span><span class="na">toLowerCase</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now we can write the algorithm to <span class='ibakuman-inline-translation'>iterate over<sub> { 遍历 }</sub></span> the matches. This can use a <em>StringBuilder</em> for the output:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">lastIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">StringBuilder</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">TITLE_CASE_PATTERN</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">original</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">output</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">original</span><span class="o">,</span> <span class="n">lastIndex</span><span class="o">,</span> <span class="n">matcher</span><span class="o">.</span><span class="na">start</span><span class="o">())</span>
+</span></span><span class="line"><span class="cl">      <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">convert</span><span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">1</span><span class="o">)));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">lastIndex</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="na">end</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">(</span><span class="n">lastIndex</span> <span class="o">&lt;</span> <span class="n">original</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">output</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">original</span><span class="o">,</span> <span class="n">lastIndex</span><span class="o">,</span> <span class="n">original</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We should note that <strong><em>StringBuilder</em> provides a <span class='ibakuman-inline-translation'>handy<sub> { 方便的 }</sub></span> version of <em>append</em> that can extract substrings</strong>. This works well with the <em>end</em> property of <em>Matcher</em> to let us <span class='ibakuman-inline-translation'>pick up<sub> { 提取；捡起 }</sub></span> all non-matched characters since the last match.</p>
+<h2 id="generalizing-the-algorithmhttpswwwbaeldungcomjava-regex-token-replacementgeneralising"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#generalising"  target="_blank" rel="noopener"
+    >Generalizing the Algorithm</a></h2>
+<p>Now that we&rsquo;ve solved the problem of replacing some specific tokens, why don&rsquo;t we convert the code into a form where it can be used for the general case? <span class='ibakuman-inline-translation'>The only thing that varies from one implementation to the next is the regular expression to use, and the logic for converting each match into its replacement.<sub> { 在不同的实现中，唯一不同的是要使用的正则表达式，以及将每个匹配转换为其替换的逻辑 }</sub></span></p>
+<h3 id="use-a-function-and-pattern-inputhttpswwwbaeldungcomjava-regex-token-replacement1-use-a-function-and-pattern-input"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#1-use-a-function-and-pattern-input"  target="_blank" rel="noopener"
+    >Use a Function and Pattern Input</a></h3>
+<p>We can use a Java <em>Function&lt;Matcher, String&gt;</em> object to allow the caller to provide the logic to process each match. And we can take an input called <em>tokenPattern</em> to find all the tokens:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// same as before
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">while</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">output</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">original</span><span class="o">,</span> <span class="n">lastIndex</span><span class="o">,</span> <span class="n">matcher</span><span class="o">.</span><span class="na">start</span><span class="o">())</span>
+</span></span><span class="line"><span class="cl">      <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">converter</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">matcher</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// same as before
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here, the regular expression is no longer hard-coded. Instead, the <em>converter</em> function is provided by the caller and is applied to each match within the <em>find</em> loop.</p>
+<h3 id="testing-the-general-versionhttpswwwbaeldungcomjava-regex-token-replacement2-testing-the-general-version"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#2-testing-the-general-version"  target="_blank" rel="noopener"
+    >Testing the General Version</a></h3>
+<p>Let&rsquo;s see if the general method works as well as the original:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">assertThat</span><span class="o">(</span><span class="n">replaceTokens</span><span class="o">(</span><span class="s">&#34;First 3 Capital Words! then 10 TLAs, I Found&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">TITLE_CASE_PATTERN</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">match</span> <span class="o">-&gt;</span> <span class="n">match</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">toLowerCase</span><span class="o">()))</span>
+</span></span><span class="line"><span class="cl">  <span class="o">.</span><span class="na">isEqualTo</span><span class="o">(</span><span class="s">&#34;first 3 capital words! then 10 TLAs, i found&#34;</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here we see that calling the code is straightforward. The conversion function is easy to express as a lambda. And the test passes.</p>
+<p>Now we have a token replacer, so let&rsquo;s try some other use cases.</p>
+<h2 id="some-use-caseshttpswwwbaeldungcomjava-regex-token-replacementusecases"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#usecases"  target="_blank" rel="noopener"
+    >Some Use Cases</a></h2>
+<h3 id="escaping-special-charactershttpswwwbaeldungcomjava-regex-token-replacement1-escaping-special-characters"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#1-escaping-special-characters"  target="_blank" rel="noopener"
+    >Escaping Special Characters</a></h3>
+<p>Let&rsquo;s imagine we wanted to use the regular expression escape character <code>\</code> to manually quote each character of a regular expression rather than <a class="link" href="https://www.baeldung.com/java-regexp-escape-char"  target="_blank" rel="noopener"
+    >use the <em>quote</em> method</a>. Perhaps we are quoting a string as part of creating a regular expression to pass to another library or service, so block quoting the expression won&rsquo;t <span class='ibakuman-inline-translation'>suffice<sub> { 足够；足以 }</sub></span>.</p>
+<p>If we can express the pattern that means “a regular expression character”, it&rsquo;s easy to use our algorithm to escape them all:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Pattern</span> <span class="n">regexCharacters</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;[&lt;(\\[{\\\\^\\-=$!|\\]})?*+.&gt;]&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">assertThat</span><span class="o">(</span><span class="n">replaceTokens</span><span class="o">(</span><span class="s">&#34;A regex character like [&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">regexCharacters</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">match</span> <span class="o">-&gt;</span> <span class="s">&#34;\\&#34;</span> <span class="o">+</span> <span class="n">match</span><span class="o">.</span><span class="na">group</span><span class="o">()))</span>
+</span></span><span class="line"><span class="cl">  <span class="o">.</span><span class="na">isEqualTo</span><span class="o">(</span><span class="s">&#34;A regex character like \\[&#34;</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>For each match, we prefix the <code>\</code> character. As <code>\</code> is a special character in Java strings, it&rsquo;s escaped with another <code>\</code>.</p>
+<p>Indeed, this example is covered in extra <code>\</code> characters as the character class in the pattern for <em>regexCharacters</em> has to quote many of the special characters. This shows the regular expression parser that we&rsquo;re using them to mean their literals, not as regular expression syntax.</p>
+<h3 id="replacing-placeholdershttpswwwbaeldungcomjava-regex-token-replacement2-replacing-placeholders"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#2-replacing-placeholders"  target="_blank" rel="noopener"
+    >Replacing Placeholders</a></h3>
+<p>A common way to express a placeholder is to use a syntax like <em>${name}</em>. Let&rsquo;s consider a use case where the template <em>“Hi ${name} at ${company}”</em> needs to be populated from a map called <em>placeholderValues</em>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">placeholderValues</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl"><span class="n">placeholderValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">,</span> <span class="s">&#34;Bill&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">placeholderValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;company&#34;</span><span class="o">,</span> <span class="s">&#34;Baeldung&#34;</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>All we need is a good regular expression</strong> to find the <em>${…}</em> tokens:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="s">&#34;\\$\\{(?&lt;placeholder&gt;[A-Za-z0-9-_]+)}&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>is one option. It has to quote the <em>$</em> and the initial <span class='ibakuman-inline-translation'>curly brace<sub> { 花括号 }</sub></span> as they would otherwise be treated as regular expression syntax.</p>
+<p>At the heart of this pattern is a capturing group for the name of the placeholder. We&rsquo;ve used a character class that allows alphanumeric, <span class='ibakuman-inline-translation'>dashes<sub> { 破折号 }</sub></span>, and underscores, which should fit most use-cases.</p>
+<p><span class="ibakuman-inline-note">However, to make the code more readable, we&rsquo;ve named this capturing group placeholder.</span> Let&rsquo;s see how to use that named capturing group:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">assertThat</span><span class="o">(</span><span class="n">replaceTokens</span><span class="o">(</span><span class="s">&#34;Hi ${name} at ${company}&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;\\$\\{(?&lt;placeholder&gt;[A-Za-z0-9-_]+)}&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">match</span> <span class="o">-&gt;</span> <span class="n">placeholderValues</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">match</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="s">&#34;placeholder&#34;</span><span class="o">))))</span>
+</span></span><span class="line"><span class="cl">  <span class="o">.</span><span class="na">isEqualTo</span><span class="o">(</span><span class="s">&#34;Hi Bill at Baeldung&#34;</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here we can see that getting the value of the named group out of the <em>Matcher</em> just involves using <em>group</em> with the name as the input, rather than the number.</p>
+<h2 id="conclusionhttpswwwbaeldungcomjava-regex-token-replacementconclusion"><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#conclusion"  target="_blank" rel="noopener"
+    >Conclusion</a></h2>
+<p>In this article, we looked at how to use powerful regular expressions to find tokens in our strings. We learned how the <em>find</em> method works with <em>Matcher</em> to show us the matches.</p>
+<p>Then we created and generalized an algorithm to allow us to do token-by-token replacement.</p>
+<p>Finally, we looked at a couple of common use-cases for escaping characters and populating templates.</p>
+<p>As always, the code examples can be found <a class="link" href="https://github.com/eugenp/tutorials/tree/master/core-java-modules/core-java-regex-2"  target="_blank" rel="noopener"
+    >over on GitHub</a>.</p>
+<h2 id="references">References</h2>
+<p><a class="link" href="https://www.baeldung.com/java-regex-token-replacement#individuallyprocessing"  target="_blank" rel="noopener"
+    >How to Use Regular Expressions to Replace Tokens in Strings in Java</a></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/regex/lookahead-and-lookbehind/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/16.939adf57434b8b256e488a22d644b448_hu0ea51e27a440094cf104de9d9c751749_432111_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 正则表达式的先行断言 (lookahead) 和后行断言 (lookbehind)"
+                        
+                        data-hash="md5-k5rfV0NLiyVuSIoi1kS0SA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">正则表达式的先行断言 (lookahead) 和后行断言 (lookbehind)</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/regex/guide-to-escaping-characters-in-java-regexps/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/09.ac6a519f1202ec664435105ea711f181_hu8c633d2cf76ab6635d2135cc8fe71c52_994828_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Guide to Escaping Characters in Java RegExps"
+                        
+                        data-hash="md5-rGpRnxIC7GZENRBepxHxgQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Guide to Escaping Characters in Java RegExps</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/regex/a-guide-to-java-regular-expressions-api/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/02.22ff935b67faf208274d880305163ff4_huf55d0eff1680a905d0940d9535d13b2a_2828685_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post A Guide To Java Regular Expressions API"
+                        
+                        data-hash="md5-Iv&#43;TW2f68ggnTYgDBRY/9A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">A Guide To Java Regular Expressions API</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overviewhttpswwwbaeldungcomjava-regex-token-replacementoverview"><a href="https://www.baeldung.com/java-regex-token-replacement#overview">Overview</a></a></li>
+    <li><a href="#individually-processing-matcheshttpswwwbaeldungcomjava-regex-token-replacementindividuallyprocessing"><a href="https://www.baeldung.com/java-regex-token-replacement#individuallyprocessing">Individually Processing Matches</a></a>
+      <ol>
+        <li><a href="#title-case-examplehttpswwwbaeldungcomjava-regex-token-replacement1-title-case-example"><a href="https://www.baeldung.com/java-regex-token-replacement#1-title-case-example">Title Case Example</a></a></li>
+        <li><a href="#testing-our-examplehttpswwwbaeldungcomjava-regex-token-replacement2-testing-our-example"><a href="https://www.baeldung.com/java-regex-token-replacement#2-testing-our-example">Testing Our Example</a></a></li>
+        <li><a href="#inspecting-_matcher_-a-bit-morehttpswwwbaeldungcomjava-regex-token-replacement3-inspecting-matcher-a-bit-more"><a href="https://www.baeldung.com/java-regex-token-replacement#3-inspecting-matcher-a-bit-more">Inspecting <em>Matcher</em> a Bit More</a></a></li>
+      </ol>
+    </li>
+    <li><a href="#replacing-matches-one-by-onehttpswwwbaeldungcomjava-regex-token-replacementreplaceonebyone"><a href="https://www.baeldung.com/java-regex-token-replacement#replaceonebyone">Replacing Matches One by One</a></a>
+      <ol>
+        <li><a href="#the-replacement-algorithmhttpswwwbaeldungcomjava-regex-token-replacement1-the-replacement-algorithm"><a href="https://www.baeldung.com/java-regex-token-replacement#1-the-replacement-algorithm">The Replacement Algorithm</a></a></li>
+        <li><a href="#the-token-replacer-in-javahttpswwwbaeldungcomjava-regex-token-replacement2-the-token-replacer-in-java"><a href="https://www.baeldung.com/java-regex-token-replacement#2-the-token-replacer-in-java">The Token Replacer in Java</a></a></li>
+      </ol>
+    </li>
+    <li><a href="#generalizing-the-algorithmhttpswwwbaeldungcomjava-regex-token-replacementgeneralising"><a href="https://www.baeldung.com/java-regex-token-replacement#generalising">Generalizing the Algorithm</a></a>
+      <ol>
+        <li><a href="#use-a-function-and-pattern-inputhttpswwwbaeldungcomjava-regex-token-replacement1-use-a-function-and-pattern-input"><a href="https://www.baeldung.com/java-regex-token-replacement#1-use-a-function-and-pattern-input">Use a Function and Pattern Input</a></a></li>
+        <li><a href="#testing-the-general-versionhttpswwwbaeldungcomjava-regex-token-replacement2-testing-the-general-version"><a href="https://www.baeldung.com/java-regex-token-replacement#2-testing-the-general-version">Testing the General Version</a></a></li>
+      </ol>
+    </li>
+    <li><a href="#some-use-caseshttpswwwbaeldungcomjava-regex-token-replacementusecases"><a href="https://www.baeldung.com/java-regex-token-replacement#usecases">Some Use Cases</a></a>
+      <ol>
+        <li><a href="#escaping-special-charactershttpswwwbaeldungcomjava-regex-token-replacement1-escaping-special-characters"><a href="https://www.baeldung.com/java-regex-token-replacement#1-escaping-special-characters">Escaping Special Characters</a></a></li>
+        <li><a href="#replacing-placeholdershttpswwwbaeldungcomjava-regex-token-replacement2-replacing-placeholders"><a href="https://www.baeldung.com/java-regex-token-replacement#2-replacing-placeholders">Replacing Placeholders</a></a></li>
+      </ol>
+    </li>
+    <li><a href="#conclusionhttpswwwbaeldungcomjava-regex-token-replacementconclusion"><a href="https://www.baeldung.com/java-regex-token-replacement#conclusion">Conclusion</a></a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

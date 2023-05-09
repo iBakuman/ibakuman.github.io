@@ -1,0 +1,1101 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview In this tutorial, we’ll look at the various techniques to debug Bash shell scripts. The Bash shell doesn’t provide any built-in debugger. However, there are certain commands and constructs that can be utilized { 利用 } for this purpose. First, we’ll discuss the usages of the set command for debugging scripts. After that, w'>
+<title>Debugging a Bash Script</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/linux/debugging-a-bash-script/'><link rel="prev" href="https://ibakuman.github.io/en/posts/wsl/run-multiple-instances-of-same-linux-distroon-wsl/" /><link rel="next" href="https://ibakuman.github.io/en/posts/esbuild/getting-started-with-esbuild/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='Debugging a Bash Script'>
+<meta property='og:description' content='Overview In this tutorial, we’ll look at the various techniques to debug Bash shell scripts. The Bash shell doesn’t provide any built-in debugger. However, there are certain commands and constructs that can be utilized { 利用 } for this purpose. First, we’ll discuss the usages of the set command for debugging scripts. After that, w'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/linux/debugging-a-bash-script/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Shell Script' /><meta property='article:published_time' content='2022-11-22T23:43:31&#43;08:00'/><meta property='article:modified_time' content='2022-11-22T23:43:31&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="Debugging a Bash Script">
+<meta name="twitter:description" content="Overview In this tutorial, we’ll look at the various techniques to debug Bash shell scripts. The Bash shell doesn’t provide any built-in debugger. However, there are certain commands and constructs that can be utilized { 利用 } for this purpose. First, we’ll discuss the usages of the set command for debugging scripts. After that, w"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/linux/debugging-a-bash-script/">
+                <img src="/gallery/landscape/16_hu0ea51e27a440094cf104de9d9c751749_432111_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/16_hu0ea51e27a440094cf104de9d9c751749_432111_800x0_resize_q75_box.jpg 800w, /gallery/landscape/16_hu0ea51e27a440094cf104de9d9c751749_432111_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="532"
+                        loading="lazy"
+                        alt="Featured image of post Debugging a Bash Script" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/linux/" >
+                Linux
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/linux/debugging-a-bash-script/">Debugging a Bash Script</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 22, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    6 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>In this tutorial, we’ll look at the various techniques to debug Bash shell scripts. The Bash shell doesn’t provide any built-in debugger. However, there are certain commands and constructs that can be <span class='ibakuman-inline-translation'>utilized<sub> { 利用 }</sub></span> for this purpose.</p>
+<p>First, we’ll discuss the usages of the <a class="link" href="https://man7.org/linux/man-pages/man1/set.1p.html"  target="_blank" rel="noopener"
+    ><em>set</em></a> command for debugging scripts. After that, we’ll check a few debugging specific use-cases using the <em>set</em> and <a class="link" href="https://man7.org/linux/man-pages/man1/trap.1p.html"  target="_blank" rel="noopener"
+    ><em>trap</em></a> commands. Finally, we’ll present some methods to debug already running scripts.</p>
+<h2 id="bash-debugging-options">Bash Debugging Options</h2>
+<p>The debugging options available in the Bash shell can be switched on and off in multiple ways. Within scripts, we can either use the <em>set</em> command or add an option to the <em><strong><a class="link" href="https://www.baeldung.com/linux/shebang"  target="_blank" rel="noopener"
+    >shebang</a></strong></em> line. However, another approach is to explicitly specify the <a class="link" href="https://www.man7.org/linux/man-pages/man1/bash.1.html"  target="_blank" rel="noopener"
+    >debugging options</a> in the command-line while executing the script. Let’s dive into the discussion.</p>
+<h3 id="enabling-_verbose_-mode">Enabling <em>verbose</em> Mode</h3>
+<p><strong>We can enable the <em>verbose</em> mode using the <em>-v</em> switch, which allows us to view each command before it’s executed.</strong></p>
+<p>To demonstrate this, let’s create a sample script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nb">read</span> -p <span class="s2">&#34;Enter the input: &#34;</span> val
+</span></span><span class="line"><span class="cl"><span class="nv">zero_val</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$val</span><span class="s2">&#34;</span> -gt <span class="s2">&#34;</span><span class="nv">$zero_val</span><span class="s2">&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="k">then</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;Positive number entered.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;The input value is not positive.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This script checks whether or not the number entered as input is positive.</p>
+<p>Next, let’s execute our script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash -v ./positive_check.sh
+</span></span><span class="line"><span class="cl"><span class="c1">#!/bin/bash</span>
+</span></span><span class="line"><span class="cl"><span class="nb">read</span> -p <span class="s2">&#34;Enter the input: &#34;</span> val
+</span></span><span class="line"><span class="cl">Enter the input: -10
+</span></span><span class="line"><span class="cl"><span class="nv">zero_val</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$val</span><span class="s2">&#34;</span> -gt <span class="s2">&#34;</span><span class="nv">$zero_val</span><span class="s2">&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="k">then</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;Positive number entered.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;The input value is not positive.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">The input value is not positive.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As we can notice, it prints every line of the script on the terminal before it’s processed.</p>
+<p>We can also add the <em>-v</em> option in the <em>shebang</em> line:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash -v
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>This has the same effect as explicitly calling a script using <em>bash -v.</em> Another equivalent is to enable the mode within a script using <em>set</em> command:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nb">set</span> -v
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In fact, we can use either of the ways discussed above to enable the various switches that we’ll discuss <span class='ibakuman-inline-translation'>henceforth<sub> { from this time into the future }</sub></span>.</p>
+<h3 id="syntax-checking-using-_noexec_-mode">Syntax Checking Using <em>noexec</em> Mode</h3>
+<p>There can be situations where we may want to validate the script syntactically prior to its execution. If so, we can use the <em>noexec</em> mode using the <em>-n</em> option. As a result, Bash will read the commands but not execute them.</p>
+<p>Let’s execute our <em>positive_check.sh</em> script in <em>noexec</em> mode:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash -n ./positive_check.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This produces a blank output since there are no syntax errors. Now, we’ll modify our script a bit and remove the <em>then</em> statement:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nb">read</span> -p <span class="s2">&#34;Enter the input: &#34;</span> val
+</span></span><span class="line"><span class="cl"><span class="nv">zero_val</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$val</span><span class="s2">&#34;</span> -gt <span class="s2">&#34;</span><span class="nv">$zero_val</span><span class="s2">&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;Positive number entered.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;The input value is not positive.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Next, we’ll validate it syntactically with <em>-n</em> option:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash -n ./positive_check_noexec.sh
+</span></span><span class="line"><span class="cl">./positive_check_noexec.sh: line 6: syntax error near unexpected token <span class="sb">`</span><span class="k">else</span><span class="s1">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">./positive_check_noexec.sh: line 6: `else&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As expected, it threw an error since we missed the <em>then</em> statement in the <a class="link" href="https://www.baeldung.com/linux/conditional-expressions-shell-script"  target="_blank" rel="noopener"
+    ><em>if</em> condition</a> <em>.</em></p>
+<h3 id="debugging-using-_xtrace_-mode">Debugging Using <em>xtrace</em> Mode</h3>
+<p>In the previous section, we tested the script for syntax errors. But for identifying logical errors, we may want to trace the state of variables and commands during the execution process. In such instances, we can execute the script in <em>xtrace</em> (execution trace) mode using the <em>-x</em> option.</p>
+<p>This mode <strong>prints the trace of commands for each line after they are expanded but before they are executed</strong>.</p>
+<p>Let’s execute our <em>positive_check.sh</em> script in execution trace mode:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash -x ./positive_check.sh
+</span></span><span class="line"><span class="cl">+ <span class="nb">read</span> -p <span class="s1">&#39;Enter the input: &#39;</span> val
+</span></span><span class="line"><span class="cl">Enter the input: <span class="m">17</span>
+</span></span><span class="line"><span class="cl">+ <span class="nv">zero_val</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl">+ <span class="s1">&#39;[&#39;</span> <span class="m">17</span> -gt <span class="m">0</span> <span class="s1">&#39;]&#39;</span>
+</span></span><span class="line"><span class="cl">+ <span class="nb">echo</span> <span class="s1">&#39;Positive number entered.&#39;</span>
+</span></span><span class="line"><span class="cl">Positive number entered.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here we can see the expanded version of variables on <a class="link" href="https://www.baeldung.com/linux/pipes-redirection"  target="_blank" rel="noopener"
+    ><em>stdout</em></a> before execution. It’s important to note that the lines preceded by <em>+</em> sign are generated by the <em>xtrace</em> mode.</p>
+<h3 id="identifying-unset-variables">Identifying Unset Variables</h3>
+<p>Let’s run an experiment to understand the default behavior of unset variables in Bash scripts:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">five_val</span><span class="o">=</span><span class="m">5</span>
+</span></span><span class="line"><span class="cl"><span class="nv">two_val</span><span class="o">=</span><span class="m">2</span>
+</span></span><span class="line"><span class="cl"><span class="nv">total</span><span class="o">=</span><span class="k">$((</span>five_val+tow_val<span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$total</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We’ll now execute the above script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ./add_values.sh
+</span></span><span class="line"><span class="cl"><span class="m">5</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As we can notice, there’s an issue: The script executed successfully, but the output is logically incorrect.</p>
+<p>We’ll now execute the script with the <em>-u</em> option:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash -u ./add_values.sh
+</span></span><span class="line"><span class="cl">./add_values.sh: line 4: tow_val: unbound variable
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Certainly, there’s a lot more clarity now!</p>
+<p><strong>The <em>-u</em> option treats unset variables and parameters as an error when performing parameter expansion</strong>. Consequently, we get an error notification that a variable is not bound to value while executing the script with <em>-u</em> option</p>
+<h2 id="use-cases-to-debug-shell-scripts">Use Cases to Debug Shell Scripts</h2>
+<p>So far, we saw the various switches for debugging scripts. Henceforth, we’ll look at some <strong>use-cases</strong> <strong>and methods to implement these in shell scripts.</strong></p>
+<h3 id="combining-debugging-options">Combining Debugging Options</h3>
+<p>To get better insights, <strong>we can further combine the various options of the <em>set</em> command</strong>.</p>
+<p>Let’s execute our <em>add_values.sh</em> script with both <em>-v</em> and <em>-u</em> options enabled:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash -uv ./add_values.sh
+</span></span><span class="line"><span class="cl"><span class="c1"># bin/bash</span>
+</span></span><span class="line"><span class="cl"><span class="nv">five_val</span><span class="o">=</span><span class="m">5</span>
+</span></span><span class="line"><span class="cl"><span class="nv">two_val</span><span class="o">=</span><span class="m">2</span>
+</span></span><span class="line"><span class="cl"><span class="nv">total</span><span class="o">=</span><span class="k">$((</span>five_val+tow_val<span class="k">))</span>
+</span></span><span class="line"><span class="cl">./add_values.sh: line 4: tow_val: unbound variable
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here, by enabling the <em>verbose</em> mode with the <em>-u</em> option, we could easily identify the statement triggering the error.</p>
+<p>Similarly, <strong>we can combine the <em>verbose</em> and <em>xtrace</em> mode to get more <span class='ibakuman-inline-translation'>precise<sub> { 精确的 }</sub></span> debug information</strong>.</p>
+<p>As discussed previously, the <em>-v</em> option shows each line before it is evaluated, and the -x option shows each line after they are expanded. Hence, <strong>we can combine both <em>-x</em> and <em>-v</em> options to see how statements look like before and after variable substitutions.</strong></p>
+<p>Now, let’s execute our <em>positive_check.sh</em> script with <em>-x</em> and <em>-v</em> mode enabled:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash -xv ./positive_check.sh
+</span></span><span class="line"><span class="cl"><span class="c1">#!/bin/bash</span>
+</span></span><span class="line"><span class="cl"><span class="nb">read</span> -p <span class="s2">&#34;Enter the input: &#34;</span> val
+</span></span><span class="line"><span class="cl">+ <span class="nb">read</span> -p <span class="s1">&#39;Enter the input: &#39;</span> val
+</span></span><span class="line"><span class="cl">Enter the input: <span class="m">5</span>
+</span></span><span class="line"><span class="cl"><span class="nv">zero_val</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl">+ <span class="nv">zero_val</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$val</span><span class="s2">&#34;</span> -gt <span class="s2">&#34;</span><span class="nv">$zero_val</span><span class="s2">&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="k">then</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;Positive number entered.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;The input value is not positive.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">+ <span class="s1">&#39;[&#39;</span> <span class="m">5</span> -gt <span class="m">0</span> <span class="s1">&#39;]&#39;</span>
+</span></span><span class="line"><span class="cl">+ <span class="nb">echo</span> <span class="s1">&#39;Positive number entered.&#39;</span>
+</span></span><span class="line"><span class="cl">Positive number entered.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We can observe that the statements are printed on <em>stdout</em> before and after variable expansion.</p>
+<h3 id="debugging-specific-parts-of-the-script">Debugging Specific Parts of the Script</h3>
+<p>Debugging with <em>-x</em> or <em>-v</em> option shell scripts generates an output for every statement on <em>stdout.</em> However, there can be situations where we may want <strong>to reduce debug information to only specific parts of the script</strong>. We can achieve that by enabling the debug mode before the code block starts, and later reset it using the <em>set</em> command.</p>
+<p>Let’s check it with an example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nb">read</span> -p <span class="s2">&#34;Enter the input: &#34;</span> val
+</span></span><span class="line"><span class="cl"><span class="nv">zero_val</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -x
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$val</span><span class="s2">&#34;</span> -gt <span class="s2">&#34;</span><span class="nv">$zero_val</span><span class="s2">&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="k">then</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;Positive number entered.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;The input value is not positive.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> +x
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;Script Ended&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here, we could debug only the <em>if</em> condition using the <em>set</em> statement before the condition starts. Later, we could reset the <em>xtrace</em> mode after the <em>if</em>  block ends using the <em>set +x</em> command.</p>
+<p>Let’s validate it with the output:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ./positive_debug.sh
+</span></span><span class="line"><span class="cl">Enter the input: <span class="m">7</span>
+</span></span><span class="line"><span class="cl">+ <span class="s1">&#39;[&#39;</span> <span class="m">7</span> -gt <span class="m">0</span> <span class="s1">&#39;]&#39;</span>
+</span></span><span class="line"><span class="cl">+ <span class="nb">echo</span> <span class="s1">&#39;Positive number entered.&#39;</span>
+</span></span><span class="line"><span class="cl">Positive number entered.
+</span></span><span class="line"><span class="cl">+ <span class="nb">set</span> +x
+</span></span><span class="line"><span class="cl">Script Ended
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Certainly, the output looks less cluttered.</p>
+<h3 id="redirecting-only-the-debug-output-to-a-file">Redirecting Only the Debug Output to a File</h3>
+<p>In the previous section, we examined how we can restrict debugging to only certain parts of the script. <span class='ibakuman-inline-translation'>Consequently<sub> { 因此 }</sub></span>, we could restrict the amount of output on <em>stdout.</em></p>
+<p>Furthermore, <strong>we can redirect the debug information to another file and let the script output print on <em>stdout</em></strong>.</p>
+<p>Let’s create another script to check it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nb">exec</span> 5&gt; debug.log
+</span></span><span class="line"><span class="cl"><span class="nv">PS4</span><span class="o">=</span><span class="s1">&#39;$LINENO: &#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">BASH_XTRACEFD</span><span class="o">=</span><span class="s2">&#34;5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">read</span> -p <span class="s2">&#34;Enter the input: &#34;</span> val
+</span></span><span class="line"><span class="cl"><span class="nv">zero_val</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$val</span><span class="s2">&#34;</span> -gt <span class="s2">&#34;</span><span class="nv">$zero_val</span><span class="s2">&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="k">then</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;Positive number entered.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">   <span class="nb">echo</span> <span class="s2">&#34;The input value is not positive.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>First, we opened the <em>debug.log</em> file on File Descriptor (FD)<em>5</em> for writing using the <a class="link" href="https://www.baeldung.com/linux/exec-command-in-shell-script"  target="_blank" rel="noopener"
+    ><em>exec</em></a> command.</p>
+<p>Then we changed the <a class="link" href="https://www.baeldung.com/linux/bash-special-variables"  target="_blank" rel="noopener"
+    >special shell variable</a> <em><a class="link" href="https://www.gnu.org/software/autoconf/manual/autoconf-2.61/html_node/Special-Shell-Variables.html"  target="_blank" rel="noopener"
+    >PS4</a>.</em> The <em>PS4</em> variable defines the prompt that gets displayed when we execute a shell script in <em>xtrace</em> mode. The default value of <em>PS4</em> is <em>+.</em> We changed the value of the <em>PS4</em> variable to display line numbers in the debug prompt. To achieve this, we used another special shell variable <em>LINENO</em>.</p>
+<p>Later, we assigned the FD 5 to Bash variable <strong><a class="link" href="https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html"  target="_blank" rel="noopener"
+    ><em>BASH_XTRACEFD</em></a>.</strong> In effect, Bash will now write the <em>xtrace</em> output on FD 5  i.e. <em>debug.log</em> file. Let’s execute the script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash -x ./debug_logging.sh
+</span></span><span class="line"><span class="cl">+ <span class="nb">exec</span>
+</span></span><span class="line"><span class="cl">+ <span class="nv">PS4</span><span class="o">=</span><span class="s1">&#39;$LINENO: &#39;</span>
+</span></span><span class="line"><span class="cl">4: <span class="nv">BASH_XTRACEFD</span><span class="o">=</span><span class="m">5</span>
+</span></span><span class="line"><span class="cl">Enter the input: <span class="m">2</span>
+</span></span><span class="line"><span class="cl">Positive number entered.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As expected, the debug output is not written on the terminal. Although, the first few lines, until FD <em>5</em> is assigned to debug output were printed.</p>
+<p>Additionally, the script also creates an output file <em>debug.log,</em> which contains the debug information:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ cat debug.log
+</span></span><span class="line"><span class="cl">5: <span class="nb">read</span> -p <span class="s1">&#39;Enter the input: &#39;</span> val
+</span></span><span class="line"><span class="cl">6: <span class="nv">zero_val</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl">7: <span class="s1">&#39;[&#39;</span> <span class="m">2</span> -gt <span class="m">0</span> <span class="s1">&#39;]&#39;</span>
+</span></span><span class="line"><span class="cl">9: <span class="nb">echo</span> <span class="s1">&#39;Positive number entered.&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="debugging-scripts-using-_trap_">Debugging Scripts Using <em>trap</em></h2>
+<p>**We can utilize the <em>DEBUG</em> <a class="link" href="https://man7.org/linux/man-pages/man1/trap.1p.html"  target="_blank" rel="noopener"
+    ><em>trap</em></a> feature of Bash to execute a command repetitively.  The command specified in the arguments of <em>trap</em> command is executed before each subsequent statement in the script.</p>
+<p>Let’s illustrate this with an example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># bin/bash</span>
+</span></span><span class="line"><span class="cl"><span class="nb">trap</span> <span class="s1">&#39;echo &#34;Line- ${LINENO}: five_val=${five_val}, two_val=${two_val}, total=${total}&#34; &#39;</span> DEBUG
+</span></span><span class="line"><span class="cl"><span class="nv">five_val</span><span class="o">=</span><span class="m">5</span>
+</span></span><span class="line"><span class="cl"><span class="nv">two_val</span><span class="o">=</span><span class="m">2</span>
+</span></span><span class="line"><span class="cl"><span class="nv">total</span><span class="o">=</span><span class="k">$((</span>five_val+two_val<span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;Total is: </span><span class="nv">$total</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">total</span><span class="o">=</span><span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;Resetting Total&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In this example, we specified the <em>echo</em> command to print the values of variables  <em>five_val</em>, <em>two_val</em>, and <em>total.</em> Subsequently, we passed this echo statement to the <em>trap</em> command with the <em>DEBUG</em> signal. <span class="ibakuman-inline-note">In effect, prior to the execution of every command in the script, the values of variables get printed</span>.</p>
+<p>Let’s check the generated output:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ./trap_debug.sh
+</span></span><span class="line"><span class="cl">Line- 3: <span class="nv">five_val</span><span class="o">=</span>, <span class="nv">two_val</span><span class="o">=</span>, <span class="nv">total</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl">Line- 4: <span class="nv">five_val</span><span class="o">=</span>5, <span class="nv">two_val</span><span class="o">=</span>, <span class="nv">total</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl">Line- 5: <span class="nv">five_val</span><span class="o">=</span>5, <span class="nv">two_val</span><span class="o">=</span>2, <span class="nv">total</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl">Line- 6: <span class="nv">five_val</span><span class="o">=</span>5, <span class="nv">two_val</span><span class="o">=</span>2, <span class="nv">total</span><span class="o">=</span><span class="m">7</span>
+</span></span><span class="line"><span class="cl">Total is: <span class="m">7</span>
+</span></span><span class="line"><span class="cl">Line- 7: <span class="nv">five_val</span><span class="o">=</span>5, <span class="nv">two_val</span><span class="o">=</span>2, <span class="nv">total</span><span class="o">=</span><span class="m">7</span>
+</span></span><span class="line"><span class="cl">Line- 7: <span class="nv">five_val</span><span class="o">=</span>5, <span class="nv">two_val</span><span class="o">=</span>2, <span class="nv">total</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl">Resetting Total
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="debugging-already-running-scripts">Debugging Already Running Scripts</h2>
+<p>So far, we presented methods to debug shell scripts while executing them. Now, we’ll look at ways to debug an already running script.</p>
+<p>Consider a sample running script which executes <a class="link" href="https://man7.org/linux/man-pages/man3/sleep.3.html"  target="_blank" rel="noopener"
+    ><em>sleep</em></a> in an infinite <a class="link" href="https://www.baeldung.com/linux/repeat-command"  target="_blank" rel="noopener"
+    ><em>while</em> loop</a> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">while</span> :
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl"> sleep <span class="m">10</span> <span class="p">&amp;</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">echo</span> <span class="s2">&#34;Sleeping for 4 seconds..&#34;</span>
+</span></span><span class="line"><span class="cl"> sleep <span class="m">4</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>With the help of <em><a class="link" href="https://man7.org/linux/man-pages/man1/pstree.1.html"  target="_blank" rel="noopener"
+    >pstree</a></em> command, we can check the child <a class="link" href="https://www.baeldung.com/linux/managing-processes"  target="_blank" rel="noopener"
+    >processes</a> forked by our script <em>sleep.sh</em>:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ pstree -p
+</span></span><span class="line"><span class="cl">init<span class="o">(</span>1<span class="o">)</span>─┬─init<span class="o">(</span>148<span class="o">)</span>───bash<span class="o">(</span>149<span class="o">)</span>───sleep.sh<span class="o">(</span>372<span class="o">)</span>─┬─sleep<span class="o">(</span>422<span class="o">)</span>
+</span></span><span class="line"><span class="cl">        │                                        ├─sleep<span class="o">(</span>424<span class="o">)</span>
+</span></span><span class="line"><span class="cl">        │                                        └─sleep<span class="o">(</span>425<span class="o">)</span>
+</span></span><span class="line"><span class="cl">        ├─init<span class="o">(</span>213<span class="o">)</span>───bash<span class="o">(</span>214<span class="o">)</span>───pstree<span class="o">(</span>426<span class="o">)</span>
+</span></span><span class="line"><span class="cl">        └─<span class="o">{</span>init<span class="o">}(</span>7<span class="o">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We used an additional option <em>-p</em> to print the process ids along with the process names. Hence, we’re able to <span class='ibakuman-inline-translation'>realize<sub> { 意识到；领悟；理解 }</sub></span> that the script is waiting for the child processes (<em>sleep</em>) to complete.</p>
+<p>Sometimes we may want to have a closer look at the operations performed by our processes. In such cases, we can <strong>use the <a class="link" href="https://man7.org/linux/man-pages/man1/strace.1.html"  target="_blank" rel="noopener"
+    ><em>strace</em></a> command</strong> <strong>to trace the Linux system calls in progress</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ sudo strace -c -fp <span class="m">372</span>
+</span></span><span class="line"><span class="cl">strace: Process <span class="m">372</span> attached
+</span></span><span class="line"><span class="cl">strace: Process <span class="m">789</span> attached
+</span></span><span class="line"><span class="cl">strace: Process <span class="m">790</span> attached
+</span></span><span class="line"><span class="cl">^Cstrace: Process <span class="m">372</span> detached
+</span></span><span class="line"><span class="cl">strace: Process <span class="m">789</span> detached
+</span></span><span class="line"><span class="cl">strace: Process <span class="m">790</span> detached
+</span></span><span class="line"><span class="cl">% <span class="nb">time</span>     seconds  usecs/call     calls    errors syscall
+</span></span><span class="line"><span class="cl">------ ----------- ----------- --------- --------- ----------------
+</span></span><span class="line"><span class="cl">100.00    0.015625        <span class="m">5208</span>         <span class="m">3</span>           wait4
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">6</span>           <span class="nb">read</span>
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">1</span>           write
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>        <span class="m">39</span>           close
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>        <span class="m">36</span>           fstat
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>        <span class="m">38</span>           mmap
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">8</span>           mprotect
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">2</span>           munmap
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">6</span>           brk
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>        <span class="m">16</span>           rt_sigaction
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>        <span class="m">20</span>           rt_sigprocmask
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">1</span>           rt_sigreturn
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">6</span>         <span class="m">6</span> access
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">1</span>           dup2
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">2</span>           getpid
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">2</span>           clone
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">2</span>           execve
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>         <span class="m">2</span>           arch_prctl
+</span></span><span class="line"><span class="cl">  0.00    0.000000           <span class="m">0</span>        <span class="m">37</span>           openat
+</span></span><span class="line"><span class="cl">------ ----------- ----------- --------- --------- ----------------
+</span></span><span class="line"><span class="cl">100.00    0.015625                   <span class="m">228</span>         <span class="m">6</span> total
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here we used the option <em>-p</em> to attach to the process id <em>(372)</em> i.e. our script in execution. Additionally, we also used the <em>-f</em> option to attach to all its child processes. Note that, the <em>strace</em> command generates output for every system call. Hence, we used the <em>-c</em> option to print a summary of the system calls at the termination of <em>strace</em>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this tutorial, we studied multiple techniques to debug a shell script.</p>
+<p>In the beginning, we discussed the various options of <em>set</em> command and their usage for debugging scripts. After that, we implemented several case-studies to study a combination of debugging options. <span class='ibakuman-inline-translation'>Alongside this<sub> { 除此之外 }</sub></span>, we also explored ways to restrict debug output and redirect it to another file.</p>
+<p>Next, we presented a use-case of the <em>trap</em> command and <em>DEBUG</em> signal for debugging scenarios. Finally, we offered a few approaches to debug already running scripts.</p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a class="link" href="https://www.baeldung.com/linux/debug-bash-script"  target="_blank" rel="noopener"
+    >The original article</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/shell-script/">Shell Script</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/14.f042bee33f5598c65efdcb121a2971b6_hu408d85e3d6fd20da711d14997ee2c37d_918594_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 10 Cool and Awesome Bash Loop Examples"
+                        
+                        data-hash="md5-8EK&#43;4z9VmMZe/csSGilxtg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">10 Cool and Awesome Bash Loop Examples</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/linux/how-to-create-a-desktop-shortcut-in-ubuntu-20.04/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post How to create a desktop shortcut in Ubuntu 20.04"
+                        
+                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">How to create a desktop shortcut in Ubuntu 20.04</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#bash-debugging-options">Bash Debugging Options</a>
+      <ol>
+        <li><a href="#enabling-_verbose_-mode">Enabling <em>verbose</em> Mode</a></li>
+        <li><a href="#syntax-checking-using-_noexec_-mode">Syntax Checking Using <em>noexec</em> Mode</a></li>
+        <li><a href="#debugging-using-_xtrace_-mode">Debugging Using <em>xtrace</em> Mode</a></li>
+        <li><a href="#identifying-unset-variables">Identifying Unset Variables</a></li>
+      </ol>
+    </li>
+    <li><a href="#use-cases-to-debug-shell-scripts">Use Cases to Debug Shell Scripts</a>
+      <ol>
+        <li><a href="#combining-debugging-options">Combining Debugging Options</a></li>
+        <li><a href="#debugging-specific-parts-of-the-script">Debugging Specific Parts of the Script</a></li>
+        <li><a href="#redirecting-only-the-debug-output-to-a-file">Redirecting Only the Debug Output to a File</a></li>
+      </ol>
+    </li>
+    <li><a href="#debugging-scripts-using-_trap_">Debugging Scripts Using <em>trap</em></a></li>
+    <li><a href="#debugging-already-running-scripts">Debugging Already Running Scripts</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#reference">Reference</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

@@ -1,0 +1,904 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview In version 3.5, TypeScript added an Omit&amp;lt;T, K&amp;gt; helper type to the lib.es5.d.ts type definition file that ships as part of the TypeScript compiler. The Omit&amp;lt;T, K&amp;gt; type lets us create an object type that omits specific properties from another object type: 1 2 3 4 5 6 7 8 9 10 11 12 13 type User = { id: string; name: string; email: string; }; type UserWithoutEmail ='>
+<title>The Omit Helper Type in TypeScript</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/042-the-omit-helper-type-in-typescript/'><link rel="prev" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/041-const-assertions-in-literal-expressions-in-typescript/" /><link rel="next" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/043-nullish-coalescing-the-operator-in-typescript/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='The Omit Helper Type in TypeScript'>
+<meta property='og:description' content='Overview In version 3.5, TypeScript added an Omit&amp;lt;T, K&amp;gt; helper type to the lib.es5.d.ts type definition file that ships as part of the TypeScript compiler. The Omit&amp;lt;T, K&amp;gt; type lets us create an object type that omits specific properties from another object type: 1 2 3 4 5 6 7 8 9 10 11 12 13 type User = { id: string; name: string; email: string; }; type UserWithoutEmail ='>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/042-the-omit-helper-type-in-typescript/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2023-01-03T14:05:09&#43;08:00'/><meta property='article:modified_time' content='2023-01-03T14:05:09&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="The Omit Helper Type in TypeScript">
+<meta name="twitter:description" content="Overview In version 3.5, TypeScript added an Omit&amp;lt;T, K&amp;gt; helper type to the lib.es5.d.ts type definition file that ships as part of the TypeScript compiler. The Omit&amp;lt;T, K&amp;gt; type lets us create an object type that omits specific properties from another object type: 1 2 3 4 5 6 7 8 9 10 11 12 13 type User = { id: string; name: string; email: string; }; type UserWithoutEmail ="><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/typescript/typescript-evolution/042-the-omit-helper-type-in-typescript/">
+                <img src="/gallery/landscape/10_hucf27c6ee6e299e97a870b7c7ce3b8818_623029_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/10_hucf27c6ee6e299e97a870b7c7ce3b8818_623029_800x0_resize_q75_box.jpg 800w, /gallery/landscape/10_hucf27c6ee6e299e97a870b7c7ce3b8818_623029_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="519"
+                        loading="lazy"
+                        alt="Featured image of post The Omit Helper Type in TypeScript" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/typescript/" >
+                TypeScript
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/typescript/typescript-evolution/042-the-omit-helper-type-in-typescript/">The Omit Helper Type in TypeScript</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jan 03, 2023</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>In version 3.5, TypeScript added an <code>Omit&lt;T, K&gt;</code> helper type to the <em>lib.es5.d.ts</em> type definition file that ships as part of the TypeScript compiler. The <code>Omit&lt;T, K&gt;</code> type lets us create an object type that omits specific properties from another object type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">User</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Omit</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="err">&#34;</span><span class="na">email</span><span class="err">&#34;</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>Omit&lt;T, K&gt;</code> helper type is defined in <em>lib.es5.d.ts</em> like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Construct a type with the properties of T except for those in type K.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Omit</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">K</span> <span class="na">extends</span> <span class="na">keyof</span> <span class="na">any</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">Exclude</span><span class="err">&lt;</span><span class="na">keyof</span> <span class="na">T</span><span class="err">,</span> <span class="na">K</span><span class="p">&gt;</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To <span class="ibakuman-inline-translation">untangle<sub> { If you untangle a confused or complicated situation, you make the different things involved clear, or put the situation right }</sub></span> this type definition and understand how it works, let&rsquo;s see how we could&rsquo;ve <span class="ibakuman-inline-translation">come up with<sub> { 提出；想出 }</sub></span> our own version of the <code>Omit&lt;T, K&gt;</code> helper type ourselves.</p>
+<h2 id="defining-the-omitt-k-helper-type">Defining the <code>Omit&lt;T, K&gt;</code> Helper Type</h2>
+<p>Let&rsquo;s start with the same <code>User</code> type we&rsquo;ve seen above:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">User</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>First, we need to be able to retrieve all keys of the <code>User</code> type. We can use the <a class="link" href="https://mariusschulz.com/blog/keyof-and-lookup-types-in-typescript"  target="_blank" rel="noopener"
+    ><code>keyof</code> operator</a> to retrieve a union of <a class="link" href="https://mariusschulz.com/blog/string-literal-types-in-typescript"  target="_blank" rel="noopener"
+    >string literal types</a> that contains all property keys of this object type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserKeys</span> <span class="o">=</span> <span class="k">keyof</span> <span class="nx">User</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserKeys</span> <span class="o">=</span> <span class="s2">&#34;id&#34;</span> <span class="o">|</span> <span class="s2">&#34;name&#34;</span> <span class="o">|</span> <span class="s2">&#34;email&#34;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Next, we need to be able to exclude a specific string literal type from a union of string literal types. In the case of our <code>User</code> type, we want to exclude the type <code>&quot;email&quot;</code> from the union <code>&quot;id&quot; | &quot;name&quot; | &quot;email&quot;</code>. We can use the <code>Exclude&lt;T, U&gt;</code> helper type to do that:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserKeysWithoutEmail</span> <span class="o">=</span> <span class="nx">Exclude</span><span class="p">&lt;</span><span class="nt">UserKeys</span><span class="err">,</span> <span class="err">&#34;</span><span class="na">email</span><span class="err">&#34;</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserKeysWithoutEmail</span> <span class="o">=</span> <span class="nx">Exclude</span><span class="o">&lt;</span><span class="s2">&#34;id&#34;</span> <span class="o">|</span> <span class="s2">&#34;name&#34;</span> <span class="o">|</span> <span class="s2">&#34;email&#34;</span><span class="p">,</span> <span class="s2">&#34;email&#34;</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserKeysWithoutEmail</span> <span class="o">=</span> <span class="s2">&#34;id&#34;</span> <span class="o">|</span> <span class="s2">&#34;name&#34;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>Exclude&lt;T, U&gt;</code> type is defined in <em>lib.es5.d.ts</em> like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Exclude from T those types that are assignable to U
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Exclude</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">U</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">T</span> <span class="kr">extends</span> <span class="nx">U</span> <span class="o">?</span> <span class="kt">never</span> <span class="o">:</span> <span class="nx">T</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>It&rsquo;s using a <a class="link" href="https://mariusschulz.com/blog/conditional-types-in-typescript"  target="_blank" rel="noopener"
+    >conditional type</a> and the <a class="link" href="https://mariusschulz.com/blog/the-never-type-in-typescript"  target="_blank" rel="noopener"
+    ><code>never</code> type</a>. Using the <code>Exclude&lt;T, U&gt;</code> helper type, we&rsquo;re removing those types in our union type <code>&quot;id&quot; | &quot;name&quot; | &quot;email&quot;</code> that are assignable to the <code>&quot;email&quot;</code> type. That is only true for the string literal type <code>&quot;email&quot;</code> itself, so we&rsquo;re left with the union type <code>&quot;id | &quot;name&quot;</code>.</p>
+<p>Finally, we need to create an object type that contains a subset of the properties of our <code>User</code> type. Specifically, we want to create an object type that contains only those properties whose keys are found in the <code>UserKeysWithoutEmail</code> union type. We can use the <code>Pick&lt;T, K&gt;</code> helper type to pick those properties off of our <code>User</code> type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="na">UserKeysWithoutEmail</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="err">&#34;</span><span class="na">id</span><span class="err">&#34;</span> <span class="err">|</span> <span class="err">&#34;</span><span class="na">name</span><span class="err">&#34;</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here&rsquo;s how the <code>Pick&lt;T, K&gt;</code> helper type is defined within <em>lib.es5.d.ts</em>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * From T, pick a set of properties whose keys are in the union K
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">K</span> <span class="na">extends</span> <span class="na">keyof</span> <span class="na">T</span><span class="p">&gt;</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="nx">P</span> <span class="k">in</span> <span class="nx">K</span><span class="p">]</span><span class="o">:</span> <span class="nx">T</span><span class="p">[</span><span class="nx">P</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>Pick&lt;T, K&gt;</code> type is a <a class="link" href="https://mariusschulz.com/blog/mapped-types-in-typescript"  target="_blank" rel="noopener"
+    >mapped type</a> that&rsquo;s using the <code>keyof</code> operator and an <a class="link" href="https://mariusschulz.com/blog/keyof-and-lookup-types-in-typescript#indexed-access-types"  target="_blank" rel="noopener"
+    >indexed access type</a> <code>T[P]</code> to retrieve the type of the property <code>P</code> in the object type <code>T</code>.</p>
+<p>Now, let&rsquo;s summarize all the type operations we&rsquo;ve performed using <code>keyof</code>, <code>Exclude&lt;T, U&gt;</code>, and <code>Pick&lt;T, K&gt;</code> in a single type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="na">Exclude</span><span class="err">&lt;</span><span class="na">keyof</span> <span class="na">User</span><span class="err">,</span> <span class="err">&#34;</span><span class="na">email</span><span class="err">&#34;</span><span class="p">&gt;</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Notice that this type is specific to our <code>User</code> type. Let&rsquo;s make this a generic type so we can reuse it in other places:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Omit</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">K</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">Exclude</span><span class="err">&lt;</span><span class="na">keyof</span> <span class="na">T</span><span class="err">,</span> <span class="na">K</span><span class="p">&gt;</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We can now use this type to compute our <code>UserWithoutEmail</code> type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Omit</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="err">&#34;</span><span class="na">email</span><span class="err">&#34;</span><span class="p">&gt;;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">Since object keys can only be strings, numbers, or symbols</span>, we can add a generic constraint to the type parameter <code>K</code> of our <code>Omit&lt;T, K&gt;</code> helper type to only allow types <code>string</code>, <code>number</code>, or <code>symbol</code> for keys:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Omit</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">K</span> <span class="na">extends</span> <span class="na">string</span> <span class="err">|</span> <span class="na">number</span> <span class="err">|</span> <span class="na">symbol</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">Exclude</span><span class="err">&lt;</span><span class="na">keyof</span> <span class="na">T</span><span class="err">,</span> <span class="na">K</span><span class="p">&gt;</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The generic constraint <code>extends string | number | symbol</code> is a bit verbose. We can replace the <code>string | number | symbol</code> union type by the <code>keyof any</code> type since the two are equivalent:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Omit</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">K</span> <span class="na">extends</span> <span class="na">keyof</span> <span class="na">any</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">Exclude</span><span class="err">&lt;</span><span class="na">keyof</span> <span class="na">T</span><span class="err">,</span> <span class="na">K</span><span class="p">&gt;</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>And there we go! We&rsquo;ve arrived at the exact definition of the <code>Omit&lt;T, K&gt;</code> helper type as it is found within the <em>lib.es5.d.ts</em> type definition file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Construct a type with the properties of T except for those in type K.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Omit</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">K</span> <span class="na">extends</span> <span class="na">keyof</span> <span class="na">any</span><span class="p">&gt;</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">,</span> <span class="na">Exclude</span><span class="err">&lt;</span><span class="na">keyof</span> <span class="na">T</span><span class="err">,</span> <span class="na">K</span><span class="p">&gt;</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="unrolling-omituser-email">Unrolling <code>Omit&lt;User, &quot;email&quot;&gt;</code></h2>
+<p>Here&rsquo;s a step-by-step evaluation of the <code>Omit&lt;User, &quot;email&quot;&gt;</code> type. Try to follow every step to understand how TypeScript is computing the final type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">User</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Omit</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="err">&#34;</span><span class="na">email</span><span class="err">&#34;</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="na">Exclude</span><span class="err">&lt;</span><span class="na">keyof</span> <span class="na">User</span><span class="err">,</span> <span class="err">&#34;</span><span class="na">email</span><span class="err">&#34;</span><span class="p">&gt;</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="na">Exclude</span><span class="err">&lt;&#34;</span><span class="na">id</span><span class="err">&#34;</span> <span class="err">|</span> <span class="err">&#34;</span><span class="na">name</span><span class="err">&#34;</span> <span class="err">|</span> <span class="err">&#34;</span><span class="na">email</span><span class="err">&#34;,</span> <span class="err">&#34;</span><span class="na">email</span><span class="err">&#34;</span><span class="p">&gt;</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Pick</span><span class="o">&lt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">User</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="o">|</span> <span class="p">(</span><span class="s2">&#34;id&#34;</span> <span class="kr">extends</span> <span class="s2">&#34;email&#34;</span> <span class="o">?</span> <span class="kt">never</span> <span class="o">:</span> <span class="s2">&#34;id&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">|</span> <span class="p">(</span><span class="s2">&#34;name&#34;</span> <span class="kr">extends</span> <span class="s2">&#34;email&#34;</span> <span class="o">?</span> <span class="kt">never</span> <span class="o">:</span> <span class="s2">&#34;name&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">|</span> <span class="p">(</span><span class="s2">&#34;email&#34;</span> <span class="kr">extends</span> <span class="s2">&#34;email&#34;</span> <span class="o">?</span> <span class="kt">never</span> <span class="o">:</span> <span class="s2">&#34;email&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="err">&#34;</span><span class="na">id</span><span class="err">&#34;</span> <span class="err">|</span> <span class="err">&#34;</span><span class="na">name</span><span class="err">&#34;</span> <span class="err">|</span> <span class="na">never</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="nx">Pick</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">,</span> <span class="err">&#34;</span><span class="na">id</span><span class="err">&#34;</span> <span class="err">|</span> <span class="err">&#34;</span><span class="na">name</span><span class="err">&#34;</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="nx">P</span> <span class="k">in</span> <span class="s2">&#34;id&#34;</span> <span class="o">|</span> <span class="s2">&#34;name&#34;</span><span class="p">]</span><span class="o">:</span> <span class="nx">User</span><span class="p">[</span><span class="nx">P</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">User</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">User</span><span class="p">[</span><span class="s2">&#34;name&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This is equivalent to:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">UserWithoutEmail</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Et voilà, our final UserWithoutEmail type.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a class="link" href="https://mariusschulz.com/blog/the-omit-helper-type-in-typescript"  target="_blank" rel="noopener"
+    >The Omit Helper Type in TypeScript — Marius Schulz</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/046-string-literal-types-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/04.0d227eb193cd808efb3e41cf0214a573_hu21e79f1310d133228b33f735d4ec0be8_1556942_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post String Literal Types in TypeScript"
+                        
+                        data-hash="md5-DSJ&#43;sZPNgI77PkHPAhSlcw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">String Literal Types in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/045-assertion-functions-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Assertion Functions in TypeScript"
+                        
+                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Assertion Functions in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/044-optional-chaining-the-operator-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/14.f042bee33f5598c65efdcb121a2971b6_hu408d85e3d6fd20da711d14997ee2c37d_918594_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Optional Chaining: The ?. Operator in TypeScript"
+                        
+                        data-hash="md5-8EK&#43;4z9VmMZe/csSGilxtg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Optional Chaining: The ?. Operator in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/043-nullish-coalescing-the-operator-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/20.1bee3eecff8df8a9e2cb815d1108b2e8_hu04c80cb06f0b716a920690442f749887_1496648_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Nullish Coalescing: The ?? Operator in TypeScript"
+                        
+                        data-hash="md5-G&#43;4&#43;7P&#43;N&#43;Kniy4FdEQiy6A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Nullish Coalescing: The ?? Operator in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/041-const-assertions-in-literal-expressions-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/11.2f093314f7144588c8c264fd8c5edd91_hudf52b8b325017a6d69e0e042062b02e2_3188398_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Const Assertions in Literal Expressions in TypeScript"
+                        
+                        data-hash="md5-LwkzFPcURYjIwmT9jF7dkQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Const Assertions in Literal Expressions in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#defining-the-omitt-k-helper-type">Defining the <code>Omit&lt;T, K&gt;</code> Helper Type</a></li>
+    <li><a href="#unrolling-omituser-email">Unrolling <code>Omit&lt;User, &quot;email&quot;&gt;</code></a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

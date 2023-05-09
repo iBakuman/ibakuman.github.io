@@ -1,0 +1,882 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Introduction Go’s slice type provides a convenient and efficient means of working with sequences of typed data. Slices are analogous { 相似的，类似的 } to arrays in other languages, but have some unusual properties. This article will look at what slices are and how they are used. Arrays The slice type is an abstraction built on top of Go’s'>
+<title>Go Slices: usage and internals</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/go/blog/001-go-slices-usage-and-internals/'><link rel="prev" href="https://ibakuman.github.io/en/posts/javascript/how-javascript-event-delegation-works/" /><link rel="next" href="https://ibakuman.github.io/en/posts/english/algorithm/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='Go Slices: usage and internals'>
+<meta property='og:description' content='Introduction Go’s slice type provides a convenient and efficient means of working with sequences of typed data. Slices are analogous { 相似的，类似的 } to arrays in other languages, but have some unusual properties. This article will look at what slices are and how they are used. Arrays The slice type is an abstraction built on top of Go’s'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/go/blog/001-go-slices-usage-and-internals/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2023-01-30T21:08:46&#43;08:00'/><meta property='article:modified_time' content='2023-01-30T21:08:46&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="Go Slices: usage and internals">
+<meta name="twitter:description" content="Introduction Go’s slice type provides a convenient and efficient means of working with sequences of typed data. Slices are analogous { 相似的，类似的 } to arrays in other languages, but have some unusual properties. This article will look at what slices are and how they are used. Arrays The slice type is an abstraction built on top of Go’s"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/go/blog/001-go-slices-usage-and-internals/">
+                <img src="/gallery/landscape/07_hu38aa638bb2ccd6db7051157dcdf19c8f_1416034_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/07_hu38aa638bb2ccd6db7051157dcdf19c8f_1416034_800x0_resize_q75_box.jpg 800w, /gallery/landscape/07_hu38aa638bb2ccd6db7051157dcdf19c8f_1416034_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="534"
+                        loading="lazy"
+                        alt="Featured image of post Go Slices: usage and internals" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/go/" >
+                Go
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/go/blog/001-go-slices-usage-and-internals/">Go Slices: usage and internals</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jan 30, 2023</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    4 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="introduction">Introduction</h2>
+<p>Go’s slice type provides a convenient and efficient means of working with sequences of typed data. Slices are <span class="ibakuman-inline-translation">analogous<sub> { 相似的，类似的 }</sub></span> to arrays in other languages, but have some unusual properties. This article will look at what slices are and how they are used.</p>
+<h2 id="arrays">Arrays</h2>
+<p>The slice type is an abstraction built on top of Go’s array type, and so to understand slices we must first understand arrays.</p>
+<p>An array type definition specifies a length and an element type. For example, the type <code>[4]int</code> represents an array of four integers. An array’s size is fixed; its length is part of its type (<code>[4]int</code> and <code>[5]int</code> are distinct, incompatible types). Arrays can be indexed in the usual way, so the expression <code>s[n]</code> accesses the nth element, starting from zero.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="nx">i</span> <span class="o">:=</span> <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// i == 1
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Arrays do not need to be initialized explicitly; the zero value of an array is a ready-to-use array whose elements are themselves zeroed:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// a[2] == 0, the zero value of the int type
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The in-memory representation of <code>[4]int</code> is just four integer values laid out sequentially:</p>
+<p><img src="https://go.dev/blog/slices-intro/slice-array.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="https://go.dev/blog/slices-intro/slice-array.png"
+	
+	
+>
+</p>
+<p>Go’s arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (as would be the case in C). This means that when you assign or pass around an array value you will make a copy of its contents. (To avoid the copy you could pass a <em>pointer</em> to the array, but then that’s a pointer to an array, not an array.) <span class="ibakuman-inline-note">One way to think about arrays is as a sort of struct but with indexed rather than named fields: a fixed-size composite value.</span></p>
+<p>An array literal can be specified like so:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">b</span> <span class="o">:=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;Penn&#34;</span><span class="p">,</span> <span class="s">&#34;Teller&#34;</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><span class="ibakuman-inline-note">Or, you can have the compiler count the array elements for you:</span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">b</span> <span class="o">:=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;Penn&#34;</span><span class="p">,</span> <span class="s">&#34;Teller&#34;</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In both cases, the type of <code>b</code> is <code>[2]string</code>.</p>
+<h2 id="slices">Slices</h2>
+<p>Arrays have their place, but they’re a bit inflexible, so you don’t see them too often in Go code. Slices, though, are everywhere. They build on arrays to provide great power and convenience.</p>
+<p>The type specification for a slice is <code>[]T</code>, where <code>T</code> is the type of the elements of the slice. Unlike an array type, a slice type has no specified length.</p>
+<p>A slice literal is declared just like an array literal, except you leave out the element count:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">letters := []string{&#34;a&#34;, &#34;b&#34;, &#34;c&#34;, &#34;d&#34;}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>A slice can be created with the built-in function called <code>make</code>, which has the signature,</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">func make([]T, len, cap) []T
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>where T stands for the element type of the slice to be created. The <code>make</code> function takes a type, a length, and an optional capacity. When called, <code>make</code> allocates an array and returns a slice that refers to that array.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">var s []byte
+</span></span><span class="line"><span class="cl">s = make([]byte, 5, 5)
+</span></span><span class="line"><span class="cl">// s == []byte{0, 0, 0, 0, 0}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>When the capacity argument is omitted, it defaults to the specified length. Here’s a more succinct version of the same code:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">s := make([]byte, 5)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The length and capacity of a slice can be inspected using the built-in <code>len</code> and <code>cap</code> functions.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">len(s) == 5
+</span></span><span class="line"><span class="cl">cap(s) == 5
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The next two sections discuss the relationship between length and capacity.</p>
+<p>The zero value of a slice is <code>nil</code>. The <code>len</code> and <code>cap</code> functions will both return 0 for a nil slice.</p>
+<p>A slice can also be formed by “slicing” an existing slice or array. Slicing is done by specifying a half-open range with two indices separated by a colon. For example, the expression <code>b[1:4]</code> creates a slice including elements 1 through 3 of <code>b</code> (the indices of the resulting slice will be 0 through 2).</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">b := []byte{&#39;g&#39;, &#39;o&#39;, &#39;l&#39;, &#39;a&#39;, &#39;n&#39;, &#39;g&#39;}
+</span></span><span class="line"><span class="cl">// b[1:4] == []byte{&#39;o&#39;, &#39;l&#39;, &#39;a&#39;}, sharing the same storage as b
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The start and end indices of a slice expression are optional; they default to zero and the slice’s length respectively:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// b[:2] == []byte{&#39;g&#39;, &#39;o&#39;}
+</span></span><span class="line"><span class="cl">// b[2:] == []byte{&#39;l&#39;, &#39;a&#39;, &#39;n&#39;, &#39;g&#39;}
+</span></span><span class="line"><span class="cl">// b[:] == b
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This is also the syntax to create a slice given an array:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">x := [3]string{&#34;Лайка&#34;, &#34;Белка&#34;, &#34;Стрелка&#34;}
+</span></span><span class="line"><span class="cl">s := x[:] // a slice referencing the storage of x
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="slice-internals">Slice internals</h2>
+<p>A slice is a descriptor of an array segment. It consists of a pointer to the array, the length of the segment, and its capacity (the maximum length of the segment).</p>
+<p><img src="/slices-intro/slice-struct.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+>
+</p>
+<p>Our variable <code>s</code>, created earlier by <code>make([]byte, 5)</code>, is structured like this:</p>
+<p><img src="/slices-intro/slice-1.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+>
+</p>
+<p>The length is the number of elements referred to by the slice. The capacity is the number of elements in the underlying array (beginning at the element referred to by the slice pointer). The distinction between length and capacity will be made clear as we walk through the next few examples.</p>
+<p>As we slice <code>s</code>, observe the changes in the slice data structure and their relation to the underlying array:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">s = s[2:4]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="/slices-intro/slice-2.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+>
+</p>
+<p>Slicing does not copy the slice’s data. It creates a new slice value that points to the original array. This makes slice operations as efficient as manipulating array indices. Therefore, modifying the <em>elements</em> (not the slice itself) of a re-slice modifies the elements of the original slice:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">d := []byte{&#39;r&#39;, &#39;o&#39;, &#39;a&#39;, &#39;d&#39;}
+</span></span><span class="line"><span class="cl">e := d[2:]
+</span></span><span class="line"><span class="cl">// e == []byte{&#39;a&#39;, &#39;d&#39;}
+</span></span><span class="line"><span class="cl">e[1] = &#39;m&#39;
+</span></span><span class="line"><span class="cl">// e == []byte{&#39;a&#39;, &#39;m&#39;}
+</span></span><span class="line"><span class="cl">// d == []byte{&#39;r&#39;, &#39;o&#39;, &#39;a&#39;, &#39;m&#39;}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Earlier we sliced <code>s</code> to a length shorter than its capacity. We can grow s to its capacity by slicing it again:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">s = s[:cap(s)]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="/slices-intro/slice-3.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+>
+</p>
+<p>A slice cannot be grown beyond its capacity. Attempting to do so will cause a runtime panic, just as when indexing outside the bounds of a slice or array. Similarly, slices cannot be re-sliced below zero to access earlier elements in the array.</p>
+<h2 id="growing-slices-the-copy-and-append-functions">Growing slices (the copy and append functions)</h2>
+<p>To increase the capacity of a slice one must create a new, larger slice and copy the contents of the original slice into it. This technique is how dynamic array implementations from other languages work behind the scenes. The next example doubles the capacity of <code>s</code> by making a new slice, <code>t</code>, copying the contents of <code>s</code> into <code>t</code>, and then assigning the slice value <code>t</code> to <code>s</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">t := make([]byte, len(s), (cap(s)+1)*2) // +1 in case cap(s) == 0
+</span></span><span class="line"><span class="cl">for i := range s {
+</span></span><span class="line"><span class="cl">        t[i] = s[i]
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">s = t
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The looping piece of this common operation is made easier by the built-in copy function. As the name suggests, copy copies data from a source slice to a destination slice. It returns the number of elements copied.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">func copy(dst, src []T) int
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>copy</code> function supports copying between slices of different lengths (it will copy only up to the smaller number of elements). In addition, <code>copy</code> can handle source and destination slices that share the same underlying array, handling overlapping slices correctly.</p>
+<p>Using <code>copy</code>, we can simplify the code snippet above:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">t := make([]byte, len(s), (cap(s)+1)*2)
+</span></span><span class="line"><span class="cl">copy(t, s)
+</span></span><span class="line"><span class="cl">s = t
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>A common operation is to append data to the end of a slice. This function appends byte elements to a slice of bytes, growing the slice if necessary, and returns the updated slice value:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">func AppendByte(slice []byte, data ...byte) []byte {
+</span></span><span class="line"><span class="cl">    m := len(slice)
+</span></span><span class="line"><span class="cl">    n := m + len(data)
+</span></span><span class="line"><span class="cl">    if n &gt; cap(slice) { // if necessary, reallocate
+</span></span><span class="line"><span class="cl">        // allocate double what&#39;s needed, for future growth.
+</span></span><span class="line"><span class="cl">        newSlice := make([]byte, (n+1)*2)
+</span></span><span class="line"><span class="cl">        copy(newSlice, slice)
+</span></span><span class="line"><span class="cl">        slice = newSlice
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    slice = slice[0:n]
+</span></span><span class="line"><span class="cl">    copy(slice[m:n], data)
+</span></span><span class="line"><span class="cl">    return slice
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>One could use <code>AppendByte</code> like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p := []byte{2, 3, 5}
+</span></span><span class="line"><span class="cl">p = AppendByte(p, 7, 11, 13)
+</span></span><span class="line"><span class="cl">// p == []byte{2, 3, 5, 7, 11, 13}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Functions like <code>AppendByte</code> are useful because they offer complete control over the way the slice is grown. Depending on the characteristics of the program, it may be desirable to allocate in smaller or larger chunks, or to put a ceiling on the size of a reallocation.</p>
+<p>But most programs don’t need complete control, so Go provides a built-in <code>append</code> function that’s good for most purposes; it has the signature</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">func append(s []T, x ...T) []T
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>append</code> function appends the elements <code>x</code> to the end of the slice <code>s</code>, and grows the slice if a greater capacity is needed.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a := make([]int, 1)
+</span></span><span class="line"><span class="cl">// a == []int{0}
+</span></span><span class="line"><span class="cl">a = append(a, 1, 2, 3)
+</span></span><span class="line"><span class="cl">// a == []int{0, 1, 2, 3}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To append one slice to another, use <code>...</code> to expand the second argument to a list of arguments.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a := []string{&#34;John&#34;, &#34;Paul&#34;}
+</span></span><span class="line"><span class="cl">b := []string{&#34;George&#34;, &#34;Ringo&#34;, &#34;Pete&#34;}
+</span></span><span class="line"><span class="cl">a = append(a, b...) // equivalent to &#34;append(a, b[0], b[1], b[2])&#34;
+</span></span><span class="line"><span class="cl">// a == []string{&#34;John&#34;, &#34;Paul&#34;, &#34;George&#34;, &#34;Ringo&#34;, &#34;Pete&#34;}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Since the zero value of a slice (<code>nil</code>) acts like a zero-length slice, you can declare a slice variable and then append to it in a loop:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// Filter returns a new slice holding only
+</span></span><span class="line"><span class="cl">// the elements of s that satisfy fn()
+</span></span><span class="line"><span class="cl">func Filter(s []int, fn func(int) bool) []int {
+</span></span><span class="line"><span class="cl">    var p []int // == nil
+</span></span><span class="line"><span class="cl">    for _, v := range s {
+</span></span><span class="line"><span class="cl">        if fn(v) {
+</span></span><span class="line"><span class="cl">            p = append(p, v)
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    return p
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="a-possible-gotcha">A possible “gotcha”</h2>
+<p>As mentioned earlier, re-slicing a slice doesn’t make a copy of the underlying array. The full array will be kept in memory until it is no longer referenced. Occasionally this can cause the program to hold all the data in memory when only a small piece of it is needed.</p>
+<p>For example, this <code>FindDigits</code> function loads a file into memory and searches it for the first group of consecutive numeric digits, returning them as a new slice.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">var digitRegexp = regexp.MustCompile(&#34;[0-9]+&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">func FindDigits(filename string) []byte {
+</span></span><span class="line"><span class="cl">    b, _ := ioutil.ReadFile(filename)
+</span></span><span class="line"><span class="cl">    return digitRegexp.Find(b)
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This code behaves as advertised, but the returned <code>[]byte</code> points into an array containing the entire file. Since the slice references the original array, as long as the slice is kept around the garbage collector can’t release the array; the few useful bytes of the file keep the entire contents in memory.</p>
+<p>To fix this problem one can copy the interesting data to a new slice before returning it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">func CopyDigits(filename string) []byte {
+</span></span><span class="line"><span class="cl">    b, _ := ioutil.ReadFile(filename)
+</span></span><span class="line"><span class="cl">    b = digitRegexp.Find(b)
+</span></span><span class="line"><span class="cl">    c := make([]byte, len(b))
+</span></span><span class="line"><span class="cl">    copy(c, b)
+</span></span><span class="line"><span class="cl">    return c
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>A more concise version of this function could be constructed by using <code>append</code>. This is left as an exercise for the reader.</p>
+<h2 id="further-reading">Further Reading</h2>
+<p><a class="link" href="https://go.dev/doc/effective_go.html"  target="_blank" rel="noopener"
+    >Effective Go</a> contains an in-depth treatment of <a class="link" href="https://go.dev/doc/effective_go.html#slices"  target="_blank" rel="noopener"
+    >slices</a> and <a class="link" href="https://go.dev/doc/effective_go.html#arrays"  target="_blank" rel="noopener"
+    >arrays</a>, and the Go <a class="link" href="https://go.dev/doc/go_spec.html"  target="_blank" rel="noopener"
+    >language specification</a> defines <a class="link" href="https://go.dev/doc/go_spec.html#Slice_types"  target="_blank" rel="noopener"
+    >slices</a> and their <a class="link" href="https://go.dev/doc/go_spec.html#Length_and_capacity"  target="_blank" rel="noopener"
+    >associated</a> <a class="link" href="https://go.dev/doc/go_spec.html#Making_slices_maps_and_channels"  target="_blank" rel="noopener"
+    >helper</a> <a class="link" href="https://go.dev/doc/go_spec.html#Appending_and_copying_slices"  target="_blank" rel="noopener"
+    >functions</a>.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#arrays">Arrays</a></li>
+    <li><a href="#slices">Slices</a></li>
+    <li><a href="#slice-internals">Slice internals</a></li>
+    <li><a href="#growing-slices-the-copy-and-append-functions">Growing slices (the copy and append functions)</a></li>
+    <li><a href="#a-possible-gotcha">A possible “gotcha”</a></li>
+    <li><a href="#further-reading">Further Reading</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

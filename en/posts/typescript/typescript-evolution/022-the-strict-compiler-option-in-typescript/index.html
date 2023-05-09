@@ -1,0 +1,777 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview TypeScript 2.3 introduced a new --strict compiler option that enables a number of other compiler options related to stricter type checking.
+Strict Type Checking Options The idea is that you opt into a strict-by-default mode so that you enjoy all the benefits of better type safety without having to enable each compiler option separately. You can either set the --strict flag on the command line or specify the strict option within your project&amp;rsquo;s tsconfig.'>
+<title>The --strict Compiler Option in TypeScript</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/022-the-strict-compiler-option-in-typescript/'><link rel="prev" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/021-generic-parameter-defaults-in-typescript/" /><link rel="next" href="https://ibakuman.github.io/en/posts/typescript/typescript-evolution/023-type-checking-java-script-files-with-check-js-in-typescript/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='The --strict Compiler Option in TypeScript'>
+<meta property='og:description' content='Overview TypeScript 2.3 introduced a new --strict compiler option that enables a number of other compiler options related to stricter type checking.
+Strict Type Checking Options The idea is that you opt into a strict-by-default mode so that you enjoy all the benefits of better type safety without having to enable each compiler option separately. You can either set the --strict flag on the command line or specify the strict option within your project&amp;rsquo;s tsconfig.'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/typescript/typescript-evolution/022-the-strict-compiler-option-in-typescript/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2023-01-01T19:49:42&#43;08:00'/><meta property='article:modified_time' content='2023-01-01T19:49:42&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="The --strict Compiler Option in TypeScript">
+<meta name="twitter:description" content="Overview TypeScript 2.3 introduced a new --strict compiler option that enables a number of other compiler options related to stricter type checking.
+Strict Type Checking Options The idea is that you opt into a strict-by-default mode so that you enjoy all the benefits of better type safety without having to enable each compiler option separately. You can either set the --strict flag on the command line or specify the strict option within your project&amp;rsquo;s tsconfig."><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/typescript/typescript-evolution/022-the-strict-compiler-option-in-typescript/">
+                <img src="/gallery/landscape/14_hu408d85e3d6fd20da711d14997ee2c37d_918594_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/14_hu408d85e3d6fd20da711d14997ee2c37d_918594_800x0_resize_q75_box.jpg 800w, /gallery/landscape/14_hu408d85e3d6fd20da711d14997ee2c37d_918594_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="500"
+                        loading="lazy"
+                        alt="Featured image of post The --strict Compiler Option in TypeScript" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/typescript/" >
+                TypeScript
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/typescript/typescript-evolution/022-the-strict-compiler-option-in-typescript/">The --strict Compiler Option in TypeScript</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jan 01, 2023</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    6 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>TypeScript 2.3 introduced a new <code>--strict</code> compiler option that enables a number of other compiler options related to stricter type checking.</p>
+<h2 id="strict-type-checking-options">Strict Type Checking Options</h2>
+<p>The idea is that you opt into a <strong>strict-by-default mode</strong> so that you enjoy all the benefits of better type safety without having to enable each compiler option separately. You can either set the <code>--strict</code> flag on the command line or specify the <code>strict</code> option within your project&rsquo;s <em>tsconfig.json</em> file to opt into this mode.</p>
+<p>As of TypeScript 4.3 in August 2021, the <code>--strict</code> flag enables the following eight <a class="link" href="https://www.typescriptlang.org/tsconfig/#strict"  target="_blank" rel="noopener"
+    >compiler options</a>:</p>
+<ul>
+<li><code>--alwaysStrict</code></li>
+<li><code>--strictBindCallApply</code></li>
+<li><code>--strictFunctionTypes</code></li>
+<li><code>--strictNullChecks</code></li>
+<li><code>--strictPropertyInitialization</code></li>
+<li><code>--noImplicitAny</code></li>
+<li><code>--noImplicitThis</code></li>
+<li><code>--useUnknownInCatchVariables</code></li>
+</ul>
+<p>Future versions of TypeScript might add additional type checking options to this set. This means you don&rsquo;t necessarily have to monitor each TypeScript release for new strictness options that you should enable in your project. If new options are added to the option set above, they&rsquo;ll be active automatically once you upgrade your project&rsquo;s TypeScript version.</p>
+<h2 id="opting-out-of-certain-options">Opting Out of Certain Options</h2>
+<p>Every option enabled by <code>--strict</code> can be configured independently. That is, you can still override all the defaults without having to give up defaulting to strict mode.</p>
+<p>An example: Let&rsquo;s say you want all strict type checking options enabled except for <code>--alwaysStrict</code> which makes the compiler parse all source files in strict mode and emit <code>&quot;use strict&quot;;</code> directives. In that case, you can specify the following options in your <em>tsconfig.json</em> configuration file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;strict&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;alwaysStrict&#34;</span><span class="p">:</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This configuration works as you would expect and enables all strict type checking options except <code>--alwaysStrict</code>. You&rsquo;ll still automatically benefit from new strictness options as they&rsquo;re added in the future.</p>
+<h2 id="scaffolding-a-configuration-file-with-tsc---init">Scaffolding a Configuration File with <code>tsc --init</code></h2>
+<p>To help you get started with a new TypeScript project, the compiler can scaffold a configuration file for you:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ tsc --init
+</span></span><span class="line"><span class="cl">message TS6071: Successfully created a tsconfig.json file.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>After running this command, you&rsquo;ll find a <em>tsconfig.json</em> file in the current working directory. The generated configuration can look something like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;compilerOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">/*</span> <span class="err">Visit</span> <span class="err">https:</span><span class="c1">//aka.ms/tsconfig.json to read more about this file */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="err">/*</span> <span class="err">Basic</span> <span class="err">Options</span> <span class="err">*/</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// &#34;incremental&#34;: true,                         /* Enable incremental compilation */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nt">&#34;target&#34;</span><span class="p">:</span> <span class="s2">&#34;es5&#34;</span> <span class="err">/*</span> <span class="err">Specify</span> <span class="err">ECMAScript</span> <span class="err">target</span> <span class="err">version</span><span class="p">:</span> <span class="err">&#39;ES</span><span class="mi">3</span><span class="err">&#39;</span> <span class="err">(default)</span><span class="p">,</span> <span class="err">&#39;ES5&#39;,</span> <span class="err">&#39;ES2015&#39;,</span> <span class="err">&#39;ES2016&#39;,</span> <span class="err">&#39;ES2017&#39;,</span> <span class="err">&#39;ES2018&#39;,</span> <span class="err">&#39;ES2019&#39;,</span> <span class="err">&#39;ES2020&#39;,</span> <span class="err">&#39;ES2021&#39;,</span> <span class="err">or</span> <span class="err">&#39;ESNEXT&#39;.</span> <span class="err">*/,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;module&#34;</span><span class="p">:</span> <span class="s2">&#34;commonjs&#34;</span> <span class="err">/*</span> <span class="err">Specify</span> <span class="err">module</span> <span class="err">code</span> <span class="err">generation</span><span class="p">:</span> <span class="err">&#39;none&#39;</span><span class="p">,</span> <span class="err">&#39;commonjs&#39;,</span> <span class="err">&#39;amd&#39;,</span> <span class="err">&#39;system&#39;,</span> <span class="err">&#39;umd&#39;,</span> <span class="err">&#39;es2015&#39;,</span> <span class="err">&#39;es2020&#39;,</span> <span class="err">or</span> <span class="err">&#39;ESNext&#39;.</span> <span class="err">*/,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// &#34;lib&#34;: [],                                   /* Specify library files to be included in the compilation. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;allowJs&#34;: true,                             /* Allow javascript files to be compiled. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;checkJs&#34;: true,                             /* Report errors in .js files. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;jsx&#34;: &#34;preserve&#34;,                           /* Specify JSX code generation: &#39;preserve&#39;, &#39;react-native&#39;, &#39;react&#39;, &#39;react-jsx&#39; or &#39;react-jsxdev&#39;. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;declaration&#34;: true,                         /* Generates corresponding &#39;.d.ts&#39; file. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;declarationMap&#34;: true,                      /* Generates a sourcemap for each corresponding &#39;.d.ts&#39; file. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;sourceMap&#34;: true,                           /* Generates corresponding &#39;.map&#39; file. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;outFile&#34;: &#34;./&#34;,                             /* Concatenate and emit output to single file. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;outDir&#34;: &#34;./&#34;,                              /* Redirect output structure to the directory. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;rootDir&#34;: &#34;./&#34;,                             /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;composite&#34;: true,                           /* Enable project compilation */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;tsBuildInfoFile&#34;: &#34;./&#34;,                     /* Specify file to store incremental compilation information */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;removeComments&#34;: true,                      /* Do not emit comments to output. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;noEmit&#34;: true,                              /* Do not emit outputs. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;importHelpers&#34;: true,                       /* Import emit helpers from &#39;tslib&#39;. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;downlevelIteration&#34;: true,                  /* Provide full support for iterables in &#39;for-of&#39;, spread, and destructuring when targeting &#39;ES5&#39; or &#39;ES3&#39;. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;isolatedModules&#34;: true,                     /* Transpile each file as a separate module (similar to &#39;ts.transpileModule&#39;). */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="err">/*</span> <span class="err">Strict</span> <span class="err">Type-Checking</span> <span class="err">Options</span> <span class="err">*/</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;strict&#34;</span><span class="p">:</span> <span class="kc">true</span> <span class="err">/*</span> <span class="err">Enable</span> <span class="err">all</span> <span class="err">strict</span> <span class="err">type-checking</span> <span class="err">options.</span> <span class="err">*/</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// &#34;noImplicitAny&#34;: true,                       /* Raise error on expressions and declarations with an implied &#39;any&#39; type. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;strictNullChecks&#34;: true,                    /* Enable strict null checks. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;strictFunctionTypes&#34;: true,                 /* Enable strict checking of function types. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;strictBindCallApply&#34;: true,                 /* Enable strict &#39;bind&#39;, &#39;call&#39;, and &#39;apply&#39; methods on functions. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;strictPropertyInitialization&#34;: true,        /* Enable strict checking of property initialization in classes. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;noImplicitThis&#34;: true,                      /* Raise error on &#39;this&#39; expressions with an implied &#39;any&#39; type. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;alwaysStrict&#34;: true,                        /* Parse in strict mode and emit &#34;use strict&#34; for each source file. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="err">/*</span> <span class="err">Additional</span> <span class="err">Checks</span> <span class="err">*/</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// &#34;noUnusedLocals&#34;: true,                      /* Report errors on unused locals. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;noUnusedParameters&#34;: true,                  /* Report errors on unused parameters. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;noImplicitReturns&#34;: true,                   /* Report error when not all code paths in function return a value. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;noFallthroughCasesInSwitch&#34;: true,          /* Report errors for fallthrough cases in switch statement. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;noUncheckedIndexedAccess&#34;: true,            /* Include &#39;undefined&#39; in index signature results */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;noImplicitOverride&#34;: true,                  /* Ensure overriding members in derived classes are marked with an &#39;override&#39; modifier. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;noPropertyAccessFromIndexSignature&#34;: true,  /* Require undeclared properties from index signatures to use element accesses. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="err">/*</span> <span class="err">Module</span> <span class="err">Resolution</span> <span class="err">Options</span> <span class="err">*/</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// &#34;moduleResolution&#34;: &#34;node&#34;,                  /* Specify module resolution strategy: &#39;node&#39; (Node.js) or &#39;classic&#39; (TypeScript pre-1.6). */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;baseUrl&#34;: &#34;./&#34;,                             /* Base directory to resolve non-absolute module names. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;paths&#34;: {},                                 /* A series of entries which re-map imports to lookup locations relative to the &#39;baseUrl&#39;. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;rootDirs&#34;: [],                              /* List of root folders whose combined content represents the structure of the project at runtime. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;typeRoots&#34;: [],                             /* List of folders to include type definitions from. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;types&#34;: [],                                 /* Type declaration files to be included in compilation. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;allowSyntheticDefaultImports&#34;: true,        /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nt">&#34;esModuleInterop&#34;</span><span class="p">:</span> <span class="kc">true</span> <span class="err">/*</span> <span class="err">Enables</span> <span class="err">emit</span> <span class="err">interoperability</span> <span class="err">between</span> <span class="err">CommonJS</span> <span class="err">and</span> <span class="err">ES</span> <span class="err">Modules</span> <span class="err">via</span> <span class="err">creation</span> <span class="err">of</span> <span class="err">namespace</span> <span class="err">objects</span> <span class="err">for</span> <span class="err">all</span> <span class="err">imports.</span> <span class="err">Implies</span> <span class="err">&#39;allowSyntheticDefaultImports&#39;.</span> <span class="err">*/</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// &#34;preserveSymlinks&#34;: true,                    /* Do not resolve the real path of symlinks. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;allowUmdGlobalAccess&#34;: true,                /* Allow accessing UMD globals from modules. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="err">/*</span> <span class="err">Source</span> <span class="err">Map</span> <span class="err">Options</span> <span class="err">*/</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// &#34;sourceRoot&#34;: &#34;&#34;,                            /* Specify the location where debugger should locate TypeScript files instead of source locations. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;mapRoot&#34;: &#34;&#34;,                               /* Specify the location where debugger should locate map files instead of generated locations. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;inlineSourceMap&#34;: true,                     /* Emit a single file with source maps instead of having a separate file. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;inlineSources&#34;: true,                       /* Emit the source alongside the sourcemaps within a single file; requires &#39;--inlineSourceMap&#39; or &#39;--sourceMap&#39; to be set. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="err">/*</span> <span class="err">Experimental</span> <span class="err">Options</span> <span class="err">*/</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// &#34;experimentalDecorators&#34;: true,              /* Enables experimental support for ES7 decorators. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;emitDecoratorMetadata&#34;: true,               /* Enables experimental support for emitting type metadata for decorators. */
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="err">/*</span> <span class="err">Advanced</span> <span class="err">Options</span> <span class="err">*/</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;skipLibCheck&#34;</span><span class="p">:</span> <span class="kc">true</span> <span class="err">/*</span> <span class="err">Skip</span> <span class="err">type</span> <span class="err">checking</span> <span class="err">of</span> <span class="err">declaration</span> <span class="err">files.</span> <span class="err">*/</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;forceConsistentCasingInFileNames&#34;</span><span class="p">:</span> <span class="kc">true</span> <span class="err">/*</span> <span class="err">Disallow</span> <span class="err">inconsistently-cased</span> <span class="err">references</span> <span class="err">to</span> <span class="err">the</span> <span class="err">same</span> <span class="err">file.</span> <span class="err">*/</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Note that <code>--strict</code> is enabled by default. This means that you&rsquo;ll automatically be opted into the strict-by-default mode when starting a new TypeScript project.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a class="link" href="https://mariusschulz.com/blog/the-strict-compiler-option-in-typescript"  target="_blank" rel="noopener"
+    >The &ndash;strict Compiler Option in TypeScript — Marius Schulz</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/046-string-literal-types-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/04.0d227eb193cd808efb3e41cf0214a573_hu21e79f1310d133228b33f735d4ec0be8_1556942_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post String Literal Types in TypeScript"
+                        
+                        data-hash="md5-DSJ&#43;sZPNgI77PkHPAhSlcw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">String Literal Types in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/045-assertion-functions-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Assertion Functions in TypeScript"
+                        
+                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Assertion Functions in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/044-optional-chaining-the-operator-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/14.f042bee33f5598c65efdcb121a2971b6_hu408d85e3d6fd20da711d14997ee2c37d_918594_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Optional Chaining: The ?. Operator in TypeScript"
+                        
+                        data-hash="md5-8EK&#43;4z9VmMZe/csSGilxtg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Optional Chaining: The ?. Operator in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/043-nullish-coalescing-the-operator-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/20.1bee3eecff8df8a9e2cb815d1108b2e8_hu04c80cb06f0b716a920690442f749887_1496648_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Nullish Coalescing: The ?? Operator in TypeScript"
+                        
+                        data-hash="md5-G&#43;4&#43;7P&#43;N&#43;Kniy4FdEQiy6A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Nullish Coalescing: The ?? Operator in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/typescript/typescript-evolution/042-the-omit-helper-type-in-typescript/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/18.1d6c831bbe3ac5066415b0e3b01e7d47_hu7a8b922ea914ad8a12e0fc01dcf809f5_223556_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post The Omit Helper Type in TypeScript"
+                        
+                        data-hash="md5-HWyDG746xQZkFbDjsB59Rw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">The Omit Helper Type in TypeScript</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#strict-type-checking-options">Strict Type Checking Options</a></li>
+    <li><a href="#opting-out-of-certain-options">Opting Out of Certain Options</a></li>
+    <li><a href="#scaffolding-a-configuration-file-with-tsc---init">Scaffolding a Configuration File with <code>tsc --init</code></a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>

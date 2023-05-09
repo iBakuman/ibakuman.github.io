@@ -1,0 +1,1077 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview In the programming language, there are mainly three types of loops (for, while, and until). 10 cool and awesome Bash Loop examples are discussed. In the programming language, there are mainly three types of loops (for, while, and until). All three types of loops are important in different ways. There is not much difference between the while and until loops, but for loop works quite differently from these two.'>
+<title>10 Cool and Awesome Bash Loop Examples</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/linux/10-cool-and-awesome-bash-loop-examples/'><link rel="prev" href="https://ibakuman.github.io/en/posts/esbuild/getting-started-with-esbuild/" /><link rel="next" href="https://ibakuman.github.io/en/posts/javascript/prototype-chaing/" /><link rel="stylesheet" href="/css/style.min.495ccb406b9c474f2bcd0c1286082c10f709d17db3e44cbc9b85ecb93235dd6f.css" integrity="sha256-SVzLQGucR08rzQwShggsEPcJ0X2z5Ey8m4XsuTI13W8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='10 Cool and Awesome Bash Loop Examples'>
+<meta property='og:description' content='Overview In the programming language, there are mainly three types of loops (for, while, and until). 10 cool and awesome Bash Loop examples are discussed. In the programming language, there are mainly three types of loops (for, while, and until). All three types of loops are important in different ways. There is not much difference between the while and until loops, but for loop works quite differently from these two.'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/linux/10-cool-and-awesome-bash-loop-examples/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Shell Script' /><meta property='article:tag' content='Loop' /><meta property='article:published_time' content='2022-11-23T22:00:43&#43;08:00'/><meta property='article:modified_time' content='2022-11-23T22:00:43&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="10 Cool and Awesome Bash Loop Examples">
+<meta name="twitter:description" content="Overview In the programming language, there are mainly three types of loops (for, while, and until). 10 cool and awesome Bash Loop examples are discussed. In the programming language, there are mainly three types of loops (for, while, and until). All three types of loops are important in different ways. There is not much difference between the while and until loops, but for loop works quite differently from these two."><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hueddabaee59aae507003cd53518dcee26_49286_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/">
+                <img src="/gallery/landscape/08_hufd4c43b663954d2f1b153b9f2254ca86_1202710_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/08_hufd4c43b663954d2f1b153b9f2254ca86_1202710_800x0_resize_q75_box.jpg 800w, /gallery/landscape/08_hufd4c43b663954d2f1b153b9f2254ca86_1202710_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="533"
+                        loading="lazy"
+                        alt="Featured image of post 10 Cool and Awesome Bash Loop Examples" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/linux/" >
+                Linux
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/">10 Cool and Awesome Bash Loop Examples</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 23, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    4 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>In the programming language, there are mainly three types of loops (for, while, and until). 10 cool and awesome Bash Loop examples are discussed.</p>
+<p>In the programming language, there are mainly three types of loops (for, while, and until). All three types of loops are important in different ways. There is not much difference between the while and until loops, but for loop works quite differently from these two. That’s why you can use these loops to create interactive scripts as a bash user.</p>
+<p>So learning bash examples can help you improve your skills in creating scripts. So in this tutorial, we will include 10 cool and awesome bash loop examples you can try to enhance your scripting skills.</p>
+<p>In this section, we will explain various examples and the approaches we have used in the loops.</p>
+<h2 id="seq-command-with-loop-in-bash">Seq Command With Loop in Bash</h2>
+<p>You can use the seq command in the for loop to create the sequence of numbers. For example, you have a bash script “File.sh” that contains the following code:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">for</span> A in <span class="k">$(</span>seq <span class="m">5</span> <span class="m">2</span> 25<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;numbers of </span><span class="nv">$A</span><span class="s2"> are&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>You will get the following result after executing the script in the terminal:</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture2-8.png"
+	width="752"
+	height="238"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture2-8_hu6527c52d38de688a4f069bebac1bd646_72597_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture2-8_hu6527c52d38de688a4f069bebac1bd646_72597_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="315"
+		data-flex-basis="758px"
+	
+>
+</p>
+<h2 id="rename-files-using-loop">Rename Files Using Loop</h2>
+<p>Using a bash script, you can use the for loops to rename multiple files. For example, you have multiple .txt files and want to add the current date with the name. So here is the example script you can use:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">for</span> A in <span class="k">$(</span>ls *.txt<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    mv <span class="nv">$A</span> <span class="k">$(</span>basename <span class="nv">$A</span> .txt<span class="k">)</span>_<span class="k">$(</span>date +%d%m%Y<span class="k">)</span>.txt
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>The usage of basename command<i class="details-icon fas fa-chevron-left fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>Remove leading directory portions from a path.
+More information: <a class="link" href="https://www.gnu.org/software/coreutils/basename"  target="_blank" rel="noopener"
+    >https://www.gnu.org/software/coreutils/basename</a>.</p>
+<ul>
+<li>
+<p>Show only the file name from a path: <code>basename path/to/file</code></p>
+</li>
+<li>
+<p>Show only the rightmost directory name from a path: <code>basename path/to/directory/</code></p>
+</li>
+<li>
+<p>Show only the file name from a path, with a suffix removed: <code>basename path/to/file suffix</code></p>
+</li>
+</ul>
+</div>
+        </div>
+    </div>
+<p>Now, you can run the script, and it will change the name of all .txt files by adding the current date:</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture3-7.png"
+	width="752"
+	height="115"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture3-7_hu757378202949b878ed6ec8e559743974_88696_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture3-7_hu757378202949b878ed6ec8e559743974_88696_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="653"
+		data-flex-basis="1569px"
+	
+>
+</p>
+<p>Similarly, you can change the extensions of a file through a single script. So let’s change the .txt extension into .sh through the following script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash -x
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">for</span> file in *.txt<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    mv -- <span class="s2">&#34;</span><span class="nv">$file</span><span class="s2">&#34;</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">file</span><span class="p">%.txt</span><span class="si">}</span><span class="s2">.sh&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>After executing the script in the terminal, you will get the .sh rather than .txt files:</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture5-4.png"
+	width="752"
+	height="97"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture5-4_hu9cf9b027e1952355280ceae53628bf8e_68820_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture5-4_hu9cf9b027e1952355280ceae53628bf8e_68820_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="775"
+		data-flex-basis="1860px"
+	
+>
+</p>
+<h2 id="infinite-for-loop-in-bash">Infinite For Loop in Bash</h2>
+<p>When no termination condition is defined in the loop, it is called an infinite loop. In this example of a Bash loop, we will look at the infinite for loop in bash. The following infinite for loop is defined by a double semicolon ( ; ; ) and does not contain any initial, action, or termination parts.</p>
+<p>The below script will continue until you press Ctrl+C or type “quit” as input. This script will print every number from 10 to 50 that is given as input. Otherwise, it will print “number is out of range.”</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="c1">#infinite loop</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="o">((</span> <span class="p">;</span> <span class="p">;</span> <span class="o">))</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Enter a number between 10 to 50&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">read</span> n
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[</span> <span class="nv">$n</span> <span class="o">==</span> <span class="s2">&#34;quit&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;terminated&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">exit</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">((</span><span class="nv">$n</span> &lt; <span class="m">10</span> <span class="o">||</span> <span class="nv">$n</span> &gt; 50<span class="o">))</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;The number is out of range&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;The number is </span><span class="nv">$n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We gave 45 and 23 valid inputs on the above script. After that, we print 2 as input which tells in the output that “the number is out of range.” After that, to close the script, we type quit as input. Here you can also press Ctrl+C to quit the infinite loop.</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture7-4.png"
+	width="602"
+	height="179"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture7-4_hu163a4a8a61fc664be6447867c5907b03_43312_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture7-4_hu163a4a8a61fc664be6447867c5907b03_43312_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="336"
+		data-flex-basis="807px"
+	
+>
+</p>
+<h2 id="three-expression-loop-in-bash">Three Expression Loop in Bash</h2>
+<p>It is known from the name of the three-expression loop that it comprises three expressions, also called control expressions. The first expression (EXP1) is the initializer, the second expression (EXP2) is the loop test or condition, and the third expression (EXP3) is the counting expression/step. Let us run a three-expression loop in bash:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">for</span> <span class="o">((</span><span class="nv">n</span> <span class="o">=</span> 5<span class="p">;</span> n &gt;<span class="o">=</span> 1<span class="p">;</span> n--<span class="o">))</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Book </span><span class="nv">$n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>On running the above script, you will get the following output.</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture9-3.png"
+	width="602"
+	height="95"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture9-3_huc9ab9b4d6ae88049488b9418b24df210_17813_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture9-3_huc9ab9b4d6ae88049488b9418b24df210_17813_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="633"
+		data-flex-basis="1520px"
+	
+>
+</p>
+<h2 id="loop-with-multiple-conditions">Loop With Multiple Conditions</h2>
+<p>We have used the until loop with multiple conditions in the following bash loop example. In this script, we took “m” and “n,” two variables whose values are 20 and 10, respectively, and kept the limit of 15. Here we put “m” and “n” conditions together in the loop, in which the loop will run till the value of “m” is less than the limit or “n” is more than the limit.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">limit</span><span class="o">=</span><span class="m">15</span>
+</span></span><span class="line"><span class="cl"><span class="nv">m</span><span class="o">=</span><span class="m">20</span>
+</span></span><span class="line"><span class="cl"><span class="nv">n</span><span class="o">=</span><span class="m">10</span>
+</span></span><span class="line"><span class="cl"><span class="k">until</span> <span class="o">[[</span> <span class="nv">$m</span> -lt <span class="nv">$limit</span> <span class="o">||</span> <span class="nv">$n</span> -gt <span class="nv">$limit</span> <span class="o">]]</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;If M = </span><span class="nv">$m</span><span class="s2"> then N = </span><span class="nv">$n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">((</span>m--<span class="o">))</span>
+</span></span><span class="line"><span class="cl">    <span class="o">((</span>n++<span class="o">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>You can see that running the above script will run until the values of “m” and “n” come to the same level.</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture11-2.png"
+	width="602"
+	height="93"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture11-2_hudc73e5380900d22d9c53fc5b573fddc8_23578_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture11-2_hudc73e5380900d22d9c53fc5b573fddc8_23578_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="647"
+		data-flex-basis="1553px"
+	
+>
+</p>
+<h2 id="read-file-in-bash">Read File in Bash</h2>
+<p>In bash, you can read the contents of a file in several ways. In this example of bash loop, we will read the file’s contents through the filename. We can use the following script to read the file in bash:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nb">echo</span> <span class="s2">&#34;Content of the entered file is:&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">read</span> line
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="nv">$line</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span> &lt;~/Documents/Linuxhint.txt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>After running the above script, you can read the full content of the entered file.</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture13-2.png"
+	width="602"
+	height="167"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture13-2_hu9230a1bde4e24da5bbf32f6f5379108f_125259_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture13-2_hu9230a1bde4e24da5bbf32f6f5379108f_125259_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="360"
+		data-flex-basis="865px"
+	
+>
+</p>
+<h2 id="writing-to-a-file">Writing to a File</h2>
+<p>You can use the loops in the script to edit a file right from the terminal. For example, if we have a txt file “Example.txt,” and we want to add up some information, then we can use the following script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">file</span><span class="o">=</span>Example.txt
+</span></span><span class="line"><span class="cl"><span class="k">while</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">read</span> line
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="nv">$line</span> &gt;&gt;<span class="nv">$file</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If you run the above script, it will ask you to enter the details:</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture15-1.png"
+	width="602"
+	height="53"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture15-1_hu0c3e11a16f2877387e364f6660a3c916_22966_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture15-1_hu0c3e11a16f2877387e364f6660a3c916_22966_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="1135"
+		data-flex-basis="2726px"
+	
+>
+</p>
+<p>Once you enter the details, please CTRL + D to save the file and CTRL + Z to finish the process successfully.</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture16-2.png"
+	width="602"
+	height="73"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture16-2_hu2cc8f9d6713110a6fc72586bd1ee53d1_29249_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture16-2_hu2cc8f9d6713110a6fc72586bd1ee53d1_29249_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="824"
+		data-flex-basis="1979px"
+	
+>
+</p>
+<h2 id="break-and-continue-statement-loop-in-bash">Break and Continue Statement Loop in Bash</h2>
+<p>In bash, you can continue your loop statement after the break. The break statement exits the loop and then passes control to the next given statement. Iteration number two begins after the current iteration is skipped with the same continue statement.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">num</span><span class="o">=</span><span class="m">16</span>
+</span></span><span class="line"><span class="cl"><span class="k">until</span> false<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="o">((</span>num--<span class="o">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[[</span> <span class="nv">$num</span> -eq <span class="m">13</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="o">[[</span> <span class="nv">$num</span> -le <span class="m">4</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">break</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;LinuxHint = </span><span class="nv">$num</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In the following bash script, you can see that when the “num” is equal to 13, it skips the
+rest of the loop body and jumps to the next iteration. Similarly, the loop will break when “num” is less than or equal to 4.</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture18.png"
+	width="602"
+	height="152"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture18_hude896de0c26ea7ea60eafe5779d8e389_30152_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/Picture18_hude896de0c26ea7ea60eafe5779d8e389_30152_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="396"
+		data-flex-basis="950px"
+	
+>
+</p>
+<p>The above script shows that the loop starts at 15, breaks at 13, and continues till 5.</p>
+<h2 id="calculating-an-average-in-bash">Calculating an Average in Bash</h2>
+<p>You can calculate the average by running the script in a bash loop. In this, the user can calculate the average of numbers within a defined range. The following script calculates the average of provided input by the user.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">marks</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="nv">AVERAGE</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="nv">SUM</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="nv">NUM</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> true<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> -n <span class="s2">&#34;Enter your marks or press &#39;q&#39; to abort &#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">read</span> marks
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">((</span><span class="s2">&#34;</span><span class="nv">$marks</span><span class="s2">&#34;</span> &lt; 0<span class="o">))</span> <span class="o">||</span> <span class="o">((</span><span class="s2">&#34;</span><span class="nv">$marks</span><span class="s2">&#34;</span> &gt; 100<span class="o">))</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;Please enter your marks&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$marks</span><span class="s2">&#34;</span> <span class="o">==</span> <span class="s2">&#34;q&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;average marks are: </span><span class="nv">$AVERAGE</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">break</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">SUM</span><span class="o">=</span><span class="k">$((</span><span class="nv">$SUM</span> <span class="o">+</span> <span class="nv">$marks</span><span class="k">))</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">NUM</span><span class="o">=</span><span class="k">$((</span><span class="nv">$NUM</span> <span class="o">+</span> <span class="m">1</span><span class="k">))</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">AVERAGE</span><span class="o">=</span><span class="k">$((</span><span class="nv">$SUM</span> <span class="o">/</span> <span class="nv">$NUM</span><span class="k">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If the input is not within the range, a message is printed that “Please enter your marks.” When the user presses “q” after entering all the marks, the script calculates the approximate average of all the numbers entered.</p>
+<p>When the above script is run, your output will be something like this.</p>
+<p><img src="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/09kYo13.png"
+	width="434"
+	height="106"
+	srcset="/en/posts/linux/10-cool-and-awesome-bash-loop-examples/09kYo13_hu0b5aa8207b20f0a1a1985dbe1517af2e_4817_480x0_resize_box_3.png 480w, /en/posts/linux/10-cool-and-awesome-bash-loop-examples/09kYo13_hu0b5aa8207b20f0a1a1985dbe1517af2e_4817_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="409"
+		data-flex-basis="982px"
+	
+>
+</p>
+<h2 id="read-the-command-line-arguments-in-bash">Read the Command-Line Arguments in Bash</h2>
+<p>In bash, you can read single command-line arguments using loops. The script prints the formatted argument values. We run command line arguments in bash using a while loop in the following script. Through this, you will print the value passing the argument value valid option with the help of a single command.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">while</span> <span class="nb">getopts</span> a:b:c: OPTION<span class="p">;</span><span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nv">$OPTION</span> in
+</span></span><span class="line"><span class="cl">        a<span class="o">)</span><span class="nb">echo</span> <span class="s2">&#34;get option_string a abd variable is </span><span class="nv">$OPTARG</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">;;</span> 
+</span></span><span class="line"><span class="cl">        b<span class="o">)</span><span class="nb">echo</span> <span class="s2">&#34;get option_string b and variable is </span><span class="nv">$OPTARG</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">;;</span> 
+</span></span><span class="line"><span class="cl">        c<span class="o">)</span><span class="nb">echo</span> <span class="s2">&#34;get option_string c and variable is </span><span class="nv">$OPTARG</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">;;</span> 
+</span></span><span class="line"><span class="cl">        ?<span class="o">)</span><span class="nb">echo</span> <span class="s2">&#34;get a non option_string </span><span class="nv">$OPTARG</span><span class="s2"> and OPTION is </span><span class="nv">$OPTION</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">;;</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">esac</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Thus, you can print the formatted argument values to the output by running the above script in a bash.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ./tmp.sh -a aa -b bb -c cc -p -h 
+</span></span><span class="line"><span class="cl">get option_string a abd variable is aa
+</span></span><span class="line"><span class="cl">get option_string b and variable is bb
+</span></span><span class="line"><span class="cl">get option_string c and variable is cc
+</span></span><span class="line"><span class="cl">Illegal option -p
+</span></span><span class="line"><span class="cl">get a non option_string  and OPTION is ?
+</span></span><span class="line"><span class="cl">Illegal option -h
+</span></span><span class="line"><span class="cl">get a non option_string  and OPTION is ?
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="wrapping-up">Wrapping Up</h2>
+<p>So this was the brief information on the 10 cool and awesome bash loop examples you can learn. We have used different types of loops to create the interactive script easily. <span class='ibakuman-inline-translation'>Moreover<sub> { 此外；而且 }</sub></span>, we also explained the basic approaches used in the above examples.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a class="link" href="https://linuxhint.com/10-cool-awesome-bash-loop-examples/"  target="_blank" rel="noopener"
+    >10 Cool and Awesome Bash Loop Examples</a></li>
+<li><a class="link" href="https://zhuanlan.zhihu.com/p/51684845"  target="_blank" rel="noopener"
+    >Linux getopts - 知乎</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/shell-script/">Shell Script</a>
+        
+            <a href="/en/tags/loop/">Loop</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">Related content</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/linux/debugging-a-bash-script/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/17.9800920920e8a9ef0cfbd3d8d3787fb2_hudbc1561b7a760b2f47477637bc223f35_938024_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post Debugging a Bash Script"
+                        
+                        data-hash="md5-mACSCSDoqe8M&#43;9PY03h/sg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Debugging a Bash Script</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/en/posts/linux/how-to-create-a-desktop-shortcut-in-ubuntu-20.04/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post How to create a desktop shortcut in Ubuntu 20.04"
+                        
+                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">How to create a desktop shortcut in Ubuntu 20.04</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#seq-command-with-loop-in-bash">Seq Command With Loop in Bash</a></li>
+    <li><a href="#rename-files-using-loop">Rename Files Using Loop</a></li>
+    <li><a href="#infinite-for-loop-in-bash">Infinite For Loop in Bash</a></li>
+    <li><a href="#three-expression-loop-in-bash">Three Expression Loop in Bash</a></li>
+    <li><a href="#loop-with-multiple-conditions">Loop With Multiple Conditions</a></li>
+    <li><a href="#read-file-in-bash">Read File in Bash</a></li>
+    <li><a href="#writing-to-a-file">Writing to a File</a></li>
+    <li><a href="#break-and-continue-statement-loop-in-bash">Break and Continue Statement Loop in Bash</a></li>
+    <li><a href="#calculating-an-average-in-bash">Calculating an Average in Bash</a></li>
+    <li><a href="#read-the-command-line-arguments-in-bash">Read the Command-Line Arguments in Bash</a></li>
+    <li><a href="#wrapping-up">Wrapping Up</a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.84c2408aced0f84409ca719f2386c9e29c1b6a82fc363e481a9a35e3f1342cd0.js" integrity="sha256-hMJAis7Q+EQJynGfI4bJ4pwbaoL8Nj5IGpo14/E0LNA="></script>
+    </body>
+</html>
