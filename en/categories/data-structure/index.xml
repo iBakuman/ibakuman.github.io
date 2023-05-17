@@ -29,7 +29,7 @@ $r$  (i.e. computing the sum  
 $\sum_{i=l}^r a[i]$ ), and also handle changing values of the elements in the array (i.e. perform assignments of the form  
 $a[i] = x$ ). The Segment Tree should be able to process both queries in  
 $O(\log n)$  time.&lt;/p&gt;
-&lt;p&gt;This is an improvement over the simpler approaches. A &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#naive&#34; &gt;naive&lt;/a&gt; array implementation - just using a simple array - can update elements in  
+&lt;p&gt;This is an improvement over the simpler approaches. A &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#naive&#34; &gt;naive&lt;/a&gt; array implementation - just using a simple array - can update elements in  
 $O(1)$ , but requires  
 $O(n)$  to compute each sum query. And precomputed prefix sums can compute sum queries in  
 $O(1)$ , but updating an array element requires  
@@ -61,7 +61,7 @@ $a = [1, 3, -2, 8, -7]$ :&lt;/p&gt;
 &lt;p&gt;From this short description of the data structure, we can already conclude that a Segment Tree only requires a linear number of vertices. The first level of the tree contains a single node (the root), the second level will contain two vertices, in the third it will contain four vertices, until the number of vertices reaches  
 $n$ . Thus the number of vertices in the worst case can be estimated by the sum  
 $1 + 2 + 4 + \dots + 2^{\lceil\log_2 n\rceil} \lt 2^{\lceil\log_2 n\rceil + 1} \lt 4n$ .&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#it-is-worth-noting&#34; &gt;It is worth noting&lt;/a&gt; that whenever
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#it-is-worth-noting&#34; &gt;It is worth noting&lt;/a&gt; that whenever
 $n$  is not a power of two, not all levels of the Segment Tree will be completely filled. We can see that behavior in the image. For now we can forget about this fact, but it will become important later during the implementation.&lt;/p&gt;
 &lt;p&gt;The height of the Segment Tree is  
 $O(\log n)$ , because when going down from the root to the leaves the size of the segments decreases approximately by half.&lt;/p&gt;
@@ -106,8 +106,8 @@ $a[tl \dots tm]$  and the right child the segment  
 $a[tm+1 \dots tr]$ , we compute the sum query  
 $a[l \dots tm]$  using the left child, and the sum query  
 $a[tm+1 \dots r]$  using the right child.&lt;/p&gt;
-&lt;p&gt;So processing a sum query is a function that recursively calls itself once with either the left or the right child (without changing the query boundaries), or twice, once for the left and once for the right child (by splitting the query into two subqueries). And the recursion ends, whenever the boundaries of the current query segment &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#coincide-with&#34; &gt;coincides with&lt;/a&gt; the boundaries of the segment of the current vertex. In that case the answer will be the precomputed value of the sum of this segment, which is stored in the tree.&lt;/p&gt;
-&lt;p&gt;In other words, the calculation of the query is a traversal of the tree, which &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#spread-through&#34; &gt;spreads through&lt;/a&gt; all necessary branches of the tree, and uses the precomputed sum values of the segments in the tree.&lt;/p&gt;
+&lt;p&gt;So processing a sum query is a function that recursively calls itself once with either the left or the right child (without changing the query boundaries), or twice, once for the left and once for the right child (by splitting the query into two subqueries). And the recursion ends, whenever the boundaries of the current query segment &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#coincide-with&#34; &gt;coincides with&lt;/a&gt; the boundaries of the segment of the current vertex. In that case the answer will be the precomputed value of the sum of this segment, which is stored in the tree.&lt;/p&gt;
+&lt;p&gt;In other words, the calculation of the query is a traversal of the tree, which &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#spread-through&#34; &gt;spreads through&lt;/a&gt; all necessary branches of the tree, and uses the precomputed sum values of the segments in the tree.&lt;/p&gt;
 &lt;p&gt;Obviously we will start the traversal from the root vertex of the Segment Tree.&lt;/p&gt;
 &lt;p&gt;The procedure is illustrated in the following image. Again the array  
 $a = [1, 3, -2, 8, -7]$  is used, and here we want to compute the sum  
@@ -131,11 +131,11 @@ $-2 + 1 = -1$ .&lt;/p&gt;
 &lt;p&gt;Why is the complexity of this algorithm  
 $O(\log n)$ ? To show this complexity we look at each level of the tree. It turns out, that for each level we only visit not more than four vertices. And since the height of the tree is  
 $O(\log n)$ , we receive the desired running time.&lt;/p&gt;
-&lt;p&gt;We can show that this &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#proposition&#34; &gt;proposition&lt;/a&gt; (at most four vertices each level) is true by &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#iduction&#34; &gt;induction&lt;/a&gt;. At the first level, we only visit one vertex, the root vertex, so here we visit less than four vertices. Now let&amp;rsquo;s look at an arbitrary level. By induction &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#hypothesis&#34; &gt;hypothesis&lt;/a&gt;, we visit at most four vertices. If we only visit at most two vertices, the next level has at most four vertices. That trivial, because each vertex can only cause at most two recursive calls. So let&amp;rsquo;s assume that we visit three or four vertices in the current level. From those vertices, we will analyze the vertices in the middle more carefully. Since the sum query asks for the sum of a continuous subarray, we know that segments corresponding to the visited vertices in the middle will be completely covered by the segment of the sum query. Therefore these vertices will not make any recursive calls. So only the most left, and the most right vertex will have the potential to make recursive calls. And those will only create at most four recursive calls, so also the next level will satisfy the assertion. We can say that one branch approaches the left boundary of the query, and the second branch approaches the right one.&lt;/p&gt;
+&lt;p&gt;We can show that this &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#proposition&#34; &gt;proposition&lt;/a&gt; (at most four vertices each level) is true by &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#iduction&#34; &gt;induction&lt;/a&gt;. At the first level, we only visit one vertex, the root vertex, so here we visit less than four vertices. Now let&amp;rsquo;s look at an arbitrary level. By induction &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#hypothesis&#34; &gt;hypothesis&lt;/a&gt;, we visit at most four vertices. If we only visit at most two vertices, the next level has at most four vertices. That trivial, because each vertex can only cause at most two recursive calls. So let&amp;rsquo;s assume that we visit three or four vertices in the current level. From those vertices, we will analyze the vertices in the middle more carefully. Since the sum query asks for the sum of a continuous subarray, we know that segments corresponding to the visited vertices in the middle will be completely covered by the segment of the sum query. Therefore these vertices will not make any recursive calls. So only the most left, and the most right vertex will have the potential to make recursive calls. And those will only create at most four recursive calls, so also the next level will satisfy the assertion. We can say that one branch approaches the left boundary of the query, and the second branch approaches the right one.&lt;/p&gt;
 &lt;p&gt;Therefore we visit at most  
 $4 \log n$  vertices in total, and that is equal to a running time of  
 $O(\log n)$ .&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#in-conclusion&#34; &gt;In conclusion&lt;/a&gt; the query works by dividing the input segment into several sub-segments for which all the sums are already precomputed and stored in the tree. And if we stop partitioning whenever the query segment coincides with the vertex segment, then we only need  
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#in-conclusion&#34; &gt;In conclusion&lt;/a&gt; the query works by dividing the input segment into several sub-segments for which all the sums are already precomputed and stored in the tree. And if we stop partitioning whenever the query segment coincides with the vertex segment, then we only need  
 $O(\log n)$  such segments, which gives the effectiveness of the Segment Tree.&lt;/p&gt;
 &lt;h3 id=&#34;update-queries&#34;&gt;Update queries&lt;/h3&gt;
 &lt;p&gt;Now we want to modify a specific element in the array, let&amp;rsquo;s say we want to do the assignment  
@@ -163,7 +163,7 @@ $a[2] = 3$ . The green vertices are the vertices that we visit and update.&lt;
 &gt;
 &lt;/p&gt;
 &lt;h3 id=&#34;implementation&#34;&gt;Implementation&lt;/h3&gt;
-&lt;p&gt;The &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#main-consideration&#34; &gt;main consideration&lt;/a&gt; is how to store the Segment Tree. Of course we can define a  
+&lt;p&gt;The &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#main-consideration&#34; &gt;main consideration&lt;/a&gt; is how to store the Segment Tree. Of course we can define a  
 $\text{Vertex}$  struct and create objects, that store the boundaries of the segment, its sum and additionally also pointers to its child vertices. However, this requires storing a lot of redundant information in the form of pointers. We will use a simple trick to make this a lot more efficient by using an implicit data structure: Only storing the sums in an array. (A similar method is used for binary heaps). The sum of the root vertex at index 1, the sums of its two child vertices at indices 2 and 3, the sums of the children of those two vertices at indices 4 to 7, and so on. With 1-indexing, conveniently the left child of a vertex at index  
 $i$  is stored at index  
 $2i$ , and the right one at index  
@@ -223,7 +223,7 @@ $v$  and the boundaries  
 $tl$  and  
 $tr$ ) and also the information about the boundaries of the query,  
 $l$  and  
-$r$ . In order to simplify the code, this function always does two recursive calls, even if only one is necessary - in that case the &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#superfluous&#34; &gt;superfluous&lt;/a&gt; recursive call will have  
+$r$ . In order to simplify the code, this function always does two recursive calls, even if only one is necessary - in that case the &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#superfluous&#34; &gt;superfluous&lt;/a&gt; recursive call will have  
 $l &amp;gt; r$ , and this can easily be caught using an additional check at the beginning of the function.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;

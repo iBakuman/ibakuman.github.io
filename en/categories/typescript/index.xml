@@ -7,6 +7,84 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <lastBuildDate>Tue, 03 Jan 2023 21:43:12 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/en/categories/typescript/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>03. Acquiring Type Declaration Files in TypeScript</title>
+        <link>https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/</link>
+        <pubDate>Mon, 26 Dec 2022 13:30:36 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/</guid>
+        <description>&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;
+&lt;p&gt;In TypeScript 2.0, it has become significantly easier to acquire type information for JavaScript libraries. There&amp;rsquo;s no longer a need for additional tools such as &lt;a class=&#34;link&#34; href=&#34;https://github.com/typings/typings&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;typings&lt;/a&gt; or &lt;a class=&#34;link&#34; href=&#34;https://github.com/DefinitelyTyped/tsd&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;tsd&lt;/a&gt;. Instead, type declaration packages are directly available on npm.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/egghead_lesson_typescript_declarations-2x.nam2cekuwu.imm.png&#34;
+	width=&#34;1503&#34;
+	height=&#34;977&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/_hub7d9f1f856167c030fa4f15dd6297f9d_241414_cdc30420ec3e9ca66325b2ff29f49ab7.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/_hub7d9f1f856167c030fa4f15dd6297f9d_241414_0bfae215779dfb88dae331a453500c3e.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;153&#34;
+		data-flex-basis=&#34;369px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;installing-type-declaration-packages-from-npm&#34;&gt;Installing Type Declaration Packages from npm&lt;/h2&gt;
+&lt;p&gt;Let&amp;rsquo;s assume you want to use Lodash in one of your TypeScript projects:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;npm install --save lodash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;After running this command, Lodash is installed into the &lt;code&gt;node_modules&lt;/code&gt; folder and is also listed as a dependency within your project&amp;rsquo;s &lt;code&gt;package.json&lt;/code&gt; file. However, there&amp;rsquo;s no type information available for TypeScript because Lodash is written in JavaScript and doesn&amp;rsquo;t ship with type declaration files.&lt;/p&gt;
+&lt;p&gt;Using npm again, you can now install the &lt;code&gt;@types/lodash&lt;/code&gt; package which contains the corresponding type declarations that TypeScript needs:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm.png&#34;
+	width=&#34;1308&#34;
+	height=&#34;652&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm_huec5d1fbc98e029201076cdcd67616393_27249_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm_huec5d1fbc98e029201076cdcd67616393_27249_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;200&#34;
+		data-flex-basis=&#34;481px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Note how the type declaration package is named after the original npm package, prefixed with &lt;code&gt;@types/&lt;/code&gt;. Most packages should follow this convention, but you can always fall back to &lt;a class=&#34;link&#34; href=&#34;https://www.typescriptlang.org/dt/search&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Type Search&lt;/a&gt; to find the name of the type declaration package for a given library.&lt;/p&gt;
+&lt;p&gt;The benefit of using npm for managing type information is that type declaration packages will be listed in your &lt;code&gt;package.json&lt;/code&gt; alongside your other dependencies. In addition, they can be properly versioned, just like any other npm package. Plus, you only need a single package manager, npm, that is set up already anyway.&lt;/p&gt;
+&lt;h2 id=&#34;where-do-the-type-declaration-files-go&#34;&gt;Where Do the Type Declaration Files Go?&lt;/h2&gt;
+&lt;p&gt;Like any other npm package, the type declaration packages are installed in the &lt;code&gt;node_modules&lt;/code&gt; folder. Within it, there&amp;rsquo;s a &lt;code&gt;@types&lt;/code&gt; folder which contains all typings. In the above example, it&amp;rsquo;ll contain a &lt;code&gt;lodash&lt;/code&gt; folder, within which you&amp;rsquo;ll find the &lt;code&gt;index.d.ts&lt;/code&gt; file with all the Lodash type information:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm.png&#34;
+	width=&#34;512&#34;
+	height=&#34;496&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm_hu56476acc6b6aafd0ff0e1d05353c624c_33731_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm_hu56476acc6b6aafd0ff0e1d05353c624c_33731_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;103&#34;
+		data-flex-basis=&#34;247px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;The TypeScript compiler understands this convention and will pick up type declarations within the &lt;code&gt;@types&lt;/code&gt; folder automatically. There&amp;rsquo;s no need to update the &lt;code&gt;tsconfig.json&lt;/code&gt; or any other configuration file.&lt;/p&gt;
+&lt;h2 id=&#34;who-creates-the-type-declaration-packages&#34;&gt;Who Creates the Type Declaration Packages?&lt;/h2&gt;
+&lt;p&gt;Behind the scenes, the type declaration packages are automatically created by the &lt;a class=&#34;link&#34; href=&#34;https://github.com/Microsoft/types-publisher&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;types-publisher&lt;/a&gt; service. It publishes the contents of the &lt;a class=&#34;link&#34; href=&#34;https://github.com/DefinitelyTyped/DefinitelyTyped&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;DefinitelyTyped&lt;/a&gt; repository to npm. That way, typings contributed to DefinitelyTyped end up on npm, ready for consumption.&lt;/p&gt;
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://mariusschulz.com/blog/acquiring-type-declaration-files-in-typescript&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Acquiring Type Declaration Files in TypeScript — Marius Schulz&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
         <title>String Literal Types in TypeScript</title>
         <link>https://ibakuman.github.io/en/posts/typescript/typescript-evolution/046-string-literal-types-in-typescript/</link>
         <pubDate>Tue, 03 Jan 2023 21:43:12 +0800</pubDate>
@@ -10431,84 +10509,6 @@ Some examples:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://mariusschulz.com/blog/the-never-type-in-typescript&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;The never Type in TypeScript — Marius Schulz&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        </item>
-        <item>
-        <title>03. Acquiring Type Declaration Files in TypeScript</title>
-        <link>https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/</link>
-        <pubDate>Mon, 26 Dec 2022 13:30:36 +0800</pubDate>
-        
-        <guid>https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/</guid>
-        <description>&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;
-&lt;p&gt;In TypeScript 2.0, it has become significantly easier to acquire type information for JavaScript libraries. There&amp;rsquo;s no longer a need for additional tools such as &lt;a class=&#34;link&#34; href=&#34;https://github.com/typings/typings&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;typings&lt;/a&gt; or &lt;a class=&#34;link&#34; href=&#34;https://github.com/DefinitelyTyped/tsd&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;tsd&lt;/a&gt;. Instead, type declaration packages are directly available on npm.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/egghead_lesson_typescript_declarations-2x.nam2cekuwu.imm.png&#34;
-	width=&#34;1503&#34;
-	height=&#34;977&#34;
-	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/_hub7d9f1f856167c030fa4f15dd6297f9d_241414_cdc30420ec3e9ca66325b2ff29f49ab7.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/_hub7d9f1f856167c030fa4f15dd6297f9d_241414_0bfae215779dfb88dae331a453500c3e.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;153&#34;
-		data-flex-basis=&#34;369px&#34;
-	
-&gt;
-&lt;/p&gt;
-&lt;h2 id=&#34;installing-type-declaration-packages-from-npm&#34;&gt;Installing Type Declaration Packages from npm&lt;/h2&gt;
-&lt;p&gt;Let&amp;rsquo;s assume you want to use Lodash in one of your TypeScript projects:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;npm install --save lodash
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;After running this command, Lodash is installed into the &lt;code&gt;node_modules&lt;/code&gt; folder and is also listed as a dependency within your project&amp;rsquo;s &lt;code&gt;package.json&lt;/code&gt; file. However, there&amp;rsquo;s no type information available for TypeScript because Lodash is written in JavaScript and doesn&amp;rsquo;t ship with type declaration files.&lt;/p&gt;
-&lt;p&gt;Using npm again, you can now install the &lt;code&gt;@types/lodash&lt;/code&gt; package which contains the corresponding type declarations that TypeScript needs:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm.png&#34;
-	width=&#34;1308&#34;
-	height=&#34;652&#34;
-	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm_huec5d1fbc98e029201076cdcd67616393_27249_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm_huec5d1fbc98e029201076cdcd67616393_27249_1024x0_resize_box_3.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;200&#34;
-		data-flex-basis=&#34;481px&#34;
-	
-&gt;
-&lt;/p&gt;
-&lt;p&gt;Note how the type declaration package is named after the original npm package, prefixed with &lt;code&gt;@types/&lt;/code&gt;. Most packages should follow this convention, but you can always fall back to &lt;a class=&#34;link&#34; href=&#34;https://www.typescriptlang.org/dt/search&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Type Search&lt;/a&gt; to find the name of the type declaration package for a given library.&lt;/p&gt;
-&lt;p&gt;The benefit of using npm for managing type information is that type declaration packages will be listed in your &lt;code&gt;package.json&lt;/code&gt; alongside your other dependencies. In addition, they can be properly versioned, just like any other npm package. Plus, you only need a single package manager, npm, that is set up already anyway.&lt;/p&gt;
-&lt;h2 id=&#34;where-do-the-type-declaration-files-go&#34;&gt;Where Do the Type Declaration Files Go?&lt;/h2&gt;
-&lt;p&gt;Like any other npm package, the type declaration packages are installed in the &lt;code&gt;node_modules&lt;/code&gt; folder. Within it, there&amp;rsquo;s a &lt;code&gt;@types&lt;/code&gt; folder which contains all typings. In the above example, it&amp;rsquo;ll contain a &lt;code&gt;lodash&lt;/code&gt; folder, within which you&amp;rsquo;ll find the &lt;code&gt;index.d.ts&lt;/code&gt; file with all the Lodash type information:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm.png&#34;
-	width=&#34;512&#34;
-	height=&#34;496&#34;
-	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm_hu56476acc6b6aafd0ff0e1d05353c624c_33731_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm_hu56476acc6b6aafd0ff0e1d05353c624c_33731_1024x0_resize_box_3.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;103&#34;
-		data-flex-basis=&#34;247px&#34;
-	
-&gt;
-&lt;/p&gt;
-&lt;p&gt;The TypeScript compiler understands this convention and will pick up type declarations within the &lt;code&gt;@types&lt;/code&gt; folder automatically. There&amp;rsquo;s no need to update the &lt;code&gt;tsconfig.json&lt;/code&gt; or any other configuration file.&lt;/p&gt;
-&lt;h2 id=&#34;who-creates-the-type-declaration-packages&#34;&gt;Who Creates the Type Declaration Packages?&lt;/h2&gt;
-&lt;p&gt;Behind the scenes, the type declaration packages are automatically created by the &lt;a class=&#34;link&#34; href=&#34;https://github.com/Microsoft/types-publisher&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;types-publisher&lt;/a&gt; service. It publishes the contents of the &lt;a class=&#34;link&#34; href=&#34;https://github.com/DefinitelyTyped/DefinitelyTyped&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;DefinitelyTyped&lt;/a&gt; repository to npm. That way, typings contributed to DefinitelyTyped end up on npm, ready for consumption.&lt;/p&gt;
-&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://mariusschulz.com/blog/acquiring-type-declaration-files-in-typescript&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Acquiring Type Declaration Files in TypeScript — Marius Schulz&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         </item>

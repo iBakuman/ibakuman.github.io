@@ -6,14 +6,49 @@
         <description>Recent content in Go on iBakuman&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Mon, 30 Jan 2023 21:08:46 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/en/categories/go/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sun, 14 May 2023 00:17:16 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/en/categories/go/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Effective Go: Names Section</title>
+        <link>https://ibakuman.github.io/en/posts/go/effective-go/002-names/</link>
+        <pubDate>Sun, 14 May 2023 00:17:16 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/en/posts/go/effective-go/002-names/</guid>
+        <description>&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;
+&lt;p&gt;Names are as important in Go as in any other language. They even have semantic effect: the visibility of a name outside a package is determined by whether its first character is upper case. It&amp;rsquo;s therefore worth spending a little time talking about naming conventions in Go programs.&lt;/p&gt;
+&lt;h2 id=&#34;package-names&#34;&gt;Package names&lt;/h2&gt;
+&lt;p&gt;When a package is imported, the package name becomes an accessor for the contents. After&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;bytes&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;the importing package can talk about &lt;code&gt;bytes.Buffer&lt;/code&gt;. It&amp;rsquo;s helpful if everyone using the package can use the same name to refer to its contents, which implies that the package name should be good: short, concise, evocative. By convention, packages are given lower case, single-word names; there should be no need for underscores or mixedCaps. Err on the side of brevity, since everyone using your package will be typing that name. And don&amp;rsquo;t worry about collisions &lt;em&gt;a priori&lt;/em&gt;. The package name is only the default name for imports; it need not be unique across all source code, and in the rare case of a collision the importing package can choose a different name to use locally. In any case, confusion is rare because the file name in the import determines just which package is being used.&lt;/p&gt;
+&lt;p&gt;Another convention is that the package name is the base name of its source directory; the package in &lt;code&gt;src/encoding/base64&lt;/code&gt; is imported as &lt;code&gt;&amp;quot;encoding/base64&amp;quot;&lt;/code&gt; but has name &lt;code&gt;base64&lt;/code&gt;, not &lt;code&gt;encoding_base64&lt;/code&gt; and not &lt;code&gt;encodingBase64&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The importer of a package will use the name to refer to its contents, so exported names in the package can use that fact to avoid repetition. (Don&amp;rsquo;t use the &lt;code&gt;import .&lt;/code&gt; notation, which can simplify tests that must run outside the package they are testing, but should otherwise be avoided.) For instance, the buffered reader type in the &lt;code&gt;bufio&lt;/code&gt; package is called &lt;code&gt;Reader&lt;/code&gt;, not &lt;code&gt;BufReader&lt;/code&gt;, because users see it as &lt;code&gt;bufio.Reader&lt;/code&gt;, which is a clear, concise name. Moreover, because imported entities are always addressed with their package name, &lt;code&gt;bufio.Reader&lt;/code&gt; does not conflict with &lt;code&gt;io.Reader&lt;/code&gt;. Similarly, the function to make new instances of &lt;code&gt;ring.Ring&lt;/code&gt;—which is the definition of a &lt;em&gt;constructor&lt;/em&gt; in Go—would normally be called &lt;code&gt;NewRing&lt;/code&gt;, but since &lt;code&gt;Ring&lt;/code&gt; is the only type exported by the package, and since the package is called &lt;code&gt;ring&lt;/code&gt;, it&amp;rsquo;s called just &lt;code&gt;New&lt;/code&gt;, which clients of the package see as &lt;code&gt;ring.New&lt;/code&gt;. Use the package structure to help you choose good names.&lt;/p&gt;
+&lt;p&gt;Another short example is &lt;code&gt;once.Do&lt;/code&gt;; &lt;code&gt;once.Do(setup)&lt;/code&gt; reads well and would not be improved by writing &lt;code&gt;once.DoOrWaitUntilDone(setup)&lt;/code&gt;. Long names don&amp;rsquo;t automatically make things more readable. A helpful doc comment can often be more valuable than an extra long name.&lt;/p&gt;
+&lt;h2 id=&#34;getters&#34;&gt;Getters&lt;/h2&gt;
+&lt;p&gt;Go doesn&amp;rsquo;t provide automatic support for getters and setters. There&amp;rsquo;s nothing wrong with providing getters and setters yourself, and it&amp;rsquo;s often appropriate to do so, but it&amp;rsquo;s neither idiomatic nor necessary to put &lt;code&gt;Get&lt;/code&gt; into the getter&amp;rsquo;s name. If you have a field called &lt;code&gt;owner&lt;/code&gt; (lower case, unexported), the getter method should be called &lt;code&gt;Owner&lt;/code&gt; (upper case, exported), not &lt;code&gt;GetOwner&lt;/code&gt;. The use of upper-case names for export provides the hook to discriminate the field from the method. A setter function, if needed, will likely be called &lt;code&gt;SetOwner&lt;/code&gt;. Both names read well in practice:&lt;/p&gt;
+&lt;p&gt;owner := obj.Owner()
+if owner != user {
+obj.SetOwner(user)
+}&lt;/p&gt;
+&lt;h2 id=&#34;interface-names&#34;&gt;Interface names&lt;/h2&gt;
+&lt;p&gt;By convention, one-method interfaces are named by the method name plus an -er suffix or similar modification to construct an agent noun: &lt;code&gt;Reader&lt;/code&gt;, &lt;code&gt;Writer&lt;/code&gt;, &lt;code&gt;Formatter&lt;/code&gt;, &lt;code&gt;CloseNotifier&lt;/code&gt; etc.&lt;/p&gt;
+&lt;p&gt;There are a number of such names and it&amp;rsquo;s productive to honor them and the function names they capture. &lt;code&gt;Read&lt;/code&gt;, &lt;code&gt;Write&lt;/code&gt;, &lt;code&gt;Close&lt;/code&gt;, &lt;code&gt;Flush&lt;/code&gt;, &lt;code&gt;String&lt;/code&gt; and so on have canonical signatures and meanings. To avoid confusion, don&amp;rsquo;t give your method one of those names unless it has the same signature and meaning. Conversely, if your type implements a method with the same meaning as a method on a well-known type, give it the same name and signature; call your string-converter method &lt;code&gt;String&lt;/code&gt; not &lt;code&gt;ToString&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;mixedcaps&#34;&gt;MixedCaps&lt;/h2&gt;
+&lt;p&gt;Finally, the convention in Go is to use &lt;code&gt;MixedCaps&lt;/code&gt; or &lt;code&gt;mixedCaps&lt;/code&gt; rather than underscores to write multiword names.&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>Go Slices: usage and internals</title>
-        <link>https://ibakuman.github.io/en/posts/go/blog/001-go-slices-usage-and-internals/</link>
+        <link>https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/</link>
         <pubDate>Mon, 30 Jan 2023 21:08:46 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/en/posts/go/blog/001-go-slices-usage-and-internals/</guid>
+        <guid>https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/</guid>
         <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;Go’s slice type provides a convenient and efficient means of working with sequences of typed data. Slices are &lt;span class=&#34;ibakuman-inline-translation&#34;&gt;analogous&lt;sub&gt; { 相似的，类似的 }&lt;/sub&gt;&lt;/span&gt; to arrays in other languages, but have some unusual properties. This article will look at what slices are and how they are used.&lt;/p&gt;
+&lt;p&gt;Go’s slice type provides a convenient and efficient means of working with sequences of typed data. Slices are &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#analogous&#34; &gt;analogous&lt;/a&gt; to arrays in other languages, but have some unusual properties. This article will look at what slices are and how they are used.&lt;/p&gt;
 &lt;h2 id=&#34;arrays&#34;&gt;Arrays&lt;/h2&gt;
 &lt;p&gt;The slice type is an abstraction built on top of Go’s array type, and so to understand slices we must first understand arrays.&lt;/p&gt;
 &lt;p&gt;An array type definition specifies a length and an element type. For example, the type &lt;code&gt;[4]int&lt;/code&gt; represents an array of four integers. An array’s size is fixed; its length is part of its type (&lt;code&gt;[4]int&lt;/code&gt; and &lt;code&gt;[5]int&lt;/code&gt; are distinct, incompatible types). Arrays can be indexed in the usual way, so the expression &lt;code&gt;s[n]&lt;/code&gt; accesses the nth element, starting from zero.&lt;/p&gt;
@@ -41,34 +76,36 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;The in-memory representation of &lt;code&gt;[4]int&lt;/code&gt; is just four integer values laid out sequentially:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://go.dev/blog/slices-intro/slice-array.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/assets/https!go.dev!blog!slices-intro!slice-array.png&#34;
+	width=&#34;517&#34;
+	height=&#34;68&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/assets/https!go.dev!blog!slices-intro!slice-array_hu5a3110f7f8a91ffcff07d25db842332b_1237_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/assets/https!go.dev!blog!slices-intro!slice-array_hu5a3110f7f8a91ffcff07d25db842332b_1237_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;https://go.dev/blog/slices-intro/slice-array.png&#34;
 	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;760&#34;
+		data-flex-basis=&#34;1824px&#34;
 	
 &gt;
 &lt;/p&gt;
-&lt;p&gt;Go’s arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (as would be the case in C). This means that when you assign or pass around an array value you will make a copy of its contents. (To avoid the copy you could pass a &lt;em&gt;pointer&lt;/em&gt; to the array, but then that’s a pointer to an array, not an array.) &lt;span class=&#34;ibakuman-inline-note&#34;&gt;One way to think about arrays is as a sort of struct but with indexed rather than named fields: a fixed-size composite value.&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Go’s arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (&lt;a class=&#34;link&#34; href=&#34;..//posts/citation/english/section-001##as-would-be-the-case-in-c&#34; &gt;as would be the case in C&lt;/a&gt;). This means that when you assign or pass around an array value you will make a copy of its contents. (To avoid the copy you could pass a &lt;em&gt;pointer&lt;/em&gt; to the array, but then that’s a pointer to an array, not an array.) One way to think about arrays is as a sort of struct but with indexed rather than named fields: a fixed-size composite value.&lt;/p&gt;
 &lt;p&gt;An array literal can be specified like so:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Penn&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Teller&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;b := [2]string{&amp;#34;Penn&amp;#34;, &amp;#34;Teller&amp;#34;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;span class=&#34;ibakuman-inline-note&#34;&gt;Or, you can have the compiler count the array elements for you:&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;Or, you can have the compiler count the array elements for you:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Penn&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Teller&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;b := [...]string{&amp;#34;Penn&amp;#34;, &amp;#34;Teller&amp;#34;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;In both cases, the type of &lt;code&gt;b&lt;/code&gt; is &lt;code&gt;[2]string&lt;/code&gt;.&lt;/p&gt;

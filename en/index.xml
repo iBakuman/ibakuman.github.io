@@ -6,7 +6,120 @@
         <description>Recent content on iBakuman&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Fri, 05 May 2023 10:29:19 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/en/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sun, 14 May 2023 00:17:16 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/en/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>03. Acquiring Type Declaration Files in TypeScript</title>
+        <link>https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/</link>
+        <pubDate>Mon, 26 Dec 2022 13:30:36 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/</guid>
+        <description>&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;
+&lt;p&gt;In TypeScript 2.0, it has become significantly easier to acquire type information for JavaScript libraries. There&amp;rsquo;s no longer a need for additional tools such as &lt;a class=&#34;link&#34; href=&#34;https://github.com/typings/typings&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;typings&lt;/a&gt; or &lt;a class=&#34;link&#34; href=&#34;https://github.com/DefinitelyTyped/tsd&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;tsd&lt;/a&gt;. Instead, type declaration packages are directly available on npm.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/egghead_lesson_typescript_declarations-2x.nam2cekuwu.imm.png&#34;
+	width=&#34;1503&#34;
+	height=&#34;977&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/_hub7d9f1f856167c030fa4f15dd6297f9d_241414_cdc30420ec3e9ca66325b2ff29f49ab7.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/_hub7d9f1f856167c030fa4f15dd6297f9d_241414_0bfae215779dfb88dae331a453500c3e.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;153&#34;
+		data-flex-basis=&#34;369px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;installing-type-declaration-packages-from-npm&#34;&gt;Installing Type Declaration Packages from npm&lt;/h2&gt;
+&lt;p&gt;Let&amp;rsquo;s assume you want to use Lodash in one of your TypeScript projects:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;npm install --save lodash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;After running this command, Lodash is installed into the &lt;code&gt;node_modules&lt;/code&gt; folder and is also listed as a dependency within your project&amp;rsquo;s &lt;code&gt;package.json&lt;/code&gt; file. However, there&amp;rsquo;s no type information available for TypeScript because Lodash is written in JavaScript and doesn&amp;rsquo;t ship with type declaration files.&lt;/p&gt;
+&lt;p&gt;Using npm again, you can now install the &lt;code&gt;@types/lodash&lt;/code&gt; package which contains the corresponding type declarations that TypeScript needs:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm.png&#34;
+	width=&#34;1308&#34;
+	height=&#34;652&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm_huec5d1fbc98e029201076cdcd67616393_27249_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm_huec5d1fbc98e029201076cdcd67616393_27249_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;200&#34;
+		data-flex-basis=&#34;481px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;Note how the type declaration package is named after the original npm package, prefixed with &lt;code&gt;@types/&lt;/code&gt;. Most packages should follow this convention, but you can always fall back to &lt;a class=&#34;link&#34; href=&#34;https://www.typescriptlang.org/dt/search&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Type Search&lt;/a&gt; to find the name of the type declaration package for a given library.&lt;/p&gt;
+&lt;p&gt;The benefit of using npm for managing type information is that type declaration packages will be listed in your &lt;code&gt;package.json&lt;/code&gt; alongside your other dependencies. In addition, they can be properly versioned, just like any other npm package. Plus, you only need a single package manager, npm, that is set up already anyway.&lt;/p&gt;
+&lt;h2 id=&#34;where-do-the-type-declaration-files-go&#34;&gt;Where Do the Type Declaration Files Go?&lt;/h2&gt;
+&lt;p&gt;Like any other npm package, the type declaration packages are installed in the &lt;code&gt;node_modules&lt;/code&gt; folder. Within it, there&amp;rsquo;s a &lt;code&gt;@types&lt;/code&gt; folder which contains all typings. In the above example, it&amp;rsquo;ll contain a &lt;code&gt;lodash&lt;/code&gt; folder, within which you&amp;rsquo;ll find the &lt;code&gt;index.d.ts&lt;/code&gt; file with all the Lodash type information:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm.png&#34;
+	width=&#34;512&#34;
+	height=&#34;496&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm_hu56476acc6b6aafd0ff0e1d05353c624c_33731_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm_hu56476acc6b6aafd0ff0e1d05353c624c_33731_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;103&#34;
+		data-flex-basis=&#34;247px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;The TypeScript compiler understands this convention and will pick up type declarations within the &lt;code&gt;@types&lt;/code&gt; folder automatically. There&amp;rsquo;s no need to update the &lt;code&gt;tsconfig.json&lt;/code&gt; or any other configuration file.&lt;/p&gt;
+&lt;h2 id=&#34;who-creates-the-type-declaration-packages&#34;&gt;Who Creates the Type Declaration Packages?&lt;/h2&gt;
+&lt;p&gt;Behind the scenes, the type declaration packages are automatically created by the &lt;a class=&#34;link&#34; href=&#34;https://github.com/Microsoft/types-publisher&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;types-publisher&lt;/a&gt; service. It publishes the contents of the &lt;a class=&#34;link&#34; href=&#34;https://github.com/DefinitelyTyped/DefinitelyTyped&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;DefinitelyTyped&lt;/a&gt; repository to npm. That way, typings contributed to DefinitelyTyped end up on npm, ready for consumption.&lt;/p&gt;
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://mariusschulz.com/blog/acquiring-type-declaration-files-in-typescript&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Acquiring Type Declaration Files in TypeScript — Marius Schulz&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
+        <title>Effective Go: Names Section</title>
+        <link>https://ibakuman.github.io/en/posts/go/effective-go/002-names/</link>
+        <pubDate>Sun, 14 May 2023 00:17:16 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/en/posts/go/effective-go/002-names/</guid>
+        <description>&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;
+&lt;p&gt;Names are as important in Go as in any other language. They even have semantic effect: the visibility of a name outside a package is determined by whether its first character is upper case. It&amp;rsquo;s therefore worth spending a little time talking about naming conventions in Go programs.&lt;/p&gt;
+&lt;h2 id=&#34;package-names&#34;&gt;Package names&lt;/h2&gt;
+&lt;p&gt;When a package is imported, the package name becomes an accessor for the contents. After&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;bytes&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;the importing package can talk about &lt;code&gt;bytes.Buffer&lt;/code&gt;. It&amp;rsquo;s helpful if everyone using the package can use the same name to refer to its contents, which implies that the package name should be good: short, concise, evocative. By convention, packages are given lower case, single-word names; there should be no need for underscores or mixedCaps. Err on the side of brevity, since everyone using your package will be typing that name. And don&amp;rsquo;t worry about collisions &lt;em&gt;a priori&lt;/em&gt;. The package name is only the default name for imports; it need not be unique across all source code, and in the rare case of a collision the importing package can choose a different name to use locally. In any case, confusion is rare because the file name in the import determines just which package is being used.&lt;/p&gt;
+&lt;p&gt;Another convention is that the package name is the base name of its source directory; the package in &lt;code&gt;src/encoding/base64&lt;/code&gt; is imported as &lt;code&gt;&amp;quot;encoding/base64&amp;quot;&lt;/code&gt; but has name &lt;code&gt;base64&lt;/code&gt;, not &lt;code&gt;encoding_base64&lt;/code&gt; and not &lt;code&gt;encodingBase64&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The importer of a package will use the name to refer to its contents, so exported names in the package can use that fact to avoid repetition. (Don&amp;rsquo;t use the &lt;code&gt;import .&lt;/code&gt; notation, which can simplify tests that must run outside the package they are testing, but should otherwise be avoided.) For instance, the buffered reader type in the &lt;code&gt;bufio&lt;/code&gt; package is called &lt;code&gt;Reader&lt;/code&gt;, not &lt;code&gt;BufReader&lt;/code&gt;, because users see it as &lt;code&gt;bufio.Reader&lt;/code&gt;, which is a clear, concise name. Moreover, because imported entities are always addressed with their package name, &lt;code&gt;bufio.Reader&lt;/code&gt; does not conflict with &lt;code&gt;io.Reader&lt;/code&gt;. Similarly, the function to make new instances of &lt;code&gt;ring.Ring&lt;/code&gt;—which is the definition of a &lt;em&gt;constructor&lt;/em&gt; in Go—would normally be called &lt;code&gt;NewRing&lt;/code&gt;, but since &lt;code&gt;Ring&lt;/code&gt; is the only type exported by the package, and since the package is called &lt;code&gt;ring&lt;/code&gt;, it&amp;rsquo;s called just &lt;code&gt;New&lt;/code&gt;, which clients of the package see as &lt;code&gt;ring.New&lt;/code&gt;. Use the package structure to help you choose good names.&lt;/p&gt;
+&lt;p&gt;Another short example is &lt;code&gt;once.Do&lt;/code&gt;; &lt;code&gt;once.Do(setup)&lt;/code&gt; reads well and would not be improved by writing &lt;code&gt;once.DoOrWaitUntilDone(setup)&lt;/code&gt;. Long names don&amp;rsquo;t automatically make things more readable. A helpful doc comment can often be more valuable than an extra long name.&lt;/p&gt;
+&lt;h2 id=&#34;getters&#34;&gt;Getters&lt;/h2&gt;
+&lt;p&gt;Go doesn&amp;rsquo;t provide automatic support for getters and setters. There&amp;rsquo;s nothing wrong with providing getters and setters yourself, and it&amp;rsquo;s often appropriate to do so, but it&amp;rsquo;s neither idiomatic nor necessary to put &lt;code&gt;Get&lt;/code&gt; into the getter&amp;rsquo;s name. If you have a field called &lt;code&gt;owner&lt;/code&gt; (lower case, unexported), the getter method should be called &lt;code&gt;Owner&lt;/code&gt; (upper case, exported), not &lt;code&gt;GetOwner&lt;/code&gt;. The use of upper-case names for export provides the hook to discriminate the field from the method. A setter function, if needed, will likely be called &lt;code&gt;SetOwner&lt;/code&gt;. Both names read well in practice:&lt;/p&gt;
+&lt;p&gt;owner := obj.Owner()
+if owner != user {
+obj.SetOwner(user)
+}&lt;/p&gt;
+&lt;h2 id=&#34;interface-names&#34;&gt;Interface names&lt;/h2&gt;
+&lt;p&gt;By convention, one-method interfaces are named by the method name plus an -er suffix or similar modification to construct an agent noun: &lt;code&gt;Reader&lt;/code&gt;, &lt;code&gt;Writer&lt;/code&gt;, &lt;code&gt;Formatter&lt;/code&gt;, &lt;code&gt;CloseNotifier&lt;/code&gt; etc.&lt;/p&gt;
+&lt;p&gt;There are a number of such names and it&amp;rsquo;s productive to honor them and the function names they capture. &lt;code&gt;Read&lt;/code&gt;, &lt;code&gt;Write&lt;/code&gt;, &lt;code&gt;Close&lt;/code&gt;, &lt;code&gt;Flush&lt;/code&gt;, &lt;code&gt;String&lt;/code&gt; and so on have canonical signatures and meanings. To avoid confusion, don&amp;rsquo;t give your method one of those names unless it has the same signature and meaning. Conversely, if your type implements a method with the same meaning as a method on a well-known type, give it the same name and signature; call your string-converter method &lt;code&gt;String&lt;/code&gt; not &lt;code&gt;ToString&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;mixedcaps&#34;&gt;MixedCaps&lt;/h2&gt;
+&lt;p&gt;Finally, the convention in Go is to use &lt;code&gt;MixedCaps&lt;/code&gt; or &lt;code&gt;mixedCaps&lt;/code&gt; rather than underscores to write multiword names.&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>Segment Tree</title>
         <link>https://ibakuman.github.io/en/posts/algorithm/segment-tree/</link>
         <pubDate>Fri, 05 May 2023 10:29:19 +0800</pubDate>
@@ -29,7 +142,7 @@ $r$  (i.e. computing the sum  
 $\sum_{i=l}^r a[i]$ ), and also handle changing values of the elements in the array (i.e. perform assignments of the form  
 $a[i] = x$ ). The Segment Tree should be able to process both queries in  
 $O(\log n)$  time.&lt;/p&gt;
-&lt;p&gt;This is an improvement over the simpler approaches. A &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#naive&#34; &gt;naive&lt;/a&gt; array implementation - just using a simple array - can update elements in  
+&lt;p&gt;This is an improvement over the simpler approaches. A &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#naive&#34; &gt;naive&lt;/a&gt; array implementation - just using a simple array - can update elements in  
 $O(1)$ , but requires  
 $O(n)$  to compute each sum query. And precomputed prefix sums can compute sum queries in  
 $O(1)$ , but updating an array element requires  
@@ -61,7 +174,7 @@ $a = [1, 3, -2, 8, -7]$ :&lt;/p&gt;
 &lt;p&gt;From this short description of the data structure, we can already conclude that a Segment Tree only requires a linear number of vertices. The first level of the tree contains a single node (the root), the second level will contain two vertices, in the third it will contain four vertices, until the number of vertices reaches  
 $n$ . Thus the number of vertices in the worst case can be estimated by the sum  
 $1 + 2 + 4 + \dots + 2^{\lceil\log_2 n\rceil} \lt 2^{\lceil\log_2 n\rceil + 1} \lt 4n$ .&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#it-is-worth-noting&#34; &gt;It is worth noting&lt;/a&gt; that whenever
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#it-is-worth-noting&#34; &gt;It is worth noting&lt;/a&gt; that whenever
 $n$  is not a power of two, not all levels of the Segment Tree will be completely filled. We can see that behavior in the image. For now we can forget about this fact, but it will become important later during the implementation.&lt;/p&gt;
 &lt;p&gt;The height of the Segment Tree is  
 $O(\log n)$ , because when going down from the root to the leaves the size of the segments decreases approximately by half.&lt;/p&gt;
@@ -106,8 +219,8 @@ $a[tl \dots tm]$  and the right child the segment  
 $a[tm+1 \dots tr]$ , we compute the sum query  
 $a[l \dots tm]$  using the left child, and the sum query  
 $a[tm+1 \dots r]$  using the right child.&lt;/p&gt;
-&lt;p&gt;So processing a sum query is a function that recursively calls itself once with either the left or the right child (without changing the query boundaries), or twice, once for the left and once for the right child (by splitting the query into two subqueries). And the recursion ends, whenever the boundaries of the current query segment &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#coincide-with&#34; &gt;coincides with&lt;/a&gt; the boundaries of the segment of the current vertex. In that case the answer will be the precomputed value of the sum of this segment, which is stored in the tree.&lt;/p&gt;
-&lt;p&gt;In other words, the calculation of the query is a traversal of the tree, which &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#spread-through&#34; &gt;spreads through&lt;/a&gt; all necessary branches of the tree, and uses the precomputed sum values of the segments in the tree.&lt;/p&gt;
+&lt;p&gt;So processing a sum query is a function that recursively calls itself once with either the left or the right child (without changing the query boundaries), or twice, once for the left and once for the right child (by splitting the query into two subqueries). And the recursion ends, whenever the boundaries of the current query segment &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#coincide-with&#34; &gt;coincides with&lt;/a&gt; the boundaries of the segment of the current vertex. In that case the answer will be the precomputed value of the sum of this segment, which is stored in the tree.&lt;/p&gt;
+&lt;p&gt;In other words, the calculation of the query is a traversal of the tree, which &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#spread-through&#34; &gt;spreads through&lt;/a&gt; all necessary branches of the tree, and uses the precomputed sum values of the segments in the tree.&lt;/p&gt;
 &lt;p&gt;Obviously we will start the traversal from the root vertex of the Segment Tree.&lt;/p&gt;
 &lt;p&gt;The procedure is illustrated in the following image. Again the array  
 $a = [1, 3, -2, 8, -7]$  is used, and here we want to compute the sum  
@@ -131,11 +244,11 @@ $-2 + 1 = -1$ .&lt;/p&gt;
 &lt;p&gt;Why is the complexity of this algorithm  
 $O(\log n)$ ? To show this complexity we look at each level of the tree. It turns out, that for each level we only visit not more than four vertices. And since the height of the tree is  
 $O(\log n)$ , we receive the desired running time.&lt;/p&gt;
-&lt;p&gt;We can show that this &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#proposition&#34; &gt;proposition&lt;/a&gt; (at most four vertices each level) is true by &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#iduction&#34; &gt;induction&lt;/a&gt;. At the first level, we only visit one vertex, the root vertex, so here we visit less than four vertices. Now let&amp;rsquo;s look at an arbitrary level. By induction &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#hypothesis&#34; &gt;hypothesis&lt;/a&gt;, we visit at most four vertices. If we only visit at most two vertices, the next level has at most four vertices. That trivial, because each vertex can only cause at most two recursive calls. So let&amp;rsquo;s assume that we visit three or four vertices in the current level. From those vertices, we will analyze the vertices in the middle more carefully. Since the sum query asks for the sum of a continuous subarray, we know that segments corresponding to the visited vertices in the middle will be completely covered by the segment of the sum query. Therefore these vertices will not make any recursive calls. So only the most left, and the most right vertex will have the potential to make recursive calls. And those will only create at most four recursive calls, so also the next level will satisfy the assertion. We can say that one branch approaches the left boundary of the query, and the second branch approaches the right one.&lt;/p&gt;
+&lt;p&gt;We can show that this &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#proposition&#34; &gt;proposition&lt;/a&gt; (at most four vertices each level) is true by &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#iduction&#34; &gt;induction&lt;/a&gt;. At the first level, we only visit one vertex, the root vertex, so here we visit less than four vertices. Now let&amp;rsquo;s look at an arbitrary level. By induction &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#hypothesis&#34; &gt;hypothesis&lt;/a&gt;, we visit at most four vertices. If we only visit at most two vertices, the next level has at most four vertices. That trivial, because each vertex can only cause at most two recursive calls. So let&amp;rsquo;s assume that we visit three or four vertices in the current level. From those vertices, we will analyze the vertices in the middle more carefully. Since the sum query asks for the sum of a continuous subarray, we know that segments corresponding to the visited vertices in the middle will be completely covered by the segment of the sum query. Therefore these vertices will not make any recursive calls. So only the most left, and the most right vertex will have the potential to make recursive calls. And those will only create at most four recursive calls, so also the next level will satisfy the assertion. We can say that one branch approaches the left boundary of the query, and the second branch approaches the right one.&lt;/p&gt;
 &lt;p&gt;Therefore we visit at most  
 $4 \log n$  vertices in total, and that is equal to a running time of  
 $O(\log n)$ .&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#in-conclusion&#34; &gt;In conclusion&lt;/a&gt; the query works by dividing the input segment into several sub-segments for which all the sums are already precomputed and stored in the tree. And if we stop partitioning whenever the query segment coincides with the vertex segment, then we only need  
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#in-conclusion&#34; &gt;In conclusion&lt;/a&gt; the query works by dividing the input segment into several sub-segments for which all the sums are already precomputed and stored in the tree. And if we stop partitioning whenever the query segment coincides with the vertex segment, then we only need  
 $O(\log n)$  such segments, which gives the effectiveness of the Segment Tree.&lt;/p&gt;
 &lt;h3 id=&#34;update-queries&#34;&gt;Update queries&lt;/h3&gt;
 &lt;p&gt;Now we want to modify a specific element in the array, let&amp;rsquo;s say we want to do the assignment  
@@ -163,7 +276,7 @@ $a[2] = 3$ . The green vertices are the vertices that we visit and update.&lt;
 &gt;
 &lt;/p&gt;
 &lt;h3 id=&#34;implementation&#34;&gt;Implementation&lt;/h3&gt;
-&lt;p&gt;The &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#main-consideration&#34; &gt;main consideration&lt;/a&gt; is how to store the Segment Tree. Of course we can define a  
+&lt;p&gt;The &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#main-consideration&#34; &gt;main consideration&lt;/a&gt; is how to store the Segment Tree. Of course we can define a  
 $\text{Vertex}$  struct and create objects, that store the boundaries of the segment, its sum and additionally also pointers to its child vertices. However, this requires storing a lot of redundant information in the form of pointers. We will use a simple trick to make this a lot more efficient by using an implicit data structure: Only storing the sums in an array. (A similar method is used for binary heaps). The sum of the root vertex at index 1, the sums of its two child vertices at indices 2 and 3, the sums of the children of those two vertices at indices 4 to 7, and so on. With 1-indexing, conveniently the left child of a vertex at index  
 $i$  is stored at index  
 $2i$ , and the right one at index  
@@ -223,7 +336,7 @@ $v$  and the boundaries  
 $tl$  and  
 $tr$ ) and also the information about the boundaries of the query,  
 $l$  and  
-$r$ . In order to simplify the code, this function always does two recursive calls, even if only one is necessary - in that case the &lt;a class=&#34;link&#34; href=&#34;../../english/algorithm/#superfluous&#34; &gt;superfluous&lt;/a&gt; recursive call will have  
+$r$ . In order to simplify the code, this function always does two recursive calls, even if only one is necessary - in that case the &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#superfluous&#34; &gt;superfluous&lt;/a&gt; recursive call will have  
 $l &amp;gt; r$ , and this can easily be caught using an additional check at the beginning of the function.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -435,62 +548,13 @@ $k$  zeros, by returning -1.&lt;/p&gt;
 </description>
         </item>
         <item>
-        <title>English Workd</title>
-        <link>https://ibakuman.github.io/en/posts/english/algorithm/</link>
-        <pubDate>Thu, 04 May 2023 10:59:44 +0800</pubDate>
-        
-        <guid>https://ibakuman.github.io/en/posts/english/algorithm/</guid>
-        <description>&lt;h2 id=&#34;when-it-comes-to&#34;&gt;when it comes to&lt;/h2&gt;
-&lt;p&gt;&amp;ldquo;当提到&amp;rdquo; 这个片语在英语中常用于引出某个话题或问题，表示“涉及到”、“说到”、“提及”的意思。它是一个非常常见的表达方式，可以用来引出任意话题，讨论或解决问题，是英语口语和书面语中非常重要的一个表达方式。&lt;/p&gt;
-&lt;h2 id=&#34;it-is-worth-noting&#34;&gt;It is worth noting&lt;/h2&gt;
-&lt;p&gt;值得注意。
-这是一个非常常见的表达方式，通常用来引起别人的注意力，强调一个观点或提醒某些重要的信息或细节。使用这个表达方式可以使你的观点更加明显和有说服力。&lt;/p&gt;
-&lt;h2 id=&#34;coincide-with&#34;&gt;coincide with&lt;/h2&gt;
-&lt;p&gt;和&amp;hellip;巧合/同时发生&lt;/p&gt;
-&lt;p&gt;“coincides with”的意思是指两个或多个事件、行为或情况在同一时间发生或出现。例如，“My birthday coincides with Christmas day”就是在表达“我的生日和圣诞节在同一天”这一意思。在使用“coincides with”时要注意上下文语境，确保能够清晰地表达出所要表达的含义。&lt;/p&gt;
-&lt;h2 id=&#34;spread-through&#34;&gt;spread through&lt;/h2&gt;
-&lt;p&gt;在计算机科学领域，&amp;ldquo;spreads through&amp;rdquo; 意味着某种技术、思想或现象正在迅速传播和普及。以下是一些可能的应用场景和例句：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;在信息安全领域，病毒或恶意软件往往会通过计算机网络快速传播（spread through）受感染的计算机和设备。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;在社交媒体和互联网领域，流行词汇、趋势话题或互联网文化现象通常会通过社交媒体平台或互联网论坛广泛传播（spread through）。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;在软件开发和部署过程中，新技术、工具或框架开始被开发团队广泛采用并传播（spread through）整个组织。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;在人工智能和机器学习领域，新的算法、模型或深度学习架构可能会开始在学术界和工业界中迅速传播（spread through）。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;因此，&amp;ldquo;spreads through&amp;rdquo; 的应用范围非常广泛，可以用于描述各种不同类型的传播现象。&lt;/p&gt;
-&lt;h2 id=&#34;induction&#34;&gt;induction&lt;/h2&gt;
-&lt;p&gt;归纳是通过已知的事物或经验，推断出普遍性规律或结论的方法。归纳是科学研究中重要的方法之一，它可以用来总结和概括经验，发现规律和原则，从而使人们更深入地认识事物的本质。同时，归纳也具有一定的局限性，由于归纳结论是建立在有限的、部分的和具体的事实基础之上，因此其结果可能不够准确或全面，需要不断地进行修正和完善。&lt;/p&gt;
-&lt;h2 id=&#34;hypothesis&#34;&gt;hypothesis&lt;/h2&gt;
-&lt;p&gt;假设（hypothesis）是一种科学推断或试探性推论。它通常是建立在先前观察的事实或数据的基础上，用于预测未来的可能性或进行实验验证。制定假设可以帮助科学家们探索新的想法，并在实验中进行测试，从而推动科学的发展。然而，假设也存在一些限制，例如很难确定一个完美的假设并排除对实验结果干扰的其他因素。因此，我们需要谨慎地对待假设，并且总是需要更多的研究和证据来进一步验证或修正假设。&lt;/p&gt;
-&lt;h2 id=&#34;proposition&#34;&gt;proposition&lt;/h2&gt;
-&lt;p&gt;&amp;ldquo;Proposition&amp;rdquo; (提案)是指一个想法或建议，通常是针对某个问题或情况提出的。在商业或政治上，提出一个好的提案可能会带来巨大的收益或成就。因此，能够提出清晰、准确、可行、富有创意的提案能力是一项非常重要的技能。&lt;/p&gt;
-&lt;h2 id=&#34;at-most&#34;&gt;at most&lt;/h2&gt;
-&lt;p&gt;“at most” in Chinese (Simplified) can be translated as “最多” (zuìduō). This phrase means a maximum amount or limit that cannot be exceeded. It implies that the amount or quantity being discussed cannot go any higher than the specified number. For example, if someone says, “I can stay for 2 hours at most”, it means they won’t be able to stay any longer than 2 hours. In general, “at most” is a useful phrase for indicating a boundary or limit, and can be used in a variety of situations such as time, duration, quantity, or distance.&lt;/p&gt;
-&lt;h2 id=&#34;in-conclusion&#34;&gt;in conclusion&lt;/h2&gt;
-&lt;p&gt;作为结论，总之这个词汇可以用来总结文章或表达某种结论。在学术论文中，作者通常会使用&amp;quot;总之&amp;quot;来概括整个研究并强调重点。此外，&amp;ldquo;总之&amp;quot;也可以用于日常交流中，表示总结某个观点或提醒对方注意某个要点。总之，这是一个非常实用的词汇。&lt;/p&gt;
-&lt;h2 id=&#34;main-consideration&#34;&gt;main consideration&lt;/h2&gt;
-&lt;p&gt;&amp;ldquo;主要考虑&amp;quot;是一个非常关键的概念。在人们做出任何决策之前，都需要进行主要考虑，并对各种因素进行权衡。这些因素可能包括成本、时间、可行性、安全性等等。在商业领域中，主要考虑对于企业制定战略、制定业务计划、投资和开发产品等方面非常重要。在个人生活中，主要考虑可以帮助我们做出明智的决策，以实现自己的个人目标和追求幸福的愿望。因此，理解主要考虑的概念十分重要，这将帮助我们做出明智和有根据的决策。&lt;/p&gt;
-&lt;h2 id=&#34;superfluous&#34;&gt;superfluous&lt;/h2&gt;
-&lt;p&gt;&amp;ldquo;Superfluous&amp;rdquo; refers to something that is unnecessary and unneeded. In other words, it is excessive or surplus to requirements. It is commonly used to describe something that is extra or redundant and does not add any value to the situation or topic at hand. In my opinion, it is important to eliminate superfluous elements in our lives to simplify things and increase efficiency. By doing so, we can focus on what truly matters and make better use of our time and resources.&lt;/p&gt;
-&lt;h2 id=&#34;naive&#34;&gt;naive&lt;/h2&gt;
-&lt;p&gt;&amp;ldquo;naive&amp;rdquo; 在英语中通常被解释为“幼稚的，天真的，易受骗的”。它通常用来描述一个人缺乏经验或对世界的真实情况缺乏了解的状态。&lt;/p&gt;
-</description>
-        </item>
-        <item>
         <title>Go Slices: usage and internals</title>
-        <link>https://ibakuman.github.io/en/posts/go/blog/001-go-slices-usage-and-internals/</link>
+        <link>https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/</link>
         <pubDate>Mon, 30 Jan 2023 21:08:46 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/en/posts/go/blog/001-go-slices-usage-and-internals/</guid>
+        <guid>https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/</guid>
         <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;Go’s slice type provides a convenient and efficient means of working with sequences of typed data. Slices are &lt;span class=&#34;ibakuman-inline-translation&#34;&gt;analogous&lt;sub&gt; { 相似的，类似的 }&lt;/sub&gt;&lt;/span&gt; to arrays in other languages, but have some unusual properties. This article will look at what slices are and how they are used.&lt;/p&gt;
+&lt;p&gt;Go’s slice type provides a convenient and efficient means of working with sequences of typed data. Slices are &lt;a class=&#34;link&#34; href=&#34;https://ibakuman.github.io/posts/citation/english/section-001#analogous&#34; &gt;analogous&lt;/a&gt; to arrays in other languages, but have some unusual properties. This article will look at what slices are and how they are used.&lt;/p&gt;
 &lt;h2 id=&#34;arrays&#34;&gt;Arrays&lt;/h2&gt;
 &lt;p&gt;The slice type is an abstraction built on top of Go’s array type, and so to understand slices we must first understand arrays.&lt;/p&gt;
 &lt;p&gt;An array type definition specifies a length and an element type. For example, the type &lt;code&gt;[4]int&lt;/code&gt; represents an array of four integers. An array’s size is fixed; its length is part of its type (&lt;code&gt;[4]int&lt;/code&gt; and &lt;code&gt;[5]int&lt;/code&gt; are distinct, incompatible types). Arrays can be indexed in the usual way, so the expression &lt;code&gt;s[n]&lt;/code&gt; accesses the nth element, starting from zero.&lt;/p&gt;
@@ -518,34 +582,36 @@ $k$  zeros, by returning -1.&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;The in-memory representation of &lt;code&gt;[4]int&lt;/code&gt; is just four integer values laid out sequentially:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://go.dev/blog/slices-intro/slice-array.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/assets/https!go.dev!blog!slices-intro!slice-array.png&#34;
+	width=&#34;517&#34;
+	height=&#34;68&#34;
+	srcset=&#34;https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/assets/https!go.dev!blog!slices-intro!slice-array_hu5a3110f7f8a91ffcff07d25db842332b_1237_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/go/blog/go-slices-usage-and-internals/assets/https!go.dev!blog!slices-intro!slice-array_hu5a3110f7f8a91ffcff07d25db842332b_1237_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;https://go.dev/blog/slices-intro/slice-array.png&#34;
 	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;760&#34;
+		data-flex-basis=&#34;1824px&#34;
 	
 &gt;
 &lt;/p&gt;
-&lt;p&gt;Go’s arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (as would be the case in C). This means that when you assign or pass around an array value you will make a copy of its contents. (To avoid the copy you could pass a &lt;em&gt;pointer&lt;/em&gt; to the array, but then that’s a pointer to an array, not an array.) &lt;span class=&#34;ibakuman-inline-note&#34;&gt;One way to think about arrays is as a sort of struct but with indexed rather than named fields: a fixed-size composite value.&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Go’s arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (&lt;a class=&#34;link&#34; href=&#34;..//posts/citation/english/section-001##as-would-be-the-case-in-c&#34; &gt;as would be the case in C&lt;/a&gt;). This means that when you assign or pass around an array value you will make a copy of its contents. (To avoid the copy you could pass a &lt;em&gt;pointer&lt;/em&gt; to the array, but then that’s a pointer to an array, not an array.) One way to think about arrays is as a sort of struct but with indexed rather than named fields: a fixed-size composite value.&lt;/p&gt;
 &lt;p&gt;An array literal can be specified like so:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Penn&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Teller&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;b := [2]string{&amp;#34;Penn&amp;#34;, &amp;#34;Teller&amp;#34;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;span class=&#34;ibakuman-inline-note&#34;&gt;Or, you can have the compiler count the array elements for you:&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;Or, you can have the compiler count the array elements for you:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Penn&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Teller&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;b := [...]string{&amp;#34;Penn&amp;#34;, &amp;#34;Teller&amp;#34;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;In both cases, the type of &lt;code&gt;b&lt;/code&gt; is &lt;code&gt;[2]string&lt;/code&gt;.&lt;/p&gt;
@@ -11672,84 +11738,6 @@ Some examples:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://mariusschulz.com/blog/the-never-type-in-typescript&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;The never Type in TypeScript — Marius Schulz&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        </item>
-        <item>
-        <title>03. Acquiring Type Declaration Files in TypeScript</title>
-        <link>https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/</link>
-        <pubDate>Mon, 26 Dec 2022 13:30:36 +0800</pubDate>
-        
-        <guid>https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/</guid>
-        <description>&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;
-&lt;p&gt;In TypeScript 2.0, it has become significantly easier to acquire type information for JavaScript libraries. There&amp;rsquo;s no longer a need for additional tools such as &lt;a class=&#34;link&#34; href=&#34;https://github.com/typings/typings&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;typings&lt;/a&gt; or &lt;a class=&#34;link&#34; href=&#34;https://github.com/DefinitelyTyped/tsd&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;tsd&lt;/a&gt;. Instead, type declaration packages are directly available on npm.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/egghead_lesson_typescript_declarations-2x.nam2cekuwu.imm.png&#34;
-	width=&#34;1503&#34;
-	height=&#34;977&#34;
-	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/_hub7d9f1f856167c030fa4f15dd6297f9d_241414_cdc30420ec3e9ca66325b2ff29f49ab7.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/_hub7d9f1f856167c030fa4f15dd6297f9d_241414_0bfae215779dfb88dae331a453500c3e.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;153&#34;
-		data-flex-basis=&#34;369px&#34;
-	
-&gt;
-&lt;/p&gt;
-&lt;h2 id=&#34;installing-type-declaration-packages-from-npm&#34;&gt;Installing Type Declaration Packages from npm&lt;/h2&gt;
-&lt;p&gt;Let&amp;rsquo;s assume you want to use Lodash in one of your TypeScript projects:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;npm install --save lodash
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;After running this command, Lodash is installed into the &lt;code&gt;node_modules&lt;/code&gt; folder and is also listed as a dependency within your project&amp;rsquo;s &lt;code&gt;package.json&lt;/code&gt; file. However, there&amp;rsquo;s no type information available for TypeScript because Lodash is written in JavaScript and doesn&amp;rsquo;t ship with type declaration files.&lt;/p&gt;
-&lt;p&gt;Using npm again, you can now install the &lt;code&gt;@types/lodash&lt;/code&gt; package which contains the corresponding type declarations that TypeScript needs:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm.png&#34;
-	width=&#34;1308&#34;
-	height=&#34;652&#34;
-	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm_huec5d1fbc98e029201076cdcd67616393_27249_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/npm_install_types_lodash-2x.yvlxb75hxu.imm_huec5d1fbc98e029201076cdcd67616393_27249_1024x0_resize_box_3.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;200&#34;
-		data-flex-basis=&#34;481px&#34;
-	
-&gt;
-&lt;/p&gt;
-&lt;p&gt;Note how the type declaration package is named after the original npm package, prefixed with &lt;code&gt;@types/&lt;/code&gt;. Most packages should follow this convention, but you can always fall back to &lt;a class=&#34;link&#34; href=&#34;https://www.typescriptlang.org/dt/search&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Type Search&lt;/a&gt; to find the name of the type declaration package for a given library.&lt;/p&gt;
-&lt;p&gt;The benefit of using npm for managing type information is that type declaration packages will be listed in your &lt;code&gt;package.json&lt;/code&gt; alongside your other dependencies. In addition, they can be properly versioned, just like any other npm package. Plus, you only need a single package manager, npm, that is set up already anyway.&lt;/p&gt;
-&lt;h2 id=&#34;where-do-the-type-declaration-files-go&#34;&gt;Where Do the Type Declaration Files Go?&lt;/h2&gt;
-&lt;p&gt;Like any other npm package, the type declaration packages are installed in the &lt;code&gt;node_modules&lt;/code&gt; folder. Within it, there&amp;rsquo;s a &lt;code&gt;@types&lt;/code&gt; folder which contains all typings. In the above example, it&amp;rsquo;ll contain a &lt;code&gt;lodash&lt;/code&gt; folder, within which you&amp;rsquo;ll find the &lt;code&gt;index.d.ts&lt;/code&gt; file with all the Lodash type information:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm.png&#34;
-	width=&#34;512&#34;
-	height=&#34;496&#34;
-	srcset=&#34;https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm_hu56476acc6b6aafd0ff0e1d05353c624c_33731_480x0_resize_box_3.png 480w, https://ibakuman.github.io/en/posts/typescript/typescript-evolution/003-acquiring-type-declaration-files-in-typescript/assets/node_modules-@types-folder-2x.t2kpsqy7h2.imm_hu56476acc6b6aafd0ff0e1d05353c624c_33731_1024x0_resize_box_3.png 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;103&#34;
-		data-flex-basis=&#34;247px&#34;
-	
-&gt;
-&lt;/p&gt;
-&lt;p&gt;The TypeScript compiler understands this convention and will pick up type declarations within the &lt;code&gt;@types&lt;/code&gt; folder automatically. There&amp;rsquo;s no need to update the &lt;code&gt;tsconfig.json&lt;/code&gt; or any other configuration file.&lt;/p&gt;
-&lt;h2 id=&#34;who-creates-the-type-declaration-packages&#34;&gt;Who Creates the Type Declaration Packages?&lt;/h2&gt;
-&lt;p&gt;Behind the scenes, the type declaration packages are automatically created by the &lt;a class=&#34;link&#34; href=&#34;https://github.com/Microsoft/types-publisher&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;types-publisher&lt;/a&gt; service. It publishes the contents of the &lt;a class=&#34;link&#34; href=&#34;https://github.com/DefinitelyTyped/DefinitelyTyped&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;DefinitelyTyped&lt;/a&gt; repository to npm. That way, typings contributed to DefinitelyTyped end up on npm, ready for consumption.&lt;/p&gt;
-&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://mariusschulz.com/blog/acquiring-type-declaration-files-in-typescript&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Acquiring Type Declaration Files in TypeScript — Marius Schulz&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         </item>

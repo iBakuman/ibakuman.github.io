@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>UTF-8 on iBakuman&#39;s Blog</title>
+        <link>https://ibakuman.github.io/tags/utf-8/</link>
+        <description>Recent content in UTF-8 on iBakuman&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Wed, 17 May 2023 18:56:45 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/tags/utf-8/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>一次性弄懂 Unicode 和 UTF-8</title>
+        <link>https://ibakuman.github.io/posts/misc/unicode-and-utf8/</link>
+        <pubDate>Wed, 17 May 2023 18:56:45 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/posts/misc/unicode-and-utf8/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;在日常开发的过程中，有关 &lt;code&gt;Unicode&lt;/code&gt; 、&lt;code&gt;UTF-8&lt;/code&gt; 的问题并不常出现，但在阅读技术文章或源码时出现频率就比较高了。笔者最近刚好就在开发时遇到了和 &lt;code&gt;Unicode&lt;/code&gt; 相关的问题，发现自己对这方面的基础知识并没有充分掌握。因此将相关知识梳理出来，帮助大家理解清楚 &lt;code&gt;Unicode&lt;/code&gt; 和 &lt;code&gt;UTF-8&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;字符集&#34;&gt;字符集&lt;/h2&gt;
+&lt;h3 id=&#34;什么是字符集&#34;&gt;什么是字符集？&lt;/h3&gt;
+&lt;p&gt;字符集（Character set）是多个字符的集合，并且每个字符都拥有唯一的编号（即码点，Code Point）。不同的字符集所包含的字符个数不同，常见的字符集有：&lt;code&gt;ASCII&lt;/code&gt; 字符集、&lt;code&gt;GB2312&lt;/code&gt; 字符集、&lt;code&gt;BIG5&lt;/code&gt; 字符集、 &lt;code&gt;GB18030&lt;/code&gt; 字符集、&lt;code&gt;Unicode&lt;/code&gt; 字符集等。&lt;/p&gt;
+&lt;p&gt;在没有计算机之前，大部分信息以文本的形式存在，那么如何将文本存储到计算机中呢？&lt;/p&gt;
+&lt;p&gt;我们知道，在计算机中是通过&lt;strong&gt;二进制值&lt;/strong&gt;来表示信息的，每个二进制位（bit）都有 &lt;code&gt;0&lt;/code&gt; 和 &lt;code&gt;1&lt;/code&gt; 两种状态。而计算机中存储的最小单位就是字节（Byte），由 8 个二进制位组成，那么就可以表示 2^8=256 种状态。&lt;/p&gt;
+&lt;p&gt;利用这 256 个二进制值，我们可以将字符转换为数值存储到计算机中，假设我们规定：&lt;/p&gt;
+&lt;p&gt;makefile&lt;/p&gt;
+&lt;p&gt;复制代码&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;A: 00000000 B: 00000001 C: 00000010&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;这样有了一对一的映射关系后，我们就可以把文本 &lt;code&gt;ABC&lt;/code&gt; 用 &lt;code&gt;00000000 00000001 00000010&lt;/code&gt; 存储到计算机中。这样的一个包含字符 &lt;code&gt;ABC&lt;/code&gt; 的映射集合就是我们自定义的” 字符集 “。&lt;/p&gt;
+&lt;h3 id=&#34;ascii-码&#34;&gt;ASCII 码&lt;/h3&gt;
+&lt;p&gt;我们在上一节介绍字符集时自定义了一个只包含 &lt;code&gt;ABC&lt;/code&gt; 三个字母的字符集，仅仅作为例子可以，但是应用到实际的话显然是不够用的，因为既没有将所有的字母写入，也无法映射空格或标点符号等字符。&lt;/p&gt;
+&lt;p&gt;为了解决这个问题，在上世纪六十年代，美国制定了一套字符编码，即 &lt;code&gt;ASCII&lt;/code&gt; 码（American Standard Code for Information Interchange，美国信息交换标准代码，详见&lt;a class=&#34;link&#34; href=&#34;https://link.juejin.cn/?target=https%3A%2F%2Fzh.wikipedia.org%2Fzh-hans%2FASCII&#34;  title=&#34;https://zh.wikipedia.org/zh-hans/ASCII&#34;
+     target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;维基百科 - ASCII&lt;/a&gt;），将英语字符与二进制值进行一一对应，一直沿用至今。&lt;/p&gt;
+&lt;p&gt;标准 &lt;code&gt;ASCII&lt;/code&gt; 码使用 &lt;code&gt;7&lt;/code&gt; 位二进制数（剩下的首位二进制为 &lt;code&gt;0&lt;/code&gt;）来表示所有的大写和小写字母，数字 0 到 9、标点符号，以及在美式英语中使用的特殊控制字符。比如空格 &lt;code&gt;SPACE&lt;/code&gt; 的十进制值是 32（二进制 &lt;code&gt;00100000&lt;/code&gt; ），大写的字母 &lt;code&gt;A&lt;/code&gt; 的十进制值是 65（二进制 &lt;code&gt;01000001&lt;/code&gt;），如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1.webp&#34;
+	width=&#34;738&#34;
+	height=&#34;212&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1_hu49fc7c78b27e271aa3c03da5b65274e1_14582_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1_hu49fc7c78b27e271aa3c03da5b65274e1_14582_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image.png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;348&#34;
+		data-flex-basis=&#34;835px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ASCII&lt;/code&gt; 码对于美国这种使用英语作为母语的国家是够用了，但是对于使用其他语言的国家，128 个二进制值仍不足以表示所有字符，于是一些国家决定利用字节中的闲置最高位编入新的字符，这样一来这些国家使用了 8 位二进制值就可以表示最多 256 个字符。&lt;/p&gt;
+&lt;p&gt;然而这又带来了新的问题，即使不同国家都使用 256 个字符的编码方式，但是同一个二进制值在不同的国家却表示不同的字符，例如 130 在法语中表示 é ，在希伯来语编码中却代表了字母 Gimel (ג)，就会造成乱码。&lt;/p&gt;
+&lt;p&gt;为了解决多语言环境下产生的编码冲突问题，&lt;code&gt;Unicode&lt;/code&gt; 应运而生。&lt;/p&gt;
+&lt;h3 id=&#34;unicode&#34;&gt;Unicode&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;Unicode&lt;/code&gt; 将世界上的所有字符囊括其中，并为每一个字符定义唯一的代码（即一个整数），称作&lt;strong&gt;码点&lt;/strong&gt;（Code Point）。&lt;/p&gt;
+&lt;p&gt;码点的范围是 &lt;code&gt;U+0000&lt;/code&gt;~&lt;code&gt;U+10FFFF&lt;/code&gt;，&lt;code&gt;U+&lt;/code&gt; 表示这是 &lt;code&gt;Unicode&lt;/code&gt; 字符集，后面跟着一个&lt;strong&gt;十六进制数&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;目前的 &lt;code&gt;Unicode&lt;/code&gt; 字符分为 17 组编排，每个编组存放 &lt;code&gt;65536&lt;/code&gt; （即 2^16）个码点，称为一个&lt;strong&gt;平面&lt;/strong&gt;（Plane）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-4.webp&#34;
+	width=&#34;1710&#34;
+	height=&#34;706&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-4_huf78a0c88ffd55186e56b11a56f1ba239_74878_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-4_huf78a0c88ffd55186e56b11a56f1ba239_74878_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image.png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;242&#34;
+		data-flex-basis=&#34;581px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;例如，&lt;code&gt;U+0041&lt;/code&gt; 表示英语的大写字母 &lt;code&gt;A&lt;/code&gt;，&lt;code&gt;U+4E25&lt;/code&gt; 表示汉字&lt;code&gt;严&lt;/code&gt;，它们都位于基本多文种平面。详见&lt;a class=&#34;link&#34; href=&#34;https://link.juejin.cn/?target=https%3A%2F%2Fzh.wikipedia.org%2Fzh-hans%2FUnicode&#34;  title=&#34;https://zh.wikipedia.org/zh-hans/Unicode&#34;
+     target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;维基百科 - Unicode&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;字符编码&#34;&gt;字符编码&lt;/h2&gt;
+&lt;h3 id=&#34;什么是字符编码&#34;&gt;什么是字符编码？&lt;/h3&gt;
+&lt;p&gt;字符，即字母、数字、运算符号、标点符号和其他符号，以及一些功能性符号。&lt;/p&gt;
+&lt;p&gt;编码，根据词性的不同，表示的含义也不同：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;作为动词时，表示信息从一种形式或格式转换为另一种形式的过程，例如将大写字母 &lt;code&gt;A&lt;/code&gt; 转换为二进制值 &lt;code&gt;1000001&lt;/code&gt; 的过程就是一个编码动作；&lt;/li&gt;
+&lt;li&gt;作为名词时，有两种表示
+&lt;ol&gt;
+&lt;li&gt;表示将字符转为机器码的方案，例如 &lt;code&gt;ASCII&lt;/code&gt; 编码、&lt;code&gt;UTF-8&lt;/code&gt; 编码等；&lt;/li&gt;
+&lt;li&gt;另一种是表示将字符转换后得到的机器码，例如 &lt;code&gt;100001&lt;/code&gt; 就是 &lt;code&gt;A&lt;/code&gt; 的编码。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此在阅读有关字符编码的文章时，应该根据当前上下文来判断编码一词的含义。&lt;/p&gt;
+&lt;h3 id=&#34;unicode-的实现方式&#34;&gt;Unicode 的实现方式&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;Unicode&lt;/code&gt; 字符集解决了多语种间的冲突问题，但是并没有规定如何将编码存储到计算机中。&lt;/p&gt;
+&lt;p&gt;以大写字母 A 为例，它的 Unicode 码点为 &lt;code&gt;U+0041&lt;/code&gt; ，转换成二进制为 &lt;code&gt;1000001&lt;/code&gt; ，需要使用 1 个字节存储；汉字 严 的 Unicode 码点为 &lt;code&gt;U+4E25&lt;/code&gt; ，转换成二进制为 &lt;code&gt;1001110 00100101&lt;/code&gt;，需要使用 2 个字节存储。而位于编号更靠后的平面中的字符，转换成二进制数字就会更长，最高位 &lt;code&gt;U+10FFFF&lt;/code&gt; 甚至&lt;strong&gt;需要 3 个字节来存储&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;在这种情况下所面临的问题就是，计算机无法得知某个字符究竟&lt;strong&gt;需要多少字节存储&lt;/strong&gt;，假设统一使用 3 个字节来存储 1 个字符，那么存储位于基本多文种平面的字符，就会有 2 个字节的所有位都是 0 ，会造成存储资源的浪费。&lt;/p&gt;
+&lt;p&gt;为了解决存储方式上存在的问题，就出现了 &lt;code&gt;UTF&lt;/code&gt; (Unicode 转换格式，Unicode Transformation Formats，简称 UTF）系列的编码方式。下面介绍一下几种常见的实现方式。&lt;/p&gt;
+&lt;h3 id=&#34;utf-8-编码&#34;&gt;UTF-8 编码&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;UTF-8&lt;/code&gt; 编码是&lt;strong&gt;互联网上使用最广泛&lt;/strong&gt;的一种 &lt;code&gt;Unicode&lt;/code&gt; 的实现方式。&lt;/p&gt;
+&lt;p&gt;它是一种变长编码。对于 &lt;code&gt;ASCII&lt;/code&gt; 字符仍用 7 位编码表示，占用一个字节（首位补 0）；而遇到其他 &lt;code&gt;Unicode&lt;/code&gt; 字符时，将按一定算法转换，每个字符使用 &lt;strong&gt;1 到 4 个字节编码&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;编码规则也很简单：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;编码后的字节长度为 1 时，&lt;strong&gt;首位为 0&lt;/strong&gt; ，剩余 7 位为 &lt;code&gt;Unicode&lt;/code&gt; 码点值。因此码点值的范围是 0~128，在&lt;strong&gt;这个范围内 ASCII 编码和 UTF-8 是相同的&lt;/strong&gt;；&lt;/li&gt;
+&lt;li&gt;编码后的字节长度 n 大于 1 时，首个字节的前 n 位都是 1（即，有几个 1 就表示总共有几个字节），n+1 位为 0 ，其他字节的前两位均为 10，剩余的位为 &lt;code&gt;Unicode&lt;/code&gt; 码点值。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在 Unicode 中，一般使用频率较高的都是编码值较小的字符（即大部分都位于基本多文种平面），并且 Unicode 中前 128 个字符也是和 ASCII 码的二进制值相同。UTF-8 采用的这种变长编码规则，可以尽可能的节省内存空间，并且完全兼容 ASCII 码，因此，它逐渐成为电子邮件、网页及其他存储或传送文字优先采用的编码方式。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-2.webp&#34;
+	width=&#34;2020&#34;
+	height=&#34;538&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-2_hua17044ad1caab87bd0f508a49c91be15_58274_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-2_hua17044ad1caab87bd0f508a49c91be15_58274_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image.png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;375&#34;
+		data-flex-basis=&#34;901px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;以大写字母 &lt;code&gt;A&lt;/code&gt; 为例，码点为 &lt;code&gt;U+0041&lt;/code&gt; ，编码后为 1 个字节，和 &lt;code&gt;ASCII&lt;/code&gt; 编码下的存储方式相同，都是 &lt;code&gt;01000001&lt;/code&gt; ；&lt;/p&gt;
+&lt;p&gt;而对于汉字&lt;code&gt;严&lt;/code&gt;，码点为 &lt;code&gt;U+4E25&lt;/code&gt;，编码后为 3 个字节。码点值转换为二进制是 &lt;code&gt;1001110 00100101&lt;/code&gt;，共 15 位，由转换关系表可知它落在 3 字节序列中，因此转换后的格式应该是 &lt;code&gt;1110xxxx 10xxxxxx 10xxxxxx&lt;/code&gt;，将码点值按顺序补位后得到 &lt;code&gt;11100100 10111000 10100101&lt;/code&gt;，这就是 &lt;code&gt;UTF-8&lt;/code&gt; 编码后的汉字严，过程如下图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-105351.png.webp&#34;
+	width=&#34;800&#34;
+	height=&#34;270&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-105351.png_hu1498b9303f30cb11e9a52dd21f49d224_16268_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-105351.png_hu1498b9303f30cb11e9a52dd21f49d224_16268_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;WX20220906-105351.png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;296&#34;
+		data-flex-basis=&#34;711px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;我们来验证下上面的转换过程。&lt;/p&gt;
+&lt;p&gt;首先准备两个 txt 文件，第一个文件里只有字母 A，第二个文件里只有汉字 严，保存文件时以 &lt;code&gt;UTF-8&lt;/code&gt; 格式保存。这里笔者用的是 Mac 系统，可以直接在命令行中执行 &lt;code&gt;echo&lt;/code&gt; 命令输出到 txt 文件中，默认的编码格式就是 &lt;code&gt;UTF-8&lt;/code&gt;：&lt;/p&gt;
+&lt;p&gt;bash&lt;/p&gt;
+&lt;p&gt;复制代码&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;echo &#39;A&#39; &amp;gt; &#39;A.txt&#39; echo &#39;严&#39; &amp;gt; &#39;严.txt&#39;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;然后打开命令行，使用 &lt;code&gt;hexdump&lt;/code&gt; 命令查看文件：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;hexdump 命令可以以 ASCII、八进制、十进制或十六进制显示文件内容。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png.webp&#34;
+	width=&#34;1102&#34;
+	height=&#34;406&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png_hu1a55facba30561cf7e49a2dfd4b9d3bf_22402_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png_hu1a55facba30561cf7e49a2dfd4b9d3bf_22402_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image.png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;271&#34;
+		data-flex-basis=&#34;651px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;第一列的两个值是文件中的字符偏移量，我们的重点在第二列。显然 A.txt 的结果是符合预期的，因为 &lt;code&gt;ASCII&lt;/code&gt; 码在 &lt;code&gt;UTF-8&lt;/code&gt; 的编码方式下和 Unicode 码点值是相同的。而严.txt 的结果不太一样，显然是经过了变长的编码算法转换后得到的。&lt;/p&gt;
+&lt;p&gt;我们将 &lt;code&gt;e4 b8 a5&lt;/code&gt; 的十六进制值转换一下。可以使用在线进制转换工具 &lt;a class=&#34;link&#34; href=&#34;https://link.juejin.cn/?target=https%3A%2F%2Ftool.oschina.net%2Fhexconvert%2F&#34;  title=&#34;https://tool.oschina.net/hexconvert/&#34;
+     target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;tool.oschina.net/hexconvert/&lt;/a&gt; 或者直接将每一个十六进制数转换为二进制进行组合，转换结果就是：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-3.webp&#34;
+	width=&#34;1440&#34;
+	height=&#34;418&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-3_hu2c47a8c3beb0dc5ecae2fbebc6b162af_22610_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-3_hu2c47a8c3beb0dc5ecae2fbebc6b162af_22610_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image.png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;344&#34;
+		data-flex-basis=&#34;826px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;这样就和上文我们转换的结果相同了。&lt;/p&gt;
+&lt;h3 id=&#34;utf-16-编码&#34;&gt;UTF-16 编码&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;UTF-16&lt;/code&gt; 也是一种变长编码，它将 &lt;code&gt;Unicode&lt;/code&gt; 码点映射为 16 位长的整数（即码元）的序列，用于数据存储或传递。&lt;code&gt;Unicode&lt;/code&gt; 字符的码点，使用 1 个或者 2 个 16 位长的码元来表示。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;码元（Code Unit，也称 “代码单元”）是指一个已编码的文本中具有最短的比特组合的单元。对于 UTF-8 来说，码元是 8bit ；对于 UTF-16 来说，码元是 16bit；对于 UTF-32 来说，码元是 32bit。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;Unicode&lt;/code&gt; 的基本多文种平面码点范围是 &lt;code&gt;U+0000&lt;/code&gt; 到 &lt;code&gt;U+FFFF&lt;/code&gt; ，不过从 &lt;code&gt;U+D800&lt;/code&gt; 到 &lt;code&gt;U+DFFF&lt;/code&gt; 之间的码位区段是&lt;strong&gt;永久保留不映射到 Unicode 字符的&lt;/strong&gt;，因此 UTF-16 就利用保留下来的 &lt;code&gt;U+D800&lt;/code&gt; 到 &lt;code&gt;U+DFFF&lt;/code&gt; 区块的码位来对辅助平面的字符的码位进行编码。&lt;/p&gt;
+&lt;p&gt;编码规则如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于从 &lt;code&gt;U+0000&lt;/code&gt; 到 &lt;code&gt;U+D7FF&lt;/code&gt; 以及 &lt;code&gt;U+E000&lt;/code&gt; 到 &lt;code&gt;U+FFFF&lt;/code&gt; 的码位：UTF-16 编码这个范围内的码位为 16bit 的单个码元，数值就等价于对应的码位；&lt;/li&gt;
+&lt;li&gt;对于从 &lt;code&gt;U+10000&lt;/code&gt; 到 &lt;code&gt;U+10FFFF&lt;/code&gt; 的码位：这个范围是补充平面中的码位，在 UTF-16 中被编码为两个 16bit 的码元（即 32 位，4 字节），称作_代理对。_&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-5.webp&#34;
+	width=&#34;1050&#34;
+	height=&#34;418&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-5_hue09dd92cd59fac4760954104edac7b84_19922_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-5_hue09dd92cd59fac4760954104edac7b84_19922_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image.png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;251&#34;
+		data-flex-basis=&#34;602px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;编码过程如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;码位减去 &lt;code&gt;0x10000&lt;/code&gt;，得到的值的范围为 20bit 的 &lt;code&gt;0...0xFFFFF&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;高位的 10bit 的值（从左往右数第 1 位到第 10 位）加上 &lt;code&gt;0xD800&lt;/code&gt; 后得到第一个码元，称作&lt;strong&gt;前导代理&lt;/strong&gt;，值的范围是 &lt;code&gt;0xD800...0xDBFF&lt;/code&gt; 。&lt;/li&gt;
+&lt;li&gt;低位的 10bit 的值（从左往右数第 11 位到第 20 位）加上 &lt;code&gt;0xDC00&lt;/code&gt; 后得到第二个码元，称作&lt;strong&gt;后尾代理&lt;/strong&gt;，值的范围是 &lt;code&gt;0xDC00...0xDFFF&lt;/code&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以补充平面的字符 🐶 为例，它的码点值是 &lt;strong&gt;U+1F436：&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://link.juejin.cn/?target=https%3A%2F%2Funicode-table.com%2Fcn%2F&#34;  title=&#34;https://unicode-table.com/cn/&#34;
+     target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;&lt;/a&gt;&lt;a class=&#34;link&#34; href=&#34;https://link.juejin.cn/?target=https%3A%2F%2Funicode-table.com%2Fcn%2F&#34;  title=&#34;https://unicode-table.com/cn/&#34;
+     target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;unicode-table.com/cn/&lt;/a&gt; 可以在这个网站中查找某个 Unicode 字符的码点值&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;第一步，&lt;code&gt;0x1F436&lt;/code&gt; 减去 &lt;code&gt;0x10000&lt;/code&gt;，得到 &lt;code&gt;0xF436&lt;/code&gt; ，转为二进制位为 &lt;code&gt;11110100 00110110&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;高位 10bit 为 &lt;code&gt;00 0011 1101&lt;/code&gt;（不足的位补 &lt;code&gt;0&lt;/code&gt;），转为 16 进制是 &lt;code&gt;0x003D&lt;/code&gt; ，加上 &lt;code&gt;0xD800&lt;/code&gt; 后为 &lt;code&gt;0xD83D&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;低位 10bit 为 &lt;code&gt;00 0011 0110&lt;/code&gt;，转为 16 进制是 &lt;code&gt;0x0036&lt;/code&gt; ，加上 &lt;code&gt;0xDC00&lt;/code&gt; 后为 &lt;code&gt;0xDC36&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此最终转换后的值应该是 &lt;code&gt;D8 3D DC 36&lt;/code&gt;。整个过程可以看下图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-142132.png.webp&#34;
+	width=&#34;800&#34;
+	height=&#34;464&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-142132.png_hu13649cce3656e1a0dfb4cddc4a739d37_22150_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-142132.png_hu13649cce3656e1a0dfb4cddc4a739d37_22150_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;WX20220906-142132.png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;172&#34;
+		data-flex-basis=&#34;413px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;同样地，我们来验证下上面的转换过程。&lt;/p&gt;
+&lt;p&gt;将单个字符存储在 txt 文件中，选择 &lt;code&gt;UTF-16 BE&lt;/code&gt; 的编码方式进行保存。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;UTF-16 BE 是一种字节序，有关字节序的知识见下一节。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;同样使用 &lt;code&gt;hexdump&lt;/code&gt; 命令查看：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1.webp&#34;
+	width=&#34;738&#34;
+	height=&#34;212&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1_hu49fc7c78b27e271aa3c03da5b65274e1_14582_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1_hu49fc7c78b27e271aa3c03da5b65274e1_14582_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;image.png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;348&#34;
+		data-flex-basis=&#34;835px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;符合推测结果。&lt;/p&gt;
+&lt;h3 id=&#34;utf-字节序&#34;&gt;UTF 字节序&lt;/h3&gt;
+&lt;p&gt;字节序也叫尾序或端序，详细介绍可见 &lt;a class=&#34;link&#34; href=&#34;https://link.juejin.cn/?target=https%3A%2F%2Fzh.wikipedia.org%2Fwiki%2F%25E5%25AD%2597%25E8%258A%2582%25E5%25BA%258F&#34;  title=&#34;https://zh.wikipedia.org/wiki/%E5%AD%97%E8%8A%82%E5%BA%8F&#34;
+     target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;维基百科 - 字节序&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;顾名思义，字节序就是指字节之间的顺序，在传输 or 存储过程中如果&lt;strong&gt;最小编码单元超过 1 个字节&lt;/strong&gt;，需要指定&lt;strong&gt;编码单元内的字节间顺序&lt;/strong&gt;。因此对于 &lt;code&gt;UTF-8&lt;/code&gt; 不存在字节序的问题，而 &lt;code&gt;UTF-16&lt;/code&gt; 时就需要考虑字节序的问题了。&lt;/p&gt;
+&lt;p&gt;字节序有两个通用规则：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;小端序（little endian）：多位数的低位放在较小的地址处，高位放在较大的地址处。&lt;/li&gt;
+&lt;li&gt;大端序（big endian）：和小端序相反，多位数的高位放在较小的地址处，低位放在较大的地址处。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以上一节的文本为例，下图为字符🐶在 &lt;code&gt;UTF-16&lt;/code&gt; 编码下使用不同端序时在内存中的存储结果：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/%E5%A4%A7%E7%AB%AF%E5%BA%8F%E5%B0%8F%E7%AB%AF%E5%BA%8F_%281%29.png.webp&#34;
+	width=&#34;717&#34;
+	height=&#34;289&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/%E5%A4%A7%E7%AB%AF%E5%BA%8F%E5%B0%8F%E7%AB%AF%E5%BA%8F_%281%29.png_hu6e2ab77bc10e371d517bf50f5d8f3e3b_13562_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/%E5%A4%A7%E7%AB%AF%E5%BA%8F%E5%B0%8F%E7%AB%AF%E5%BA%8F_%281%29.png_hu6e2ab77bc10e371d517bf50f5d8f3e3b_13562_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;大端序小端序 (1).png&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;248&#34;
+		data-flex-basis=&#34;595px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;网络传输中一般采用大端序，也被称之为&lt;strong&gt;网络字节序&lt;/strong&gt;，或&lt;strong&gt;网络序&lt;/strong&gt;。在网络传输时，不存在字节序列问题。而在解码时由于 cpu 硬件差异，存在字节序问题，所以需要通过 &lt;code&gt;BOM&lt;/code&gt;(byte order mark) 标识来标记字节顺序，通常出现在字节流的开头。&lt;/p&gt;
+&lt;h3 id=&#34;utf-8-与-utf-16-对比&#34;&gt;UTF-8 与 UTF-16 对比&lt;/h3&gt;
+&lt;p&gt;综上所述，我们来对比一下 UTF-8 和 UTF-16。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;标题&lt;/th&gt;
+&lt;th&gt;UTF-8&lt;/th&gt;
+&lt;th&gt;UTF-16&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;兼容性&lt;/td&gt;
+&lt;td&gt;好，完美兼容 ASCII 码，字符空间足够大&lt;/td&gt;
+&lt;td&gt;UTF-16 能表示的字符数有 6w 多，看起来很多，但是实际上目前 Unicode 收录的字符已经达到 9w 个字符，早已超过 UTF-16 的存储范围&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;字节序&lt;/td&gt;
+&lt;td&gt;不存在字节序问题，信息交换便捷&lt;/td&gt;
+&lt;td&gt;存在大小端字节序问题，信息交换时可能出现问题&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;容错率&lt;/td&gt;
+&lt;td&gt;高，个别字节的错误不会导致整个文档的不可用，字符边界明显&lt;/td&gt;
+&lt;td&gt;低，局部的字节错误，可能导致所有后续字符全部错乱&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;效率&lt;/td&gt;
+&lt;td&gt;变长字节导致计算字符数和执行索引等操作效率都不高&lt;/td&gt;
+&lt;td&gt;双字节，在计算字符串长度、执行索引操作时速度很快&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;多语种环境&lt;/td&gt;
+&lt;td&gt;ASCII 码只占用一个字节，而对于 CJK 文字来说负担太大，一个字符占用 3 个字节&lt;/td&gt;
+&lt;td&gt;刚好和前者相反&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;·&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;无论是 UTF-8 和 UTF-16/32 都各有优缺点，因此&lt;strong&gt;选择的时候应当立足于实际的应用场景&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;本文主要介绍了字符编码和字符集、&lt;code&gt;Unicode&lt;/code&gt; 编码以及 &lt;code&gt;Unicode&lt;/code&gt; 的实现方式 —— &lt;code&gt;UTF-8&lt;/code&gt; 和 &lt;code&gt;UTF-16&lt;/code&gt; 两种编码方式的相关知识。需要注意的是 &lt;code&gt;Unicode&lt;/code&gt; 编码一般指的是 &lt;code&gt;Unicode&lt;/code&gt; 字符集，而 &lt;code&gt;UTF-8&lt;/code&gt; 和 &lt;code&gt;UTF-16&lt;/code&gt; 编码指的是 &lt;code&gt;Unicode&lt;/code&gt; 的实现方式，希望本文能够帮助大家理解清楚这些知识。&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
