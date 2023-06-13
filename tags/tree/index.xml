@@ -1,17 +1,200 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>Tree on iBakuman&#39;s Blog</title>
+        <title>树 on iBakuman&#39;s Blog</title>
         <link>https://ibakuman.github.io/tags/tree/</link>
-        <description>Recent content in Tree on iBakuman&#39;s Blog</description>
+        <description>Recent content in 树 on iBakuman&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Sat, 06 May 2023 23:07:07 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/tags/tree/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 17 May 2023 20:22:04 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/tags/tree/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>337. 打家劫舍 III</title>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0337-house-robber-iii/</link>
+        <pubDate>Sat, 10 Jun 2023 11:58:53 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0337-house-robber-iii/</guid>
+        <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
+&lt;p&gt;小偷又发现了一个新的可行窃的地区。这个地区只有一个入口，我们称之为 &lt;code&gt;root&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;除了 &lt;code&gt;root&lt;/code&gt; 之外，每栋房子有且只有一个 “父 “房子与之相连。一番侦察之后，聪明的小偷意识到 “这个地方的所有房屋的排列类似于一棵二叉树”。 如果 &lt;strong&gt;两个直接相连的房子在同一天晚上被打劫&lt;/strong&gt; ，房屋将自动报警。&lt;/p&gt;
+&lt;p&gt;给定二叉树的 &lt;code&gt;root&lt;/code&gt; 。返回 &lt;em&gt;&lt;strong&gt;在不触动警报的情况下&lt;/strong&gt; ，小偷能够盗取的最高金额&lt;/em&gt; 。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;示例 1:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0337-house-robber-iii/assets/rob1-tree.jpg&#34;
+	width=&#34;277&#34;
+	height=&#34;293&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0337-house-robber-iii/assets/rob1-tree_hu3b2c581432fc268f403ef4fed1e88f80_11037_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0337-house-robber-iii/assets/rob1-tree_hu3b2c581432fc268f403ef4fed1e88f80_11037_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;94&#34;
+		data-flex-basis=&#34;226px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入: root = [3,2,3,null,3,null,1]&lt;/li&gt;
+&lt;li&gt;输出: 7&lt;/li&gt;
+&lt;li&gt;解释: 小偷一晚能够盗取的最高金额 3 + 3 + 1 = 7&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;示例 2:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0337-house-robber-iii/assets/rob2-tree.jpg&#34;
+	width=&#34;357&#34;
+	height=&#34;293&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0337-house-robber-iii/assets/rob2-tree_hu05b84dc4bb1333ade5c169a9b6a99160_13065_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0337-house-robber-iii/assets/rob2-tree_hu05b84dc4bb1333ade5c169a9b6a99160_13065_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;121&#34;
+		data-flex-basis=&#34;292px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入: root = [3,4,5,1,3,null,1]&lt;/li&gt;
+&lt;li&gt;输出: 9&lt;/li&gt;
+&lt;li&gt;解释: 小偷一晚能够盗取的最高金额 4 + 5 = 9&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;提示：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;树的节点数在 [1, 10&lt;sup&gt;4&lt;/sup&gt;] 范围内&lt;/li&gt;
+&lt;li&gt;0 &amp;lt;= Node.val &amp;lt;= 10&lt;sup&gt;4&lt;/sup&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;解法一后序遍历&#34;&gt;解法一：后序遍历&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nums&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;res&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;val&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;range&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;nums&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;val&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;res&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nx&#34;&gt;res&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;val&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;res&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/**
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt; * Definition for a binary tree node.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt; * type TreeNode struct {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt; *     Val int
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt; *     Left *TreeNode
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt; *     Right *TreeNode
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt; * }
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;rob&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;TreeNode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kd&#34;&gt;var&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;postorder&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;TreeNode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;postorder&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;TreeNode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;nil&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;c1&#34;&gt;// 第一个值是偷取 root 获取的最大金额
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;            &lt;span class=&#34;c1&#34;&gt;// 第二个值是不偷取 root 获取的最大金额
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;            &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nx&#34;&gt;left&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;leftNo&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;postorder&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Left&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nx&#34;&gt;right&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;rightNo&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;postorder&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Right&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nx&#34;&gt;first&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;leftNo&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;rightNo&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Val&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nx&#34;&gt;second&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;left&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;leftNo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;right&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;rightNo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;first&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;second&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;postorder&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;官方题解如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;rob&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;TreeNode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;val&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dfs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;root&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dfs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;node&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;TreeNode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;node&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;nil&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;l&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;r&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dfs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;node&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Left&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dfs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;node&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Right&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;selected&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;node&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Val&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;l&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;notSelected&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;l&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;l&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;selected&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;notSelected&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;y&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;y&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;x&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;y&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description>
+        </item>
+        <item>
         <title>538. 把二叉搜索树转换为累加树</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0538-convert-bst-to-greater-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0538-convert-bst-to-greater-tree/</link>
         <pubDate>Sat, 06 May 2023 23:07:07 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0538-convert-bst-to-greater-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0538-convert-bst-to-greater-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给出二叉 &lt;strong&gt;搜索&lt;/strong&gt; 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 &lt;code&gt;node&lt;/code&gt; 的新值等于原树中大于或等于 &lt;code&gt;node.val&lt;/code&gt; 的值之和。&lt;/p&gt;
 &lt;p&gt;提醒一下，二叉搜索树满足下列约束条件：&lt;/p&gt;
@@ -23,14 +206,14 @@
 &lt;p&gt;&lt;strong&gt;注意:&lt;/strong&gt; 本题和 1038: &lt;a class=&#34;link&#34; href=&#34;https://leetcode-cn.com/problems/binary-search-tree-to-greater-sum-tree/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://leetcode-cn.com/problems/binary-search-tree-to-greater-sum-tree/&lt;/a&gt; 相同&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0538-convert-bst-to-greater-tree/assets/tree.png&#34;
+&lt;p&gt;&lt;strong&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0538-convert-bst-to-greater-tree/assets/tree.png&#34;
 	width=&#34;775&#34;
 	height=&#34;529&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0538-convert-bst-to-greater-tree/assets/tree_hue6cdd386bcdfc49f893f97a510b73bf9_21234_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetccode/problems/0538-convert-bst-to-greater-tree/assets/tree_hue6cdd386bcdfc49f893f97a510b73bf9_21234_1024x0_resize_box_3.png 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0538-convert-bst-to-greater-tree/assets/tree_hue6cdd386bcdfc49f893f97a510b73bf9_21234_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetcode/problems/0538-convert-bst-to-greater-tree/assets/tree_hue6cdd386bcdfc49f893f97a510b73bf9_21234_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;146&#34;
 		data-flex-basis=&#34;351px&#34;
 	
@@ -188,22 +371,22 @@
         </item>
         <item>
         <title>669. 修剪二叉搜索树</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0669-trim-a-binary-search-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0669-trim-a-binary-search-tree/</link>
         <pubDate>Sat, 06 May 2023 22:36:51 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0669-trim-a-binary-search-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0669-trim-a-binary-search-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你二叉搜索树的根节点 &lt;code&gt;root&lt;/code&gt; ，同时给定最小边界 &lt;code&gt;low&lt;/code&gt; 和最大边界 &lt;code&gt;high&lt;/code&gt;。通过修剪二叉搜索树，使得所有节点的值在 &lt;code&gt;[low, high]&lt;/code&gt; 中。修剪树 &lt;strong&gt;不应该&lt;/strong&gt; 改变保留在树中的元素的相对结构 (即，如果没有被移除，原有的父代子代关系都应当保留)。 可以证明，存在 &lt;strong&gt;唯一的答案&lt;/strong&gt; 。&lt;/p&gt;
 &lt;p&gt;所以结果应当返回修剪好的二叉搜索树的新的根节点。注意，根节点可能会根据给定的边界发生改变。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0669-trim-a-binary-search-tree/assets/trim1.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0669-trim-a-binary-search-tree/assets/trim1.jpg&#34;
 	width=&#34;722&#34;
 	height=&#34;202&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0669-trim-a-binary-search-tree/assets/trim1_hu12434fbea0cae270f26b559a93a8960b_15115_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0669-trim-a-binary-search-tree/assets/trim1_hu12434fbea0cae270f26b559a93a8960b_15115_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0669-trim-a-binary-search-tree/assets/trim1_hu12434fbea0cae270f26b559a93a8960b_15115_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0669-trim-a-binary-search-tree/assets/trim1_hu12434fbea0cae270f26b559a93a8960b_15115_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;357&#34;
 		data-flex-basis=&#34;857px&#34;
 	
@@ -214,14 +397,14 @@
 &lt;li&gt;输出：[1,null,2]&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0669-trim-a-binary-search-tree/assets/trim2.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0669-trim-a-binary-search-tree/assets/trim2.jpg&#34;
 	width=&#34;722&#34;
 	height=&#34;444&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0669-trim-a-binary-search-tree/assets/trim2_huea8784d007246b9f759a7b0b78556495_24980_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0669-trim-a-binary-search-tree/assets/trim2_huea8784d007246b9f759a7b0b78556495_24980_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0669-trim-a-binary-search-tree/assets/trim2_huea8784d007246b9f759a7b0b78556495_24980_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0669-trim-a-binary-search-tree/assets/trim2_huea8784d007246b9f759a7b0b78556495_24980_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;162&#34;
 		data-flex-basis=&#34;390px&#34;
 	
@@ -345,22 +528,22 @@
         </item>
         <item>
         <title>701. 二叉搜索树中的插入操作</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0701-insert-into-a-binary-search-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0701-insert-into-a-binary-search-tree/</link>
         <pubDate>Sat, 06 May 2023 21:52:36 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0701-insert-into-a-binary-search-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0701-insert-into-a-binary-search-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定二叉搜索树（BST）的根节点 &lt;code&gt;root&lt;/code&gt; 和要插入树中的值 &lt;code&gt;value&lt;/code&gt; ，将值插入二叉搜索树。 返回插入后二叉搜索树的根节点。 输入数据 &lt;strong&gt;保证&lt;/strong&gt; 新值和原始二叉搜索树中的任意节点值都不同。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;，可能存在多种有效的插入方式，只要树在插入后仍保持为二叉搜索树即可。 你可以返回 &lt;strong&gt;任意有效的结果&lt;/strong&gt; 。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0701-insert-into-a-binary-search-tree/assets/insertbst.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0701-insert-into-a-binary-search-tree/assets/insertbst.jpg&#34;
 	width=&#34;752&#34;
 	height=&#34;221&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0701-insert-into-a-binary-search-tree/assets/insertbst_hu3cfe2fbe9b62c8c3b8320326a4d4a4c0_21751_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0701-insert-into-a-binary-search-tree/assets/insertbst_hu3cfe2fbe9b62c8c3b8320326a4d4a4c0_21751_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0701-insert-into-a-binary-search-tree/assets/insertbst_hu3cfe2fbe9b62c8c3b8320326a4d4a4c0_21751_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0701-insert-into-a-binary-search-tree/assets/insertbst_hu3cfe2fbe9b62c8c3b8320326a4d4a4c0_21751_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;340&#34;
 		data-flex-basis=&#34;816px&#34;
 	
@@ -371,14 +554,14 @@
 &lt;li&gt;输出：[4,2,7,1,3,5]&lt;/li&gt;
 &lt;li&gt;解释：另一个满足题目要求可以通过的树是：&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0701-insert-into-a-binary-search-tree/assets/bst.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0701-insert-into-a-binary-search-tree/assets/bst.jpg&#34;
 	width=&#34;352&#34;
 	height=&#34;301&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0701-insert-into-a-binary-search-tree/assets/bst_hu64d996d6c520f45aeb0e08a38f11cf65_12747_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0701-insert-into-a-binary-search-tree/assets/bst_hu64d996d6c520f45aeb0e08a38f11cf65_12747_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0701-insert-into-a-binary-search-tree/assets/bst_hu64d996d6c520f45aeb0e08a38f11cf65_12747_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0701-insert-into-a-binary-search-tree/assets/bst_hu64d996d6c520f45aeb0e08a38f11cf65_12747_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;116&#34;
 		data-flex-basis=&#34;280px&#34;
 	
@@ -503,23 +686,23 @@
         </item>
         <item>
         <title>235. 二叉搜索树的最近公共祖先</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/</link>
         <pubDate>Sat, 06 May 2023 21:42:00 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定一个二叉搜索树，找到该树中两个指定节点的最近公共祖先。&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://baike.baidu.com/item/%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88/8918834?fr=aladdin&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;百度百科&lt;/a&gt;中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（&lt;strong&gt;一个节点也可以是它自己的祖先&lt;/strong&gt;）。”&lt;/p&gt;
 &lt;p&gt;例如，给定如下二叉搜索树:  root = [6,2,8,0,4,7,9,null,null,3,5]&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/assets/binarysearchtree_improved.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/assets/binarysearchtree_improved.png&#34;
 	width=&#34;200&#34;
 	height=&#34;190&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/assets/binarysearchtree_improved_hu85f82f9009cd279fab484d60cf251ec8_7660_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetccode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/assets/binarysearchtree_improved_hu85f82f9009cd279fab484d60cf251ec8_7660_1024x0_resize_box_3.png 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/assets/binarysearchtree_improved_hu85f82f9009cd279fab484d60cf251ec8_7660_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetcode/problems/0235-lowest-common-ancestor-of-a-binary-search-tree/assets/binarysearchtree_improved_hu85f82f9009cd279fab484d60cf251ec8_7660_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;105&#34;
 		data-flex-basis=&#34;252px&#34;
 	
@@ -654,23 +837,23 @@
         </item>
         <item>
         <title>236. 二叉树的最近公共祖先</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0236-lowest-common-ancestor-of-a-binary-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0236-lowest-common-ancestor-of-a-binary-tree/</link>
         <pubDate>Sat, 06 May 2023 13:56:40 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0236-lowest-common-ancestor-of-a-binary-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0236-lowest-common-ancestor-of-a-binary-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定一个二叉树，找到该树中两个指定节点的最近公共祖先。&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://baike.baidu.com/item/%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88/8918834?fr=aladdin&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;百度百科&lt;/a&gt;中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（&lt;strong&gt;一个节点也可以是它自己的祖先&lt;/strong&gt;）。”&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree.png&#34;
 	width=&#34;200&#34;
 	height=&#34;190&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree_hu76b655c233eb31b0c5357d20fa2b9521_7530_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetccode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree_hu76b655c233eb31b0c5357d20fa2b9521_7530_1024x0_resize_box_3.png 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree_hu76b655c233eb31b0c5357d20fa2b9521_7530_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetcode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree_hu76b655c233eb31b0c5357d20fa2b9521_7530_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;105&#34;
 		data-flex-basis=&#34;252px&#34;
 	
@@ -682,14 +865,14 @@
 &lt;li&gt;解释：节点 &lt;code&gt;5&lt;/code&gt; 和节点 &lt;code&gt;1&lt;/code&gt; 的最近公共祖先是节点 &lt;code&gt;3 。&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree.png&#34;
 	width=&#34;200&#34;
 	height=&#34;190&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree_hu76b655c233eb31b0c5357d20fa2b9521_7530_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetccode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree_hu76b655c233eb31b0c5357d20fa2b9521_7530_1024x0_resize_box_3.png 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree_hu76b655c233eb31b0c5357d20fa2b9521_7530_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetcode/problems/0236-lowest-common-ancestor-of-a-binary-tree/assets/binarytree_hu76b655c233eb31b0c5357d20fa2b9521_7530_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;105&#34;
 		data-flex-basis=&#34;252px&#34;
 	
@@ -774,10 +957,10 @@
         </item>
         <item>
         <title>98. 验证二叉搜索树</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0098-validate-binary-search-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0098-validate-binary-search-tree/</link>
         <pubDate>Sat, 06 May 2023 13:51:46 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0098-validate-binary-search-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0098-validate-binary-search-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你一个二叉树的根节点 &lt;code&gt;root&lt;/code&gt; ，判断其是否是一个有效的二叉搜索树。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;有效&lt;/strong&gt; 二叉搜索树定义如下：&lt;/p&gt;
@@ -787,14 +970,14 @@
 &lt;li&gt;所有左子树和右子树自身必须也是二叉搜索树。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0098-validate-binary-search-tree/assets/tree1.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0098-validate-binary-search-tree/assets/tree1.jpg&#34;
 	width=&#34;302&#34;
 	height=&#34;182&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0098-validate-binary-search-tree/assets/tree1_huaeb059b75d0c91d57bc161c2ceca8ca2_6825_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0098-validate-binary-search-tree/assets/tree1_huaeb059b75d0c91d57bc161c2ceca8ca2_6825_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0098-validate-binary-search-tree/assets/tree1_huaeb059b75d0c91d57bc161c2ceca8ca2_6825_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0098-validate-binary-search-tree/assets/tree1_huaeb059b75d0c91d57bc161c2ceca8ca2_6825_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;165&#34;
 		data-flex-basis=&#34;398px&#34;
 	
@@ -805,14 +988,14 @@
 &lt;li&gt;输出：true&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0098-validate-binary-search-tree/assets/tree2.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0098-validate-binary-search-tree/assets/tree2.jpg&#34;
 	width=&#34;422&#34;
 	height=&#34;292&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0098-validate-binary-search-tree/assets/tree2_hud1a6327eeded493ee859933141a93d68_12328_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0098-validate-binary-search-tree/assets/tree2_hud1a6327eeded493ee859933141a93d68_12328_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0098-validate-binary-search-tree/assets/tree2_hud1a6327eeded493ee859933141a93d68_12328_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0098-validate-binary-search-tree/assets/tree2_hud1a6327eeded493ee859933141a93d68_12328_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;144&#34;
 		data-flex-basis=&#34;346px&#34;
 	
@@ -937,10 +1120,10 @@
         </item>
         <item>
         <title>501. 二叉搜索树中的众数</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0501-find-mode-in-binary-search-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0501-find-mode-in-binary-search-tree/</link>
         <pubDate>Sat, 06 May 2023 13:50:19 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0501-find-mode-in-binary-search-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0501-find-mode-in-binary-search-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你一个含重复值的二叉搜索树（BST）的根节点 &lt;code&gt;root&lt;/code&gt; ，找出并返回 BST 中的所有 &lt;a class=&#34;link&#34; href=&#34;https://baike.baidu.com/item/%E4%BC%97%E6%95%B0/44796&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;众数&lt;/a&gt;（即，出现频率最高的元素）。&lt;/p&gt;
@@ -952,14 +1135,14 @@
 &lt;li&gt;左子树和右子树都是二叉搜索树&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0501-find-mode-in-binary-search-tree/assets/mode-tree.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0501-find-mode-in-binary-search-tree/assets/mode-tree.jpg&#34;
 	width=&#34;142&#34;
 	height=&#34;222&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0501-find-mode-in-binary-search-tree/assets/mode-tree_hu83065d800ce084b307a78b9af3d2423c_5515_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0501-find-mode-in-binary-search-tree/assets/mode-tree_hu83065d800ce084b307a78b9af3d2423c_5515_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0501-find-mode-in-binary-search-tree/assets/mode-tree_hu83065d800ce084b307a78b9af3d2423c_5515_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0501-find-mode-in-binary-search-tree/assets/mode-tree_hu83065d800ce084b307a78b9af3d2423c_5515_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;63&#34;
 		data-flex-basis=&#34;153px&#34;
 	
@@ -1073,22 +1256,22 @@
         </item>
         <item>
         <title>530. 二叉搜索树的最小绝对差</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0530-minimum-absolute-difference-in-bst/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0530-minimum-absolute-difference-in-bst/</link>
         <pubDate>Sat, 06 May 2023 13:46:16 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0530-minimum-absolute-difference-in-bst/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0530-minimum-absolute-difference-in-bst/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你一个二叉搜索树的根节点 &lt;code&gt;root&lt;/code&gt; ，返回 &lt;strong&gt;树中任意两不同节点值之间的最小差值&lt;/strong&gt; 。&lt;/p&gt;
 &lt;p&gt;差值是一个正数，其数值等于两值之差的绝对值。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0530-minimum-absolute-difference-in-bst/assets/bst1.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0530-minimum-absolute-difference-in-bst/assets/bst1.jpg&#34;
 	width=&#34;292&#34;
 	height=&#34;301&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0530-minimum-absolute-difference-in-bst/assets/bst1_hu21078858f7621d81361c79010bbe8d05_11023_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0530-minimum-absolute-difference-in-bst/assets/bst1_hu21078858f7621d81361c79010bbe8d05_11023_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0530-minimum-absolute-difference-in-bst/assets/bst1_hu21078858f7621d81361c79010bbe8d05_11023_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0530-minimum-absolute-difference-in-bst/assets/bst1_hu21078858f7621d81361c79010bbe8d05_11023_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;97&#34;
 		data-flex-basis=&#34;232px&#34;
 	
@@ -1099,14 +1282,14 @@
 &lt;li&gt;输出：1&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0530-minimum-absolute-difference-in-bst/assets/bst2.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0530-minimum-absolute-difference-in-bst/assets/bst2.jpg&#34;
 	width=&#34;282&#34;
 	height=&#34;301&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0530-minimum-absolute-difference-in-bst/assets/bst2_hu7ccc7c2a0eaef157dd1fee47eacab959_11531_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0530-minimum-absolute-difference-in-bst/assets/bst2_hu7ccc7c2a0eaef157dd1fee47eacab959_11531_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0530-minimum-absolute-difference-in-bst/assets/bst2_hu7ccc7c2a0eaef157dd1fee47eacab959_11531_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0530-minimum-absolute-difference-in-bst/assets/bst2_hu7ccc7c2a0eaef157dd1fee47eacab959_11531_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;93&#34;
 		data-flex-basis=&#34;224px&#34;
 	
@@ -1355,22 +1538,22 @@
         </item>
         <item>
         <title>700. 二叉搜索树中的搜索</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0700-search-in-a-binary-search-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0700-search-in-a-binary-search-tree/</link>
         <pubDate>Fri, 05 May 2023 22:53:14 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0700-search-in-a-binary-search-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0700-search-in-a-binary-search-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定二叉搜索树（BST）的根节点 &lt;code&gt;root&lt;/code&gt; 和一个整数值 &lt;code&gt;val&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;你需要在 BST 中找到节点值等于 &lt;code&gt;val&lt;/code&gt; 的节点。 返回以该节点为根的子树。 如果节点不存在，则返回 &lt;code&gt;null&lt;/code&gt; 。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0700-search-in-a-binary-search-tree/assets/tree1.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0700-search-in-a-binary-search-tree/assets/tree1.jpg&#34;
 	width=&#34;422&#34;
 	height=&#34;302&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0700-search-in-a-binary-search-tree/assets/tree1_hu14449c036347c0b8264cdcf8c9369ddb_12557_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0700-search-in-a-binary-search-tree/assets/tree1_hu14449c036347c0b8264cdcf8c9369ddb_12557_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0700-search-in-a-binary-search-tree/assets/tree1_hu14449c036347c0b8264cdcf8c9369ddb_12557_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0700-search-in-a-binary-search-tree/assets/tree1_hu14449c036347c0b8264cdcf8c9369ddb_12557_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;139&#34;
 		data-flex-basis=&#34;335px&#34;
 	
@@ -1381,14 +1564,14 @@
 &lt;li&gt;输出：[2,1,3]&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0700-search-in-a-binary-search-tree/assets/tree2.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0700-search-in-a-binary-search-tree/assets/tree2.jpg&#34;
 	width=&#34;422&#34;
 	height=&#34;302&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0700-search-in-a-binary-search-tree/assets/tree2_hudfab72434221eb92452da1e544cc29e6_12077_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0700-search-in-a-binary-search-tree/assets/tree2_hudfab72434221eb92452da1e544cc29e6_12077_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0700-search-in-a-binary-search-tree/assets/tree2_hudfab72434221eb92452da1e544cc29e6_12077_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0700-search-in-a-binary-search-tree/assets/tree2_hudfab72434221eb92452da1e544cc29e6_12077_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;139&#34;
 		data-flex-basis=&#34;335px&#34;
 	
@@ -1456,24 +1639,24 @@
         </item>
         <item>
         <title>617. 合并二叉树</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0617-merge-two-binary-trees/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0617-merge-two-binary-trees/</link>
         <pubDate>Fri, 05 May 2023 21:53:43 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0617-merge-two-binary-trees/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0617-merge-two-binary-trees/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你两棵二叉树： &lt;code&gt;root1&lt;/code&gt; 和 &lt;code&gt;root2&lt;/code&gt; 。&lt;/p&gt;
 &lt;p&gt;想象一下，当你将其中一棵覆盖到另一棵之上时，两棵树上的一些节点将会重叠（而另一些不会）。你需要将这两棵树合并成一棵新二叉树。合并的规则是：如果两个节点重叠，那么将这两个节点的值相加作为合并后节点的新值；否则，&lt;strong&gt;不为&lt;/strong&gt; null 的节点将直接作为新二叉树的节点。&lt;/p&gt;
 &lt;p&gt;返回合并后的二叉树。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;注意:&lt;/strong&gt; 合并过程必须从两个树的根节点开始。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0617-merge-two-binary-trees/assets/merge.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0617-merge-two-binary-trees/assets/merge.jpg&#34;
 	width=&#34;1112&#34;
 	height=&#34;302&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0617-merge-two-binary-trees/assets/merge_hu3b94a859c7a439809a626f852104fc0f_34675_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0617-merge-two-binary-trees/assets/merge_hu3b94a859c7a439809a626f852104fc0f_34675_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0617-merge-two-binary-trees/assets/merge_hu3b94a859c7a439809a626f852104fc0f_34675_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0617-merge-two-binary-trees/assets/merge_hu3b94a859c7a439809a626f852104fc0f_34675_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;368&#34;
 		data-flex-basis=&#34;883px&#34;
 	
@@ -1530,10 +1713,10 @@
         </item>
         <item>
         <title>654. 最大二叉树</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0654-maximum-binary-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0654-maximum-binary-tree/</link>
         <pubDate>Fri, 05 May 2023 20:44:58 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0654-maximum-binary-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0654-maximum-binary-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定一个不重复的整数数组 &lt;code&gt;nums&lt;/code&gt; 。 &lt;strong&gt;最大二叉树&lt;/strong&gt; 可以用下面的算法从 &lt;code&gt;nums&lt;/code&gt; 递归地构建:&lt;/p&gt;
 &lt;ol&gt;
@@ -1543,14 +1726,14 @@
 &lt;/ol&gt;
 &lt;p&gt;返回 &lt;em&gt;&lt;code&gt;nums&lt;/code&gt; 构建的&lt;/em&gt; &lt;strong&gt;&lt;em&gt;最大二叉树&lt;/em&gt;&lt;/strong&gt; 。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0654-maximum-binary-tree/assets/tree1.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0654-maximum-binary-tree/assets/tree1.jpg&#34;
 	width=&#34;302&#34;
 	height=&#34;421&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0654-maximum-binary-tree/assets/tree1_huca97e6c39ffbd2105ceb2970dff31b92_13559_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0654-maximum-binary-tree/assets/tree1_huca97e6c39ffbd2105ceb2970dff31b92_13559_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0654-maximum-binary-tree/assets/tree1_huca97e6c39ffbd2105ceb2970dff31b92_13559_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0654-maximum-binary-tree/assets/tree1_huca97e6c39ffbd2105ceb2970dff31b92_13559_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;71&#34;
 		data-flex-basis=&#34;172px&#34;
 	
@@ -1573,14 +1756,14 @@
         - 空数组，无子节点。
 &lt;/pre&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0654-maximum-binary-tree/assets/tree2.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0654-maximum-binary-tree/assets/tree2.jpg&#34;
 	width=&#34;182&#34;
 	height=&#34;301&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0654-maximum-binary-tree/assets/tree2_hub15f3fedc7b17dd5ccf5d14a01398f6e_6276_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0654-maximum-binary-tree/assets/tree2_hub15f3fedc7b17dd5ccf5d14a01398f6e_6276_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0654-maximum-binary-tree/assets/tree2_hub15f3fedc7b17dd5ccf5d14a01398f6e_6276_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0654-maximum-binary-tree/assets/tree2_hub15f3fedc7b17dd5ccf5d14a01398f6e_6276_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;60&#34;
 		data-flex-basis=&#34;145px&#34;
 	
@@ -1812,21 +1995,21 @@
         </item>
         <item>
         <title>106. 从中序与后序遍历序列构造二叉树</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/</link>
         <pubDate>Thu, 04 May 2023 09:37:56 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定两个整数数组 &lt;code&gt;inorder&lt;/code&gt; 和 &lt;code&gt;postorder&lt;/code&gt; ，其中 &lt;code&gt;inorder&lt;/code&gt; 是二叉树的中序遍历， &lt;code&gt;postorder&lt;/code&gt; 是同一棵树的后序遍历，请你构造并返回这颗 &lt;em&gt;二叉树&lt;/em&gt; 。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/assets/tree.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/assets/tree.jpg&#34;
 	width=&#34;277&#34;
 	height=&#34;302&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/assets/tree_hu65b53a4f2015dd85846facaa3087e9e9_11138_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/assets/tree_hu65b53a4f2015dd85846facaa3087e9e9_11138_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/assets/tree_hu65b53a4f2015dd85846facaa3087e9e9_11138_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0106-construct-binary-tree-from-inorder-and-postorder-traversal/assets/tree_hu65b53a4f2015dd85846facaa3087e9e9_11138_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;91&#34;
 		data-flex-basis=&#34;220px&#34;
 	
@@ -1963,22 +2146,22 @@
         </item>
         <item>
         <title>112. 路径总和</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0112-path-sum/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0112-path-sum/</link>
         <pubDate>Wed, 03 May 2023 23:55:13 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0112-path-sum/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0112-path-sum/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你二叉树的根节点 &lt;code&gt;root&lt;/code&gt; 和一个表示目标和的整数 &lt;code&gt;targetSum&lt;/code&gt; 。判断该树中是否存在 &lt;strong&gt;根节点到叶子节点&lt;/strong&gt; 的路径，这条路径上所有节点值相加等于目标和 &lt;code&gt;targetSum&lt;/code&gt; 。如果存在，返回 &lt;code&gt;true&lt;/code&gt; ；否则，返回 &lt;code&gt;false&lt;/code&gt; 。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;叶子节点&lt;/strong&gt; 是指没有子节点的节点。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0112-path-sum/assets/pathsum1.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0112-path-sum/assets/pathsum1.jpg&#34;
 	width=&#34;592&#34;
 	height=&#34;421&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0112-path-sum/assets/pathsum1_hu538a7777e70f607100cd066273b92b66_21952_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0112-path-sum/assets/pathsum1_hu538a7777e70f607100cd066273b92b66_21952_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0112-path-sum/assets/pathsum1_hu538a7777e70f607100cd066273b92b66_21952_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0112-path-sum/assets/pathsum1_hu538a7777e70f607100cd066273b92b66_21952_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;140&#34;
 		data-flex-basis=&#34;337px&#34;
 	
@@ -1990,14 +2173,14 @@
 &lt;li&gt;解释：等于目标和的根节点到叶节点路径如上图所示。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0112-path-sum/assets/pathsum2.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0112-path-sum/assets/pathsum2.jpg&#34;
 	width=&#34;212&#34;
 	height=&#34;181&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0112-path-sum/assets/pathsum2_huf87ba94daa6f7f54e3126fb7f24c1143_6268_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0112-path-sum/assets/pathsum2_huf87ba94daa6f7f54e3126fb7f24c1143_6268_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0112-path-sum/assets/pathsum2_huf87ba94daa6f7f54e3126fb7f24c1143_6268_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0112-path-sum/assets/pathsum2_huf87ba94daa6f7f54e3126fb7f24c1143_6268_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;117&#34;
 		data-flex-basis=&#34;281px&#34;
 	
@@ -2188,21 +2371,21 @@
         </item>
         <item>
         <title>404. 左叶子之和</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0404-sum-of-left-leaves/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0404-sum-of-left-leaves/</link>
         <pubDate>Wed, 03 May 2023 23:33:43 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0404-sum-of-left-leaves/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0404-sum-of-left-leaves/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定二叉树的根节点 &lt;code&gt;root&lt;/code&gt; ，返回所有左叶子之和。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0404-sum-of-left-leaves/assets/leftsum-tree.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0404-sum-of-left-leaves/assets/leftsum-tree.jpg&#34;
 	width=&#34;277&#34;
 	height=&#34;302&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0404-sum-of-left-leaves/assets/leftsum-tree_hu65b53a4f2015dd85846facaa3087e9e9_11138_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0404-sum-of-left-leaves/assets/leftsum-tree_hu65b53a4f2015dd85846facaa3087e9e9_11138_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0404-sum-of-left-leaves/assets/leftsum-tree_hu65b53a4f2015dd85846facaa3087e9e9_11138_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0404-sum-of-left-leaves/assets/leftsum-tree_hu65b53a4f2015dd85846facaa3087e9e9_11138_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;91&#34;
 		data-flex-basis=&#34;220px&#34;
 	
@@ -2425,21 +2608,21 @@
         </item>
         <item>
         <title>513. 找树左下角的值</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0513-find-bottom-left-tree-value/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0513-find-bottom-left-tree-value/</link>
         <pubDate>Wed, 03 May 2023 23:07:21 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0513-find-bottom-left-tree-value/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0513-find-bottom-left-tree-value/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定一个二叉树的 &lt;strong&gt;根节点&lt;/strong&gt; &lt;code&gt;root&lt;/code&gt;，请找出该二叉树的 &lt;strong&gt;最底层 最左边&lt;/strong&gt; 节点的值。假设二叉树中至少有一个节点。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0513-find-bottom-left-tree-value/assets/tree1.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0513-find-bottom-left-tree-value/assets/tree1.jpg&#34;
 	width=&#34;302&#34;
 	height=&#34;182&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0513-find-bottom-left-tree-value/assets/tree1_huaeb059b75d0c91d57bc161c2ceca8ca2_6825_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0513-find-bottom-left-tree-value/assets/tree1_huaeb059b75d0c91d57bc161c2ceca8ca2_6825_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0513-find-bottom-left-tree-value/assets/tree1_huaeb059b75d0c91d57bc161c2ceca8ca2_6825_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0513-find-bottom-left-tree-value/assets/tree1_huaeb059b75d0c91d57bc161c2ceca8ca2_6825_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;165&#34;
 		data-flex-basis=&#34;398px&#34;
 	
@@ -2450,14 +2633,14 @@
 &lt;li&gt;输出: 1&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0513-find-bottom-left-tree-value/assets/tree2.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0513-find-bottom-left-tree-value/assets/tree2.jpg&#34;
 	width=&#34;432&#34;
 	height=&#34;421&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0513-find-bottom-left-tree-value/assets/tree2_hu92afbda7aca1b9b32df5d9f57b2c013e_16158_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0513-find-bottom-left-tree-value/assets/tree2_hu92afbda7aca1b9b32df5d9f57b2c013e_16158_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0513-find-bottom-left-tree-value/assets/tree2_hu92afbda7aca1b9b32df5d9f57b2c013e_16158_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0513-find-bottom-left-tree-value/assets/tree2_hu92afbda7aca1b9b32df5d9f57b2c013e_16158_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;102&#34;
 		data-flex-basis=&#34;246px&#34;
 	
@@ -2581,22 +2764,22 @@
         </item>
         <item>
         <title>257. 二叉树的所有路径</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0257-binary-tree-paths/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0257-binary-tree-paths/</link>
         <pubDate>Wed, 03 May 2023 21:50:20 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0257-binary-tree-paths/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0257-binary-tree-paths/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你一个二叉树的根节点 &lt;code&gt;root&lt;/code&gt; ，按 &lt;strong&gt;任意顺序&lt;/strong&gt; ，返回所有从根节点到叶子节点的路径。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;叶子节点&lt;/strong&gt; 是指没有子节点的节点。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0257-binary-tree-paths/assets/paths-tree.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0257-binary-tree-paths/assets/paths-tree.jpg&#34;
 	width=&#34;207&#34;
 	height=&#34;293&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0257-binary-tree-paths/assets/paths-tree_hub10c94cd735d44cab96d92363be099ef_8238_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0257-binary-tree-paths/assets/paths-tree_hub10c94cd735d44cab96d92363be099ef_8238_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0257-binary-tree-paths/assets/paths-tree_hub10c94cd735d44cab96d92363be099ef_8238_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0257-binary-tree-paths/assets/paths-tree_hub10c94cd735d44cab96d92363be099ef_8238_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;70&#34;
 		data-flex-basis=&#34;169px&#34;
 	
@@ -2732,24 +2915,24 @@
         </item>
         <item>
         <title>110. 平衡二叉树</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0110-balanced-binary-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0110-balanced-binary-tree/</link>
         <pubDate>Wed, 03 May 2023 13:52:53 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0110-balanced-binary-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0110-balanced-binary-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定一个二叉树，判断它是否是高度平衡的二叉树。本题中，一棵高度平衡二叉树定义为：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;一个二叉树_每个节点_ 的左右两个子树的高度差的绝对值不超过 1 。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0110-balanced-binary-tree/assets/balance_1.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0110-balanced-binary-tree/assets/balance_1.jpg&#34;
 	width=&#34;342&#34;
 	height=&#34;221&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0110-balanced-binary-tree/assets/balance_1_hu09ea994753ce544c034b0312f33f826f_10768_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0110-balanced-binary-tree/assets/balance_1_hu09ea994753ce544c034b0312f33f826f_10768_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0110-balanced-binary-tree/assets/balance_1_hu09ea994753ce544c034b0312f33f826f_10768_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0110-balanced-binary-tree/assets/balance_1_hu09ea994753ce544c034b0312f33f826f_10768_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;154&#34;
 		data-flex-basis=&#34;371px&#34;
 	
@@ -2760,14 +2943,14 @@
 &lt;li&gt;输出：true&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0110-balanced-binary-tree/assets/balance_2.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0110-balanced-binary-tree/assets/balance_2.jpg&#34;
 	width=&#34;452&#34;
 	height=&#34;301&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0110-balanced-binary-tree/assets/balance_2_hu0e28a0db58689415d86face9100e4c52_14999_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0110-balanced-binary-tree/assets/balance_2_hu0e28a0db58689415d86face9100e4c52_14999_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0110-balanced-binary-tree/assets/balance_2_hu0e28a0db58689415d86face9100e4c52_14999_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0110-balanced-binary-tree/assets/balance_2_hu0e28a0db58689415d86face9100e4c52_14999_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;150&#34;
 		data-flex-basis=&#34;360px&#34;
 	
@@ -3041,21 +3224,21 @@
         </item>
         <item>
         <title>559. N 叉树的最大深度</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0559-maximum-depth-of-n-ary-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0559-maximum-depth-of-n-ary-tree/</link>
         <pubDate>Wed, 03 May 2023 13:49:46 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0559-maximum-depth-of-n-ary-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0559-maximum-depth-of-n-ary-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定一个 N 叉树，找到其最大深度。最大深度是指从根节点到最远叶子节点的最长路径上的节点总数。N 叉树输入按层序遍历序列化表示，每组子节点由空值分隔（请参见示例）。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0559-maximum-depth-of-n-ary-tree/assets/narytreeexample.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0559-maximum-depth-of-n-ary-tree/assets/narytreeexample.png&#34;
 	width=&#34;781&#34;
 	height=&#34;502&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0559-maximum-depth-of-n-ary-tree/assets/narytreeexample_huc66493c09191a88d6e4a8d6245563dcf_30744_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetccode/problems/0559-maximum-depth-of-n-ary-tree/assets/narytreeexample_huc66493c09191a88d6e4a8d6245563dcf_30744_1024x0_resize_box_3.png 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0559-maximum-depth-of-n-ary-tree/assets/narytreeexample_huc66493c09191a88d6e4a8d6245563dcf_30744_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetcode/problems/0559-maximum-depth-of-n-ary-tree/assets/narytreeexample_huc66493c09191a88d6e4a8d6245563dcf_30744_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;155&#34;
 		data-flex-basis=&#34;373px&#34;
 	
@@ -3066,14 +3249,14 @@
 &lt;li&gt;输出：3&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0559-maximum-depth-of-n-ary-tree/assets/sample_4_964.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0559-maximum-depth-of-n-ary-tree/assets/sample_4_964.png&#34;
 	width=&#34;596&#34;
 	height=&#34;541&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0559-maximum-depth-of-n-ary-tree/assets/sample_4_964_hu701e89d5957946889f5fd204634db499_31486_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetccode/problems/0559-maximum-depth-of-n-ary-tree/assets/sample_4_964_hu701e89d5957946889f5fd204634db499_31486_1024x0_resize_box_3.png 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0559-maximum-depth-of-n-ary-tree/assets/sample_4_964_hu701e89d5957946889f5fd204634db499_31486_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/leetcode/problems/0559-maximum-depth-of-n-ary-tree/assets/sample_4_964_hu701e89d5957946889f5fd204634db499_31486_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;110&#34;
 		data-flex-basis=&#34;264px&#34;
 	
@@ -3144,23 +3327,23 @@
         </item>
         <item>
         <title>111. 二叉树的最小深度</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0111-minimum-depth-of-binary-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0111-minimum-depth-of-binary-tree/</link>
         <pubDate>Wed, 03 May 2023 13:39:04 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0111-minimum-depth-of-binary-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0111-minimum-depth-of-binary-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定一个二叉树，找出其最小深度。&lt;/p&gt;
 &lt;p&gt;最小深度是从根节点到最近叶子节点的最短路径上的节点数量。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;说明:&lt;/strong&gt; 叶子节点是指没有子节点的节点。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0111-minimum-depth-of-binary-tree/assets/ex_depth.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0111-minimum-depth-of-binary-tree/assets/ex_depth.jpg&#34;
 	width=&#34;432&#34;
 	height=&#34;302&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0111-minimum-depth-of-binary-tree/assets/ex_depth_hu0c9ebdfd496e34167fbf77de54e6d5f6_12800_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0111-minimum-depth-of-binary-tree/assets/ex_depth_hu0c9ebdfd496e34167fbf77de54e6d5f6_12800_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0111-minimum-depth-of-binary-tree/assets/ex_depth_hu0c9ebdfd496e34167fbf77de54e6d5f6_12800_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0111-minimum-depth-of-binary-tree/assets/ex_depth_hu0c9ebdfd496e34167fbf77de54e6d5f6_12800_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;143&#34;
 		data-flex-basis=&#34;343px&#34;
 	
@@ -3249,23 +3432,23 @@
         </item>
         <item>
         <title>222. 完全二叉树的节点个数</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0222-count-complete-tree-nodes/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0222-count-complete-tree-nodes/</link>
         <pubDate>Wed, 03 May 2023 13:31:41 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0222-count-complete-tree-nodes/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0222-count-complete-tree-nodes/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你一棵 &lt;strong&gt;完全二叉树&lt;/strong&gt; 的根节点 &lt;code&gt;root&lt;/code&gt; ，求出该树的节点个数。&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://baike.baidu.com/item/%E5%AE%8C%E5%85%A8%E4%BA%8C%E5%8F%89%E6%A0%91/7773232?fr=aladdin&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;完全二叉树&lt;/a&gt; 的定义如下：在完全二叉树中，除了最底层节点可能没填满外，其余每层节点数都达到最大值，并且最下面一层的节点都集中在该层最左边的若干位置。若最底层为第 &lt;code&gt;h&lt;/code&gt; 层，则该层包含 1~ 2&lt;sup&gt;h&lt;/sup&gt; 个节点。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0222-count-complete-tree-nodes/assets/complete.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0222-count-complete-tree-nodes/assets/complete.jpg&#34;
 	width=&#34;372&#34;
 	height=&#34;302&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0222-count-complete-tree-nodes/assets/complete_hu6828bbe4ee9b7e3511cd43b815b6e8e3_13548_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0222-count-complete-tree-nodes/assets/complete_hu6828bbe4ee9b7e3511cd43b815b6e8e3_13548_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0222-count-complete-tree-nodes/assets/complete_hu6828bbe4ee9b7e3511cd43b815b6e8e3_13548_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0222-count-complete-tree-nodes/assets/complete_hu6828bbe4ee9b7e3511cd43b815b6e8e3_13548_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;123&#34;
 		data-flex-basis=&#34;295px&#34;
 	
@@ -3297,10 +3480,10 @@
         </item>
         <item>
         <title>104. 二叉树的最大深度</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0104-maximum-depth-of-binary-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0104-maximum-depth-of-binary-tree/</link>
         <pubDate>Wed, 03 May 2023 11:30:05 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0104-maximum-depth-of-binary-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0104-maximum-depth-of-binary-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给定一个二叉树，找出其最大深度。&lt;/p&gt;
 &lt;p&gt;二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。&lt;/p&gt;
@@ -3368,21 +3551,21 @@
         </item>
         <item>
         <title>101. 对称二叉树</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0101-symmetric-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0101-symmetric-tree/</link>
         <pubDate>Tue, 02 May 2023 12:31:40 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0101-symmetric-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0101-symmetric-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你一个二叉树的根节点 &lt;code&gt;root&lt;/code&gt; ， 检查它是否轴对称。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0101-symmetric-tree/assets/symtree1.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0101-symmetric-tree/assets/symtree1.jpg&#34;
 	width=&#34;354&#34;
 	height=&#34;291&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0101-symmetric-tree/assets/symtree1_hu5d84cac4c8490568c0788a676d87e9dd_15374_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0101-symmetric-tree/assets/symtree1_hu5d84cac4c8490568c0788a676d87e9dd_15374_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0101-symmetric-tree/assets/symtree1_hu5d84cac4c8490568c0788a676d87e9dd_15374_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0101-symmetric-tree/assets/symtree1_hu5d84cac4c8490568c0788a676d87e9dd_15374_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;121&#34;
 		data-flex-basis=&#34;291px&#34;
 	
@@ -3393,14 +3576,14 @@
 &lt;li&gt;输出：true&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0101-symmetric-tree/assets/symtree2.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0101-symmetric-tree/assets/symtree2.jpg&#34;
 	width=&#34;308&#34;
 	height=&#34;258&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0101-symmetric-tree/assets/symtree2_hu6f5f6f9d67cd59dc34a2fdd2f8572da7_10207_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0101-symmetric-tree/assets/symtree2_hu6f5f6f9d67cd59dc34a2fdd2f8572da7_10207_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0101-symmetric-tree/assets/symtree2_hu6f5f6f9d67cd59dc34a2fdd2f8572da7_10207_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0101-symmetric-tree/assets/symtree2_hu6f5f6f9d67cd59dc34a2fdd2f8572da7_10207_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;119&#34;
 		data-flex-basis=&#34;286px&#34;
 	
@@ -3451,21 +3634,21 @@
         </item>
         <item>
         <title>226. 翻转二叉树</title>
-        <link>https://ibakuman.github.io/posts/leetccode/problems/0226-invert-binary-tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/0226-invert-binary-tree/</link>
         <pubDate>Tue, 02 May 2023 12:26:13 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/problems/0226-invert-binary-tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/0226-invert-binary-tree/</guid>
         <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
 &lt;p&gt;给你一棵二叉树的根节点 &lt;code&gt;root&lt;/code&gt; ，翻转这棵二叉树，并返回其根节点。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0226-invert-binary-tree/assets/invert1-tree.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0226-invert-binary-tree/assets/invert1-tree.jpg&#34;
 	width=&#34;911&#34;
 	height=&#34;301&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0226-invert-binary-tree/assets/invert1-tree_hu9fa936c7182abd3d3e60c29d6ff082f1_34272_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0226-invert-binary-tree/assets/invert1-tree_hu9fa936c7182abd3d3e60c29d6ff082f1_34272_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0226-invert-binary-tree/assets/invert1-tree_hu9fa936c7182abd3d3e60c29d6ff082f1_34272_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0226-invert-binary-tree/assets/invert1-tree_hu9fa936c7182abd3d3e60c29d6ff082f1_34272_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;302&#34;
 		data-flex-basis=&#34;726px&#34;
 	
@@ -3476,14 +3659,14 @@
 &lt;li&gt;输出：[4,7,2,9,6,3,1]&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetccode/problems/0226-invert-binary-tree/assets/invert2-tree.jpg&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/leetcode/problems/0226-invert-binary-tree/assets/invert2-tree.jpg&#34;
 	width=&#34;761&#34;
 	height=&#34;182&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/leetccode/problems/0226-invert-binary-tree/assets/invert2-tree_huc7779d09eed50db3f8add3a9a5aa01aa_15045_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetccode/problems/0226-invert-binary-tree/assets/invert2-tree_huc7779d09eed50db3f8add3a9a5aa01aa_15045_1024x0_resize_q75_box.jpg 1024w&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/leetcode/problems/0226-invert-binary-tree/assets/invert2-tree_huc7779d09eed50db3f8add3a9a5aa01aa_15045_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/leetcode/problems/0226-invert-binary-tree/assets/invert2-tree_huc7779d09eed50db3f8add3a9a5aa01aa_15045_1024x0_resize_q75_box.jpg 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;418&#34;
 		data-flex-basis=&#34;1003px&#34;
 	
@@ -3548,10 +3731,10 @@
         </item>
         <item>
         <title>有关树的 LeetCode 题目</title>
-        <link>https://ibakuman.github.io/posts/leetccode/tree/</link>
+        <link>https://ibakuman.github.io/posts/leetcode/tree/</link>
         <pubDate>Tue, 02 May 2023 12:18:21 +0800</pubDate>
         
-        <guid>https://ibakuman.github.io/posts/leetccode/tree/</guid>
+        <guid>https://ibakuman.github.io/posts/leetcode/tree/</guid>
         <description>&lt;ul&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;../problems/0098-validate-binary-search-tree/&#34; &gt;98. 验证二叉搜索树&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;../problems/0101-symmetric-tree/&#34; &gt;101. 对称二叉树&lt;/a&gt;&lt;/li&gt;

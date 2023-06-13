@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>OS on iBakuman&#39;s Blog</title>
+        <link>https://ibakuman.github.io/categories/os/</link>
+        <description>Recent content in OS on iBakuman&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Thu, 01 Jun 2023 09:33:35 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/categories/os/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>操作系统内存管理</title>
+        <link>https://ibakuman.github.io/posts/os/memory-management/</link>
+        <pubDate>Thu, 01 Jun 2023 09:33:35 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/posts/os/memory-management/</guid>
+        <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;操作系统是一门比较难啃的课程，同时操作系统知识对开发者们来说是十分重要，相信各位在学操作系统的时候，有太多的抽象难以理解的词汇与概念，把我们直接劝退，即使怀着满腔热血的心情学操作系统，不到 3 分钟睡意就突然袭来。&lt;/p&gt;
+&lt;p&gt;所以本人想把自己的想法通过图解 + 大白话的形式，产出操作系统系列文章，让小白也能看懂，帮助大家快速科普入门&lt;/p&gt;
+&lt;p&gt;本篇开始介绍内存，内存在操作系统中还是比较重要的，理解了它，对整个操作系统的工作会有一个初步的轮廓。&lt;/p&gt;
+&lt;h2 id=&#34;内容大纲&#34;&gt;内容大纲&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-1.png&#34;
+	width=&#34;628&#34;
+	height=&#34;444&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-1_hu1b4a27ca00a9a5dd98e3a6581b4399e4_27513_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/os/memory-management/assets/640-1_hu1b4a27ca00a9a5dd98e3a6581b4399e4_27513_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;141&#34;
+		data-flex-basis=&#34;339px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;正文&#34;&gt;正文&lt;/h2&gt;
+&lt;h3 id=&#34;什么是内存&#34;&gt;什么是内存&lt;/h3&gt;
+&lt;p&gt;我们想去摆地摊（准备运行程序进程）需要经过那几 个步骤，这里猜测一下。&lt;/p&gt;
+&lt;p&gt;首先要去城管申请摊位（申请内存），城管（操作系统）根据现在剩余的地毯空间与你地毯的规模划分一块相应大小的摊位（内存）给你，接着你就可以愉快的摆摊（运行程序进程）赚钱啦。&lt;/p&gt;
+&lt;p&gt;城管也会时不时的来检查（整理内存空间碎片），摊位是否规整，有没有阻碍正常的人行道。&lt;/p&gt;
+&lt;p&gt;简而言之，电脑上的程序（进程）运行是需要使用到对应大小的物理内存。&lt;/p&gt;
+&lt;h3 id=&#34;虚拟内存&#34;&gt;虚拟内存&lt;/h3&gt;
+&lt;p&gt;实际上运行的进程并不是直接使用物理内存地址，而是把进程使用的内存地址与实际的物理内存地址做隔离，即操作系统会为每个进程分配独立的一套「** 虚拟地址 **」。&lt;/p&gt;
+&lt;p&gt;每个进程玩自己的地址，互不干涉，至于虚拟地址怎么映射到物理地址，对进程来说是透明的，操作系统已经把这些安排的明明白白了。&lt;/p&gt;
+&lt;p&gt;操作系统会提供一种机制，将不同进程的虚拟地址和不同内存的物理地址映射起来，如下图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640.png&#34;
+	width=&#34;1080&#34;
+	height=&#34;369&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640_hue0bfd3ac1632ee39e8f7a90d2f7990f1_45557_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/os/memory-management/assets/640_hue0bfd3ac1632ee39e8f7a90d2f7990f1_45557_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;292&#34;
+		data-flex-basis=&#34;702px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;由此我们引出了两个概念:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;进程中使用的内存地址叫 &lt;strong&gt;虚拟地址&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;存在计算硬件里的空间地址叫 &lt;strong&gt;物理地址&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;简单来说操作系统引入虚拟空间，进程持有的虚拟地址会通过 CPU 芯片中的内存管理单元（MMU）的映射关系，来转换成物理地址，再通过物理地址访问物理内存&lt;/p&gt;
+&lt;h4 id=&#34;操作系统是如何管理虚拟地址与物理内存地址之间关系&#34;&gt;操作系统是如何管理虚拟地址与物理内存地址之间关系?&lt;/h4&gt;
+&lt;p&gt;主要有三种方式，分别是 &lt;strong&gt;分段、分页、段页&lt;/strong&gt;，下面我们来看看这三种内存管理方式&lt;/p&gt;
+&lt;h3 id=&#34;内存分段&#34;&gt;内存分段&lt;/h3&gt;
+&lt;p&gt;程序包含若干个逻辑分段，如可由代码段、数据段、栈段、堆段组成，每个分段都有不同的属性，所以内存以分段的形式把这些段分离出来进行管理&lt;/p&gt;
+&lt;h4 id=&#34;在内存分段方式下虚拟地址和物理地址是如何映射的&#34;&gt;在内存分段方式下，虚拟地址和物理地址是如何映射的？&lt;/h4&gt;
+&lt;p&gt;分段管理下的虚拟地址由两部分组成，段号和段内偏移量&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-2.png&#34;
+	width=&#34;943&#34;
+	height=&#34;556&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-2_hu76b151e9d1ec9f03568b87ec27d12ba1_32426_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/os/memory-management/assets/640-2_hu76b151e9d1ec9f03568b87ec27d12ba1_32426_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;169&#34;
+		data-flex-basis=&#34;407px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;在这里插入图片描述&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;通过段号映射段表的项&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;从项中获取到段基地址&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;段基地址 + 段内偏移量 = 使用的物理内存&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;通过上述知道了，使用段号去映射段表的项，使用项中的段基地址与偏移量计算出物理内存地址，但实际上，分段方式会把程序的虚拟地址分为 4 段，每个段在段表中有一个项，在这一项找到段的基地址，再加上偏移量计算出物理内存地址&lt;/p&gt;
+&lt;p&gt;分段的方式，很好的解决了，程序本身不需要关心具体物理内存地址的问题，但是它仍有不足之处：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;内存碎片的问题&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;内存交换的效率低的问题&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;接下来对这两个问题进行分析&lt;/p&gt;
+&lt;h4 id=&#34;分段方式是如何产生内存碎片的&#34;&gt;分段方式是如何产生内存碎片的？&lt;/h4&gt;
+&lt;p&gt;在说内存碎片之前，还是先弄明白，什么是内存碎片？，8 个人去外面吃饭，因为饭点原因，人比较多，剩下的都是 4 人小餐桌，这些 4 人小餐桌就是我们所说的内存碎片，此时会有小伙伴说，把 2 个 4 人小餐桌拼凑在一起就解决了这个问题，非常简单，我们把这种方式称为内存碎片整理（涉及到内存交换）。&lt;/p&gt;
+&lt;p&gt;回到正题，我们来看一例子，假设物理内存只有 1GB （1024MB），用户电脑上运行了多个程序：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;浏览器占用 128MB&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;音乐软件占用 256MB&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;游戏占用了 512MB&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这个时候我们关闭浏览器，剩余物理内存 1024MB -（256MB+512MB）= 256MB。但是这剩余的 256MB 物理内存不是连续的，被分为了两段 128MB，导致没有空间再打开一个 200MB 的程序，如下图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640.png&#34;
+	width=&#34;1080&#34;
+	height=&#34;369&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640_hue0bfd3ac1632ee39e8f7a90d2f7990f1_45557_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/os/memory-management/assets/640_hue0bfd3ac1632ee39e8f7a90d2f7990f1_45557_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;292&#34;
+		data-flex-basis=&#34;702px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;这里的内存碎片问题共有两点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;外部内存碎片，就是多个不连续的小物理内存空间，导致新的程序无法被装载&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;内部内存碎片，程序所有的内存都被装载进了物理内存，但是程序有部分的内存，可能不经常使用，造成内存的浪费&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;解决外部内存碎片的方法就是使用内存碎片整理&lt;/p&gt;
+&lt;p&gt;内存碎片整理通过内存交换的方式来实现，我们可以把音乐软件占用的 256MB 加载到硬盘上面去，再从硬盘读取回来，但是读取回来的位置不再是原来的位置，而是紧跟已经占用的游戏 512MB 后面，这样两个 128MB 的空闲物理内存就合并成了一个 256MB 的连续物理内存，于是新的 200MB 新程序就能被装载进来&lt;/p&gt;
+&lt;p&gt;内存交换空间，在 Linux 系统里，是我们常看到的 Swap 空间，这块空间是从硬盘划分出来的，用于内存与硬盘的空间交换。&lt;/p&gt;
+&lt;h4 id=&#34;分段方式为什么内存交换效率低&#34;&gt;分段方式为什么内存交换效率低？&lt;/h4&gt;
+&lt;p&gt;首先分段管理容易造成内存碎片，导致内存交换的频率较高，因为硬盘的访问速度比内存慢太多了，然后每次交换的时候，把一大段连续的内存写入到硬盘，再又从硬盘读取出来，如果交换的是一个占内存空间很大的程序，这样整个机器都会显得卡顿，过程也很慢的，所以说分段方式内存交换效率低。&lt;/p&gt;
+&lt;p&gt;为了解决内存分段管理造成的内存碎片与内存交换效率低的问题，就出现了内存分页&lt;/p&gt;
+&lt;h3 id=&#34;内存分页&#34;&gt;内存分页&lt;/h3&gt;
+&lt;p&gt;分段的好处是能产生连续的内存空间，但是会出现大量内存碎片与内存交换效率低的问题&lt;/p&gt;
+&lt;p&gt;先思考一下怎么解决这两个问题，内存碎片是由多个不连续的小物理内存空间造成，如果把这些不连续的小物理内存空间组合起来，是不是解决了这个问题？同样的，内存交换的时候我们保证交换的数据小，是不是能提高内存交换的效率？&lt;/p&gt;
+&lt;p&gt;这个办法就是内存分页，分页是把整个虚拟与物理空间切成一段段固定尺寸的大小，这样一个连续并且尺寸固定的空间，我们叫页，在 Linux 下，每一页的大小为 4KB。（虚拟空间是指存储一套虚拟地址的空间）&lt;/p&gt;
+&lt;p&gt;虚拟地址与物理地址是通过页表来映射，&lt;span class=&#34;ibakuman-inline-note&#34;&gt;虚拟空间内的虚拟地址一定是连续的，物理地址不一定&lt;/span&gt;，但可以通过连续的虚拟地址把多个不连续的物理内存组合使用。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-3.png&#34;
+	width=&#34;958&#34;
+	height=&#34;672&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-3_hu499a5aef58cb03ce3605ffa786e19872_29104_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/os/memory-management/assets/640-3_hu499a5aef58cb03ce3605ffa786e19872_29104_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;142&#34;
+		data-flex-basis=&#34;342px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;而当进程访问的虚拟地址在页表中查不到时，系统会产生一个缺页异常，进入系统内核空间分配物理内存、更新进程页表，最后再返回用户空间，恢复进程的运行。&lt;/p&gt;
+&lt;h4 id=&#34;分页方式是如何解决内存碎片与内存交换效率慢的问题呢&#34;&gt;分页方式是如何解决内存碎片与内存交换效率慢的问题呢？&lt;/h4&gt;
+&lt;p&gt;内存碎片的解决：&lt;/p&gt;
+&lt;p&gt;因为使用内存的单位变成固定大小的页，所以每个程序的虚拟空间维护的也是连续的页 (虚拟地址)，通过页表再映射到物理内存页，虽然映射的物理内存页不连续，但是虚拟空间是连续的，可以让它们组合起来使用，但这也只能解决外部内存碎片问题，没有解决内部内碎片问题，因为每页都有固定大小，可能某一页只使用了部分，依然会造成一些浪费。&lt;/p&gt;
+&lt;p&gt;内存交换效率慢的解决：&lt;/p&gt;
+&lt;p&gt;之前说过，减少交换数据的大小，可以提高内存交换效率，分页方式是这样解决的，如果内存空间不够时，操作系统会把其他正在运行的进程中的「最近没被使用」的内存页释放掉，也就是加载到硬盘，称为换出，一旦需要的时候再加载进来，称为换入。所以一次性写入硬盘的也只有一个页或几个页，内存的交换效率自然就提升了。&lt;/p&gt;
+&lt;p&gt;分页方式使加载程序的时候，不再需要一次性都把程序加载到物理内存中。完全可以在进行虚拟内存和物理内存的页之间的映射之后，并不真的把页加载到物理内存里，而是只有在程序运行中，需要用到对应虚拟内存页里面的指令和数据时，再加载到物理内存里面去（用大白话说，当你需要用到的时候才会去使用对应的物理内存）。&lt;/p&gt;
+&lt;h4 id=&#34;在内存分页方式下虚拟地址和物理地址是如何映射的&#34;&gt;在内存分页方式下，虚拟地址和物理地址是如何映射的？&lt;/h4&gt;
+&lt;p&gt;在分页机制下，每个进程都会分配一个页表，虚拟地址会分为两部分，页号和页内偏移量，页号作为页表的索引, 页表包含物理页每页所在物理内存的基地址，页内偏移量 + 物理内存基地址就组成了物理内存地址，如下图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-3.png&#34;
+	width=&#34;958&#34;
+	height=&#34;672&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-3_hu499a5aef58cb03ce3605ffa786e19872_29104_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/os/memory-management/assets/640-3_hu499a5aef58cb03ce3605ffa786e19872_29104_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;142&#34;
+		data-flex-basis=&#34;342px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;就是下面这几步&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;页号找到页表中的页项&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;获取页项的物理页号基地址&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;偏移量 + 物理页号基地址计算出物理内存地址&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;是不是非常的简单，但是这种分页方式使用到操作系统上会不会问题呢？那必然是会有问题的，还记得之前提到的每个进程会分配一个页表嘛？下面来为大家解开这个伏笔&lt;/p&gt;
+&lt;h4 id=&#34;在分页方式下每个进程分配一个页表会有什么问题&#34;&gt;在分页方式下，每个进程分配一个页表会有什么问题？&lt;/h4&gt;
+&lt;p&gt;不卖关子了，每个进程分配一个页表会有空间上的缺陷，因为操作系统上可以运行非常多的进程，那不就意味着页表数量非常多！&lt;/p&gt;
+&lt;pre&gt;
+1B(Byte 字节)=8bit，
+1KB (Kilobyte 千字节)=1024B，
+1MB (Megabyte 兆字节 简称“兆”)=1024KB，
+1GB (Gigabyte 吉字节 又称“千兆”)=1024MB
+&lt;/pre&gt;
+&lt;p&gt;以 32 位的环境为例，虚拟地址空间范围共有 4GB，假设一个页的大小是 4KB（2^12），那么就需要大约 100 万 （2^20） 个页，每个「页表项」需要 4 个字节大小来存储，那么整个 4GB 空间范围的映射就要有 4MB 的内存来存储页表。&lt;/p&gt;
+&lt;p&gt;4MB 看起来不大，但是数量上来了就很恐怖了，假设 100 个进程的话，就需要 400MB 的内存来存储页表，这是非常大的内存了，更别说 64 位的环境了。&lt;/p&gt;
+&lt;p&gt;为了解决空间上的问题，在对分页方式的基础上，进行优化，出现了多级页表方式&lt;/p&gt;
+&lt;h4 id=&#34;多级页表&#34;&gt;多级页表&lt;/h4&gt;
+&lt;p&gt;在前面我们知道了，分页方式在 32 位环境下，以每页 4KB 来计算，一共有 100 万页，「页表项」需要 4 个字节大小来存储，一个页表包含 100 万个「页表项」，那么每个进程的页表需要占用 4MB 大小，多级页表要如何解决这种问题呢？&lt;/p&gt;
+&lt;p&gt;在页表的基础上做一次二级分页，把 100 万「页表项」分为一级页表「1024 个页表项」,「一级页表项」下又关联二级页表「1024 个页表项」，这样一级页表的 1024 个页表项就覆盖到了 4GB 的空间范围映射，并且二级页表按需加载，这样页表占用的空间就大大降低。&lt;/p&gt;
+&lt;p&gt;做个简单的计算，假设只有 20% 的一级页表项被用到了，那么页表占用的内存空间就只有 4KB（一级页表） + 20% * 4MB（二级页表）= 0.804MB，这对比单级页表的 4MB 是不是一个巨大的节约？&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-5.png&#34;
+	width=&#34;1080&#34;
+	height=&#34;727&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-5_hu369bb0b01298d202f849d5fd7bed48dc_99919_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/os/memory-management/assets/640-5_hu369bb0b01298d202f849d5fd7bed48dc_99919_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;148&#34;
+		data-flex-basis=&#34;356px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;接着思考，在二级的基础上是不是又可以继续分级呢，能分二级，必然也能分三级、四级，在 64 位操作系统是做了四级分页，分为了四个目录，分别是&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;全局页目录项&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;上层页目录项&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;中间页目录项&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;页表项&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-4.png&#34;
+	width=&#34;1080&#34;
+	height=&#34;522&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-4_hub3c5a86b8d3d149e02e0cfe475f54957_61952_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/os/memory-management/assets/640-4_hub3c5a86b8d3d149e02e0cfe475f54957_61952_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;206&#34;
+		data-flex-basis=&#34;496px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;h4 id=&#34;tlbtranslation-lookaside-buffer&#34;&gt;TLB（Translation Lookaside Buffer）&lt;/h4&gt;
+&lt;p&gt;多级页表虽然解决了空间上的问题，但是我们发现这种方式需要走多道转换才能找到映射的物理内存地址，经过的多道转换造成了时间上的开销。&lt;/p&gt;
+&lt;p&gt;程序是局部性的，即在一段时间内，整个程序的执行仅限于程序的某一部分。相应的，执行所访问的存储空间也局限于某个内存区域。&lt;/p&gt;
+&lt;p&gt;操作系统就利用这一特性，把最多使用的几个页表项放到 TLB 缓存, CPU 在寻址时，会先查 TLB，如果没找到，才会继续查常规的页表，TLB 的命中率其实很高的，因为程序最常访问的页就那么几个。&lt;/p&gt;
+&lt;h3 id=&#34;内存段页&#34;&gt;内存段页&lt;/h3&gt;
+&lt;p&gt;段式与页式并不是相对的，他们也可以组合在一起使用，在段的基础上进行分页分级&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;先将程序划分为多个有逻辑意义的段，也就是前面提到的分段机制&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;接着再把每个段划分为多个页，也就是对分段划分出来的连续空间，再划分固定大小的页&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;虚拟地址结构由段号、段内页号和页内位移三部分组成&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-6.png&#34;
+	width=&#34;1080&#34;
+	height=&#34;682&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/memory-management/assets/640-6_hu7482d6bb3ff82b27a05018999d329ae0_74986_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/os/memory-management/assets/640-6_hu7482d6bb3ff82b27a05018999d329ae0_74986_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;158&#34;
+		data-flex-basis=&#34;380px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;就是下面这几步&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;通过段号获取段表的段项&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;通过段项获取到页表地址&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;通过页表地址找到段页表&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;通过段内页号找到段页表的段页项&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;通过段页项获取物理页基地址&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;通过物理页基地址 + 偏移量计算出物理内存地址&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;进程并不是直接使用物理内存，而是通过虚拟地址映射使用，所以操作系统会为每个进程分配虚拟空间 (一套地址)，使得每个进程使用物理内存互不影响，相互隔离。&lt;/p&gt;
+&lt;p&gt;启用大量进程造成内存紧张不足的时候，操作系统会通过内存交换技术，把不常使用的内存加载到硬盘（换出），使用时从硬盘加载到内存（换入）&lt;/p&gt;
+&lt;p&gt;操作系统对内存的管理方式分为三种，分段、分页、段页，分段的好处是物理内存空间是连续的，但是缺点很明显，容易造成内存碎片，并且内存交换效率慢，采用分页能很好的解决分段的缺陷，通过连续的虚拟地址解决了外部内存碎片问题，每次内存交换将最近不使用的内存以页的单位换出换入，保证交换数据大小，提高内存交换效率，但是会有页表空间占用问题，为了解决此问题，在分页的基础上优化成多级分页 + TLB 方式来减少空间占用与时间消耗，最后一个就是段页，段页是分段与分页的结合。&lt;/p&gt;
+&lt;p&gt;通过思考，我们发现，多级分页通过树 + 懒加载 + 缓存解决了空间占用与时间消耗的问题，虚拟地址很好的做到了让进程与物理内存地址解耦，正因如此，多进程使用物理内存时才不会有冲突，很好的做到了相互独立与隔离。&lt;/p&gt;
+&lt;h2 id=&#34;原文地址&#34;&gt;原文地址&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://mp.weixin.qq.com/s/J2XA86nKyodeTyTU2Q6W0g&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;15 分钟！一文帮小白搞懂操作系统之内存&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
+        <title>从根上理解用户态与内核态</title>
+        <link>https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/</link>
+        <pubDate>Thu, 01 Jun 2023 09:20:13 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/</guid>
+        <description>&lt;h2 id=&#34;内容大纲&#34;&gt;内容大纲&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-a528a0c54f25bf78655a3f74a09b9606_b.jpg&#34;
+	width=&#34;651&#34;
+	height=&#34;343&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-a528a0c54f25bf78655a3f74a09b9606_b_hu4c2b618433e46e962d82a55a946ec423_13414_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-a528a0c54f25bf78655a3f74a09b9606_b_hu4c2b618433e46e962d82a55a946ec423_13414_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;189&#34;
+		data-flex-basis=&#34;455px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;小故事&#34;&gt;小故事&lt;/h2&gt;
+&lt;p&gt;张三是某科技公司的初级 Java 开发工程师（低权限），目前在 15 楼办公码代码，公司提供的资源仅有一套电脑（用户态），张三想着这一线的房价，倍感压力山大，于是给自己定下一个目标，一定要做技术总监，在一线扎根， 奋斗 B 张三，奋斗 5 年终于当上了技术总监（高权限），之后张三搬到 30 楼，可以随时向资源部（系统调用）申请公司各种资源与获取公司的机密信息（内核态），所谓是走上人生巅峰。&lt;/p&gt;
+&lt;p&gt;通过这个故事，我们发现，低权限的资源范围较小，高权限的资源范围更大，所谓的「用户态与内核态只是不同权限的资源范围」。&lt;/p&gt;
+&lt;h2 id=&#34;cpu-指令集权限&#34;&gt;CPU 指令集权限&lt;/h2&gt;
+&lt;p&gt;在说用户态与内核态之前，有必要说一下 CPU 指令集，指令集是 CPU 实现软件指挥硬件执行的媒介，具体来说每一条汇编语句都对应了一条 CPU 指令，而非常非常多的 CPU 指令在一起，可以组成一个、甚至多个集合，指令的集合叫 CPU 指令集。&lt;/p&gt;
+&lt;p&gt;同时 CPU 指令集有权限分级，大家试想，CPU 指令集可以直接操作硬件的，要是因为指令操作的不规范，造成的错误会影响整个计算机系统的。好比你写程序，因为对硬件操作不熟悉，导致操作系统内核、及其他所有正在运行的程序，都可能会因为操作失误而受到不可挽回的错误，最后只能重启计算机才行。&lt;/p&gt;
+&lt;p&gt;而对于硬件的操作是非常复杂的，参数众多，出问题的几率相当大，必须谨慎的进行操作，对开发人员来说是个艰巨的任务，还会增加负担，同时开发人员在这方面也不被信任，所以操作系统内核直接屏蔽开发人员对硬件操作的可能，都不让你碰到这些 CPU 指令集。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-506586ddee155b7c553e3d5cf660209e_b.jpg&#34;
+	width=&#34;720&#34;
+	height=&#34;374&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-506586ddee155b7c553e3d5cf660209e_b_hude413d8581401bee9a40ec1aca282a8b_41440_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-506586ddee155b7c553e3d5cf660209e_b_hude413d8581401bee9a40ec1aca282a8b_41440_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;192&#34;
+		data-flex-basis=&#34;462px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;针对上面的需求，硬件设备商直接提供硬件级别的支持，做法就是对 CPU 指令集设置了权限，不同级别权限能使用的 CPU 指令集是有限的，以 Inter CPU 为例，Inter 把 CPU 指令集操作的权限由高到低划为 4 级：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ring 0&lt;/li&gt;
+&lt;li&gt;ring 1&lt;/li&gt;
+&lt;li&gt;ring 2&lt;/li&gt;
+&lt;li&gt;ring 3&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;其中 ring 0 权限最高，可以使用所有 CPU 指令集，ring 3 权限最低，仅能使用常规 CPU 指令集，不能使用操作硬件资源的 CPU 指令集，比如 IO 读写、网卡访问、申请内存都不行，Linux 系统仅采用 ring 0 和 ring 3 这 2 个权限。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-7eb07a96e11e6da0cafd15edc82faa96_b.jpg&#34;
+	width=&#34;720&#34;
+	height=&#34;424&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-7eb07a96e11e6da0cafd15edc82faa96_b_hu5110bd7a7bf23a4c35089103d1363514_43300_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-7eb07a96e11e6da0cafd15edc82faa96_b_hu5110bd7a7bf23a4c35089103d1363514_43300_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;169&#34;
+		data-flex-basis=&#34;407px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;高情商&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ring 0 被叫做内核态，完全在操作系统内核中运行&lt;/li&gt;
+&lt;li&gt;ring 3 被叫做用户态，在应用程序中运行&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;低情商&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;执行内核空间的代码，具有 ring 0 保护级别，有对硬件的所有操作权限，可以执行所有 CPU 指令集，访问任意地址的内存，在内核模式下的任何异常都是灾难性的，将会导致整台机器停机&lt;/li&gt;
+&lt;li&gt;在用户模式下，具有 ring 3 保护级别，代码没有对硬件的直接控制权限，也不能直接访问地址的内存，程序是通过调用系统接口 (System Call APIs) 来达到访问硬件和内存，在这种保护模式下，即时程序发生崩溃也是可以恢复的，在电脑上大部分程序都是在，用户模式下运行的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;用户态与内核态&#34;&gt;用户态与内核态&lt;/h2&gt;
+&lt;p&gt;通关了 CPU 指令集权限，现在再说用户态与内核态就十分简单了，用户态与内核态的概念就是 CPU 指令集权限的区别，进程中要读写 IO，必然会用到 ring 0 级别的 CPU 指令集，而此时 CPU 的指令集操作权限只有 ring 3，为了可以操作 ring 0 级别的 CPU 指令集， CPU 切换指令集操作权限级别为 ring 0，CPU 再执行相应的 ring 0 级别的 CPU 指令集（内核代码），执行的内核代码会使用当前进程的内核栈。&lt;/p&gt;
+&lt;p&gt;PS：每个进程都有两个栈，分别是用户栈与内核栈，对应用户态与内核态的使用&lt;/p&gt;
+&lt;h2 id=&#34;用户态与内核态的空间&#34;&gt;用户态与内核态的空间&lt;/h2&gt;
+&lt;p&gt;在内存资源上的使用，操作系统对用户态与内核态也做了限制，每个进程创建都会分配「虚拟空间地址」（不懂可以参考我的另一篇文章 “15 分钟！一文帮小白搞懂操作系统之内存”），以 Linux32 位操作系统为例，它的寻址空间范围是 &lt;code&gt;4G&lt;/code&gt;（2 的 32 次方），而操作系统会把虚拟控制地址划分为两部分，一部分为内核空间，另一部分为用户空间，高位的 &lt;code&gt;1G&lt;/code&gt;（从虚拟地址 0xC0000000 到 0xFFFFFFFF）由内核使用，而低位的 &lt;code&gt;3G&lt;/code&gt;（从虚拟地址 0x00000000 到 0xBFFFFFFF）由各个进程使用。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-1870a0008929b2a66e2462db14200213_b.jpg&#34;
+	width=&#34;431&#34;
+	height=&#34;282&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-1870a0008929b2a66e2462db14200213_b_hued7d69d27a3c193b3de3cc1f3a27a9d6_12445_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-1870a0008929b2a66e2462db14200213_b_hued7d69d27a3c193b3de3cc1f3a27a9d6_12445_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;152&#34;
+		data-flex-basis=&#34;366px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户态：只能操作 &lt;code&gt;0-3G&lt;/code&gt; 范围的低位虚拟空间地址&lt;/li&gt;
+&lt;li&gt;内核态：&lt;code&gt;0-4G&lt;/code&gt; 范围的虚拟空间地址都可以操作，尤其是对 &lt;code&gt;3-4G&lt;/code&gt; 范围的高位虚拟空间地址必须由内核态去操作&lt;/li&gt;
+&lt;li&gt;补充：&lt;code&gt;3G-4G&lt;/code&gt; 部分大家是共享的（指所有进程的内核态逻辑地址是共享同一块内存地址），是内核态的地址空间，这里存放在整个内核的代码和所有的内核模块，以及内核所维护的数据&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每个进程的 &lt;code&gt;4G&lt;/code&gt; 虚拟空间地址，高位 &lt;code&gt;1G&lt;/code&gt; 都是一样的，即内核空间。只有剩余的 &lt;code&gt;3G&lt;/code&gt; 才归进程自己使用，换句话说就是， 高位 &lt;code&gt;1G&lt;/code&gt; 的内核空间是被所有进程共享的！&lt;/p&gt;
+&lt;p&gt;最后做个小结，我们通过指令集权限区分用户态和内核态，还限制了内存资源的使用，操作系统为用户态与内核态划分了两块内存空间，给它们对应的指令集使用&lt;/p&gt;
+&lt;h2 id=&#34;用户态与内核态的切换&#34;&gt;用户态与内核态的切换&lt;/h2&gt;
+&lt;p&gt;相信大家都听过这样的话「用户态和内核态切换的开销大」，但是它的开销大在那里呢？简单点来说有下面几点&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;保留用户态现场（上下文、寄存器、用户栈等）&lt;/li&gt;
+&lt;li&gt;复制用户态参数，用户栈切到内核栈，进入内核态&lt;/li&gt;
+&lt;li&gt;额外的检查（因为内核代码对用户不信任）&lt;/li&gt;
+&lt;li&gt;执行内核态代码&lt;/li&gt;
+&lt;li&gt;复制内核态代码执行结果，回到用户态&lt;/li&gt;
+&lt;li&gt;恢复用户态现场（上下文、寄存器、用户栈等）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;实际上操作系统会比上述的更复杂，这里只是个大概，我们可以发现一次切换经历了「用户态 -&amp;gt; 内核态 -&amp;gt; 用户态」。&lt;/p&gt;
+&lt;p&gt;用户态要主动切换到内核态，那必须要有入口才行，实际上内核态是提供了统一的入口，下面是 Linux 整体架构图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-62ff353fcfb90639ae2ec7aa5006b73c_b.jpg&#34;
+	width=&#34;720&#34;
+	height=&#34;530&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-62ff353fcfb90639ae2ec7aa5006b73c_b_hu749c7f2c3969de67953ce945fcad0a6e_32703_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/os/user-mode-and-kernel-mode/assets/v2-62ff353fcfb90639ae2ec7aa5006b73c_b_hu749c7f2c3969de67953ce945fcad0a6e_32703_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;135&#34;
+		data-flex-basis=&#34;326px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;从上图我们可以看出来通过系统调用将 Linux 整个体系分为用户态和内核态，为了使应用程序访问到内核的资源，如 CPU、内存、I/O，内核必须提供一组通用的访问接口，这些接口就叫系统调用。&lt;/p&gt;
+&lt;p&gt;库函数就是屏蔽这些复杂的底层实现细节，减轻程序员的负担，从而更加关注上层的逻辑实现，它对系统调用进行封装，提供简单的基本接口给程序员。&lt;/p&gt;
+&lt;p&gt;Shell 顾名思义，就是外壳的意思，就好像把内核包裹起来的外壳，它是一种特殊的应用程序，俗称命令行。Shell 也是可编程的，它有标准的 Shell 语法，符合其语法的文本叫 Shell 脚本，很多人都会用 Shell 脚本实现一些常用的功能，可以提高工作效率。&lt;/p&gt;
+&lt;p&gt;最后来说说，什么情况会导致用户态到内核态切换&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;系统调用：用户态进程主动切换到内核态的方式，用户态进程通过系统调用向操作系统申请资源完成工作，例如 fork（）就是一个创建新进程的系统调用，系统调用的机制核心使用了操作系统为用户特别开放的一个中断来实现，如 Linux 的 int 80h 中断，也可以称为软中断&lt;/li&gt;
+&lt;li&gt;异常：当 CPU 在执行用户态的进程时，发生了一些没有预知的异常，这时当前运行进程会切换到处理此异常的内核相关进程中，也就是切换到了内核态，如缺页异常&lt;/li&gt;
+&lt;li&gt;中断：当 CPU 在执行用户态的进程时，外围设备完成用户请求的操作后，会向 CPU 发出相应的中断信号，这时 CPU 会暂停执行下一条即将要执行的指令，转到与中断信号对应的处理程序去执行，也就是切换到了内核态。如硬盘读写操作完成，系统会切换到硬盘读写的中断处理程序中执行后边的操作等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;关联好文章推荐&#34;&gt;关联好文章推荐&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://link.zhihu.com/?target=https%3A//mp.weixin.qq.com/s/J2XA86nKyodeTyTU2Q6W0g&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;15 分钟！一文帮小白搞懂操作系统之内存&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://link.zhihu.com/?target=https%3A//mp.weixin.qq.com/s/jhOSjVyRA6rNKqVT2pKMIQ&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;进程、线程与协程傻傻分不清？一文带你吃透！&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;原文地址&#34;&gt;原文地址&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/388057431&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;从根上理解用户态与内核态&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

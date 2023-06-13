@@ -16,18 +16,26 @@
 &lt;p&gt;在日常开发的过程中，有关 &lt;code&gt;Unicode&lt;/code&gt; 、&lt;code&gt;UTF-8&lt;/code&gt; 的问题并不常出现，但在阅读技术文章或源码时出现频率就比较高了。笔者最近刚好就在开发时遇到了和 &lt;code&gt;Unicode&lt;/code&gt; 相关的问题，发现自己对这方面的基础知识并没有充分掌握。因此将相关知识梳理出来，帮助大家理解清楚 &lt;code&gt;Unicode&lt;/code&gt; 和 &lt;code&gt;UTF-8&lt;/code&gt;。&lt;/p&gt;
 &lt;h2 id=&#34;字符集&#34;&gt;字符集&lt;/h2&gt;
 &lt;h3 id=&#34;什么是字符集&#34;&gt;什么是字符集？&lt;/h3&gt;
-&lt;p&gt;字符集（Character set）是多个字符的集合，并且每个字符都拥有唯一的编号（即码点，Code Point）。不同的字符集所包含的字符个数不同，常见的字符集有：&lt;code&gt;ASCII&lt;/code&gt; 字符集、&lt;code&gt;GB2312&lt;/code&gt; 字符集、&lt;code&gt;BIG5&lt;/code&gt; 字符集、 &lt;code&gt;GB18030&lt;/code&gt; 字符集、&lt;code&gt;Unicode&lt;/code&gt; 字符集等。&lt;/p&gt;
+&lt;p&gt;字符集（Character set）是多个字符的集合，并且每个字符都拥有唯一的编号（即码点，Code Point）。不同的字符集所包含的字符个数不同，常见的字符集有：&lt;code&gt;ASCII&lt;/code&gt; 字符集、&lt;code&gt;GB2312&lt;/code&gt; 字符集、&lt;code&gt;BIG5&lt;/code&gt; 字符集、&lt;code&gt;GB18030&lt;/code&gt; 字符集、&lt;code&gt;Unicode&lt;/code&gt; 字符集等。&lt;/p&gt;
 &lt;p&gt;在没有计算机之前，大部分信息以文本的形式存在，那么如何将文本存储到计算机中呢？&lt;/p&gt;
 &lt;p&gt;我们知道，在计算机中是通过&lt;strong&gt;二进制值&lt;/strong&gt;来表示信息的，每个二进制位（bit）都有 &lt;code&gt;0&lt;/code&gt; 和 &lt;code&gt;1&lt;/code&gt; 两种状态。而计算机中存储的最小单位就是字节（Byte），由 8 个二进制位组成，那么就可以表示 2^8=256 种状态。&lt;/p&gt;
 &lt;p&gt;利用这 256 个二进制值，我们可以将字符转换为数值存储到计算机中，假设我们规定：&lt;/p&gt;
-&lt;p&gt;makefile&lt;/p&gt;
-&lt;p&gt;复制代码&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;A: 00000000 B: 00000001 C: 00000010&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;这样有了一对一的映射关系后，我们就可以把文本 &lt;code&gt;ABC&lt;/code&gt; 用 &lt;code&gt;00000000 00000001 00000010&lt;/code&gt; 存储到计算机中。这样的一个包含字符 &lt;code&gt;ABC&lt;/code&gt; 的映射集合就是我们自定义的” 字符集 “。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;A: 00000000
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;B: 00000001
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;C: 00000010
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这样有了一对一的映射关系后，我们就可以把文本 &lt;code&gt;ABC&lt;/code&gt; 用 &lt;code&gt;00000000 00000001 00000010&lt;/code&gt; 存储到计算机中。这样的一个包含字符 &lt;code&gt;ABC&lt;/code&gt; 的映射集合就是我们自定义的” 字符集 “。&lt;/p&gt;
 &lt;h3 id=&#34;ascii-码&#34;&gt;ASCII 码&lt;/h3&gt;
 &lt;p&gt;我们在上一节介绍字符集时自定义了一个只包含 &lt;code&gt;ABC&lt;/code&gt; 三个字母的字符集，仅仅作为例子可以，但是应用到实际的话显然是不够用的，因为既没有将所有的字母写入，也无法映射空格或标点符号等字符。&lt;/p&gt;
-&lt;p&gt;为了解决这个问题，在上世纪六十年代，美国制定了一套字符编码，即 &lt;code&gt;ASCII&lt;/code&gt; 码（American Standard Code for Information Interchange，美国信息交换标准代码，详见&lt;a class=&#34;link&#34; href=&#34;https://link.juejin.cn/?target=https%3A%2F%2Fzh.wikipedia.org%2Fzh-hans%2FASCII&#34;  title=&#34;https://zh.wikipedia.org/zh-hans/ASCII&#34;
-     target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;p&gt;为了解决这个问题，在上世纪六十年代，美国制定了一套字符编码，即 &lt;code&gt;ASCII&lt;/code&gt; 码（American Standard Code for Information Interchange，美国信息交换标准代码，详见&lt;a class=&#34;link&#34; href=&#34;https://www.wikiwand.com/zh-hans/ASCII&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;维基百科 - ASCII&lt;/a&gt;），将英语字符与二进制值进行一一对应，一直沿用至今。&lt;/p&gt;
 &lt;p&gt;标准 &lt;code&gt;ASCII&lt;/code&gt; 码使用 &lt;code&gt;7&lt;/code&gt; 位二进制数（剩下的首位二进制为 &lt;code&gt;0&lt;/code&gt;）来表示所有的大写和小写字母，数字 0 到 9、标点符号，以及在美式英语中使用的特殊控制字符。比如空格 &lt;code&gt;SPACE&lt;/code&gt; 的十进制值是 32（二进制 &lt;code&gt;00100000&lt;/code&gt; ），大写的字母 &lt;code&gt;A&lt;/code&gt; 的十进制值是 65（二进制 &lt;code&gt;01000001&lt;/code&gt;），如下图所示。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1.webp&#34;
@@ -36,10 +44,8 @@
 	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1_hu49fc7c78b27e271aa3c03da5b65274e1_14582_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1_hu49fc7c78b27e271aa3c03da5b65274e1_14582_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;image.png&#34;
 	
-	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;348&#34;
 		data-flex-basis=&#34;835px&#34;
 	
@@ -58,10 +64,8 @@
 	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-4_huf78a0c88ffd55186e56b11a56f1ba239_74878_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-4_huf78a0c88ffd55186e56b11a56f1ba239_74878_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;image.png&#34;
 	
-	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;242&#34;
 		data-flex-basis=&#34;581px&#34;
 	
@@ -106,10 +110,8 @@
 	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-2_hua17044ad1caab87bd0f508a49c91be15_58274_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-2_hua17044ad1caab87bd0f508a49c91be15_58274_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;image.png&#34;
 	
-	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;375&#34;
 		data-flex-basis=&#34;901px&#34;
 	
@@ -123,10 +125,8 @@
 	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-105351.png_hu1498b9303f30cb11e9a52dd21f49d224_16268_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-105351.png_hu1498b9303f30cb11e9a52dd21f49d224_16268_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;WX20220906-105351.png&#34;
 	
-	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;296&#34;
 		data-flex-basis=&#34;711px&#34;
 	
@@ -134,10 +134,17 @@
 &lt;/p&gt;
 &lt;p&gt;我们来验证下上面的转换过程。&lt;/p&gt;
 &lt;p&gt;首先准备两个 txt 文件，第一个文件里只有字母 A，第二个文件里只有汉字 严，保存文件时以 &lt;code&gt;UTF-8&lt;/code&gt; 格式保存。这里笔者用的是 Mac 系统，可以直接在命令行中执行 &lt;code&gt;echo&lt;/code&gt; 命令输出到 txt 文件中，默认的编码格式就是 &lt;code&gt;UTF-8&lt;/code&gt;：&lt;/p&gt;
-&lt;p&gt;bash&lt;/p&gt;
-&lt;p&gt;复制代码&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;echo &#39;A&#39; &amp;gt; &#39;A.txt&#39; echo &#39;严&#39; &amp;gt; &#39;严.txt&#39;&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;然后打开命令行，使用 &lt;code&gt;hexdump&lt;/code&gt; 命令查看文件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;A&amp;#39;&lt;/span&gt; &amp;gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;A.txt&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;严&amp;#39;&lt;/span&gt; &amp;gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;严.txt&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;然后打开命令行，使用 &lt;code&gt;hexdump&lt;/code&gt; 命令查看文件：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;hexdump 命令可以以 ASCII、八进制、十进制或十六进制显示文件内容。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -147,18 +154,15 @@
 	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png_hu1a55facba30561cf7e49a2dfd4b9d3bf_22402_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png_hu1a55facba30561cf7e49a2dfd4b9d3bf_22402_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;image.png&#34;
 	
-	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;271&#34;
 		data-flex-basis=&#34;651px&#34;
 	
 &gt;
 &lt;/p&gt;
 &lt;p&gt;第一列的两个值是文件中的字符偏移量，我们的重点在第二列。显然 A.txt 的结果是符合预期的，因为 &lt;code&gt;ASCII&lt;/code&gt; 码在 &lt;code&gt;UTF-8&lt;/code&gt; 的编码方式下和 Unicode 码点值是相同的。而严.txt 的结果不太一样，显然是经过了变长的编码算法转换后得到的。&lt;/p&gt;
-&lt;p&gt;我们将 &lt;code&gt;e4 b8 a5&lt;/code&gt; 的十六进制值转换一下。可以使用在线进制转换工具 &lt;a class=&#34;link&#34; href=&#34;https://link.juejin.cn/?target=https%3A%2F%2Ftool.oschina.net%2Fhexconvert%2F&#34;  title=&#34;https://tool.oschina.net/hexconvert/&#34;
-     target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;p&gt;我们将 &lt;code&gt;e4 b8 a5&lt;/code&gt; 的十六进制值转换一下。可以使用在线进制转换工具 &lt;a class=&#34;link&#34; href=&#34;https://tool.oschina.net/hexconvert/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;tool.oschina.net/hexconvert/&lt;/a&gt; 或者直接将每一个十六进制数转换为二进制进行组合，转换结果就是：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-3.webp&#34;
 	width=&#34;1440&#34;
@@ -166,10 +170,8 @@
 	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-3_hu2c47a8c3beb0dc5ecae2fbebc6b162af_22610_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-3_hu2c47a8c3beb0dc5ecae2fbebc6b162af_22610_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;image.png&#34;
 	
-	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;344&#34;
 		data-flex-basis=&#34;826px&#34;
 	
@@ -185,23 +187,9 @@
 &lt;p&gt;编码规则如下：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;对于从 &lt;code&gt;U+0000&lt;/code&gt; 到 &lt;code&gt;U+D7FF&lt;/code&gt; 以及 &lt;code&gt;U+E000&lt;/code&gt; 到 &lt;code&gt;U+FFFF&lt;/code&gt; 的码位：UTF-16 编码这个范围内的码位为 16bit 的单个码元，数值就等价于对应的码位；&lt;/li&gt;
-&lt;li&gt;对于从 &lt;code&gt;U+10000&lt;/code&gt; 到 &lt;code&gt;U+10FFFF&lt;/code&gt; 的码位：这个范围是补充平面中的码位，在 UTF-16 中被编码为两个 16bit 的码元（即 32 位，4 字节），称作_代理对。_&lt;/li&gt;
+&lt;li&gt;对于从 &lt;code&gt;U+10000&lt;/code&gt; 到 &lt;code&gt;U+10FFFF&lt;/code&gt; 的码位：这个范围是补充平面中的码位，在 UTF-16 中被编码为两个 16bit 的码元（即 32 位，4 字节），称作 &lt;em&gt;代理对&lt;/em&gt;。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-5.webp&#34;
-	width=&#34;1050&#34;
-	height=&#34;418&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-5_hue09dd92cd59fac4760954104edac7b84_19922_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-5_hue09dd92cd59fac4760954104edac7b84_19922_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;image.png&#34;
-	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;251&#34;
-		data-flex-basis=&#34;602px&#34;
-	
-&gt;
-&lt;/p&gt;
+&lt;p&gt;![(assets/image.png-5.webp)&lt;/p&gt;
 &lt;p&gt;编码过程如下：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;码位减去 &lt;code&gt;0x10000&lt;/code&gt;，得到的值的范围为 20bit 的 &lt;code&gt;0...0xFFFFF&lt;/code&gt;。&lt;/li&gt;
@@ -228,10 +216,8 @@
 	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-142132.png_hu13649cce3656e1a0dfb4cddc4a739d37_22150_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/WX20220906-142132.png_hu13649cce3656e1a0dfb4cddc4a739d37_22150_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;WX20220906-142132.png&#34;
 	
-	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;172&#34;
 		data-flex-basis=&#34;413px&#34;
 	
@@ -249,10 +235,8 @@
 	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1_hu49fc7c78b27e271aa3c03da5b65274e1_14582_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/image.png-1_hu49fc7c78b27e271aa3c03da5b65274e1_14582_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;image.png&#34;
 	
-	
-		class=&#34;gallery-image&#34; 
+		class=&#34;gallery-image&#34;
 		data-flex-grow=&#34;348&#34;
 		data-flex-basis=&#34;835px&#34;
 	
@@ -260,8 +244,7 @@
 &lt;/p&gt;
 &lt;p&gt;符合推测结果。&lt;/p&gt;
 &lt;h3 id=&#34;utf-字节序&#34;&gt;UTF 字节序&lt;/h3&gt;
-&lt;p&gt;字节序也叫尾序或端序，详细介绍可见 &lt;a class=&#34;link&#34; href=&#34;https://link.juejin.cn/?target=https%3A%2F%2Fzh.wikipedia.org%2Fwiki%2F%25E5%25AD%2597%25E8%258A%2582%25E5%25BA%258F&#34;  title=&#34;https://zh.wikipedia.org/wiki/%E5%AD%97%E8%8A%82%E5%BA%8F&#34;
-     target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;p&gt;字节序也叫尾序或端序，详细介绍可见 &lt;a class=&#34;link&#34; href=&#34;https://zh.wikipedia.org/wiki/%E5%AD%97%E8%8A%82%E5%BA%8F&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;维基百科 - 字节序&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;顾名思义，字节序就是指字节之间的顺序，在传输 or 存储过程中如果&lt;strong&gt;最小编码单元超过 1 个字节&lt;/strong&gt;，需要指定&lt;strong&gt;编码单元内的字节间顺序&lt;/strong&gt;。因此对于 &lt;code&gt;UTF-8&lt;/code&gt; 不存在字节序的问题，而 &lt;code&gt;UTF-16&lt;/code&gt; 时就需要考虑字节序的问题了。&lt;/p&gt;
 &lt;p&gt;字节序有两个通用规则：&lt;/p&gt;
@@ -270,18 +253,16 @@
 &lt;li&gt;大端序（big endian）：和小端序相反，多位数的高位放在较小的地址处，低位放在较大的地址处。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;以上一节的文本为例，下图为字符🐶在 &lt;code&gt;UTF-16&lt;/code&gt; 编码下使用不同端序时在内存中的存储结果：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/%E5%A4%A7%E7%AB%AF%E5%BA%8F%E5%B0%8F%E7%AB%AF%E5%BA%8F_%281%29.png.webp&#34;
-	width=&#34;717&#34;
-	height=&#34;289&#34;
-	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/%E5%A4%A7%E7%AB%AF%E5%BA%8F%E5%B0%8F%E7%AB%AF%E5%BA%8F_%281%29.png_hu6e2ab77bc10e371d517bf50f5d8f3e3b_13562_480x0_resize_q75_h2_box_2.webp 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/%E5%A4%A7%E7%AB%AF%E5%BA%8F%E5%B0%8F%E7%AB%AF%E5%BA%8F_%281%29.png_hu6e2ab77bc10e371d517bf50f5d8f3e3b_13562_1024x0_resize_q75_h2_box_2.webp 1024w&#34;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/t.png&#34;
+	width=&#34;715&#34;
+	height=&#34;292&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/t_hu1421f54c72f3385337c1d64ee913aa98_37601_480x0_resize_box_3.png 480w, https://ibakuman.github.io/posts/misc/unicode-and-utf8/assets/t_hu1421f54c72f3385337c1d64ee913aa98_37601_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
-		alt=&#34;大端序小端序 (1).png&#34;
 	
-	
-		class=&#34;gallery-image&#34; 
-		data-flex-grow=&#34;248&#34;
-		data-flex-basis=&#34;595px&#34;
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;244&#34;
+		data-flex-basis=&#34;587px&#34;
 	
 &gt;
 &lt;/p&gt;
@@ -322,16 +303,16 @@
 &lt;td&gt;ASCII 码只占用一个字节，而对于 CJK 文字来说负担太大，一个字符占用 3 个字节&lt;/td&gt;
 &lt;td&gt;刚好和前者相反&lt;/td&gt;
 &lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;·&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;无论是 UTF-8 和 UTF-16/32 都各有优缺点，因此&lt;strong&gt;选择的时候应当立足于实际的应用场景&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;本文主要介绍了字符编码和字符集、&lt;code&gt;Unicode&lt;/code&gt; 编码以及 &lt;code&gt;Unicode&lt;/code&gt; 的实现方式 —— &lt;code&gt;UTF-8&lt;/code&gt; 和 &lt;code&gt;UTF-16&lt;/code&gt; 两种编码方式的相关知识。需要注意的是 &lt;code&gt;Unicode&lt;/code&gt; 编码一般指的是 &lt;code&gt;Unicode&lt;/code&gt; 字符集，而 &lt;code&gt;UTF-8&lt;/code&gt; 和 &lt;code&gt;UTF-16&lt;/code&gt; 编码指的是 &lt;code&gt;Unicode&lt;/code&gt; 的实现方式，希望本文能够帮助大家理解清楚这些知识。&lt;/p&gt;
+&lt;h2 id=&#34;原文地址&#34;&gt;原文地址&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://juejin.cn/post/7152699935660441636&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;一次性弄懂 Unicode 和 UTF-8&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         </item>
         

@@ -1,0 +1,1342 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Overview This guide will teach you how to deploy a minimum viable Kubernetes Cluster on CentOS 7 by using kubeadm tool. Kubeadm is a command line tool created to help users bootstrap a Kubernetes cluster that conforms to best practices. This tool supports cluster lifecycle management functions such as bootstrap tokens and cluster upgrades.
+For Debian installation: Deploy Kubernetes Cluster on Debian 10 with Kubespray
+For Rocky Linux 8: Install Kubernetes Cluster on Rocky Linux 8 with Kubeadm &amp;amp; CRI-O'>
+<title>Install Kubernetes Cluster on CentOS 7 with kubeadm</title><link rel='canonical' href='https://ibakuman.github.io/en/posts/kubernetes/install-kubernetes-cluster-on-centos7-with-kubeadm/'><link rel="stylesheet" href="/css/style.min.2dbe6aa63c3db4336151571f1f586e464d373413c7924a1e8fefc1ade77ce12f.css" integrity="sha256-Lb5qpjw9tDNhUVcfH1huRk03NBPHkkoej+/Bred84S8="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='Install Kubernetes Cluster on CentOS 7 with kubeadm'>
+<meta property='og:description' content='Overview This guide will teach you how to deploy a minimum viable Kubernetes Cluster on CentOS 7 by using kubeadm tool. Kubeadm is a command line tool created to help users bootstrap a Kubernetes cluster that conforms to best practices. This tool supports cluster lifecycle management functions such as bootstrap tokens and cluster upgrades.
+For Debian installation: Deploy Kubernetes Cluster on Debian 10 with Kubespray
+For Rocky Linux 8: Install Kubernetes Cluster on Rocky Linux 8 with Kubeadm &amp;amp; CRI-O'>
+<meta property='og:url' content='https://ibakuman.github.io/en/posts/kubernetes/install-kubernetes-cluster-on-centos7-with-kubeadm/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2023-05-28T17:57:47&#43;08:00'/><meta property='article:modified_time' content='2023-05-28T19:06:05&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="Install Kubernetes Cluster on CentOS 7 with kubeadm">
+<meta name="twitter:description" content="Overview This guide will teach you how to deploy a minimum viable Kubernetes Cluster on CentOS 7 by using kubeadm tool. Kubeadm is a command line tool created to help users bootstrap a Kubernetes cluster that conforms to best practices. This tool supports cluster lifecycle management functions such as bootstrap tokens and cluster upgrades.
+For Debian installation: Deploy Kubernetes Cluster on Debian 10 with Kubespray
+For Rocky Linux 8: Install Kubernetes Cluster on Rocky Linux 8 with Kubeadm &amp;amp; CRI-O"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hu607d9502653a863721bf402ab13c6bbf_56312_300x0_resize_box_3.png" width="300"
+                            height="285" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/en/about/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>About</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>Archives</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>Search</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/en/links/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>Links</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" >中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" selected>English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/en/posts/kubernetes/install-kubernetes-cluster-on-centos7-with-kubeadm/">
+                <img src="/gallery/landscape/35_hu84e08b0ba06fbb10b7accce53a019dd9_276966_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/35_hu84e08b0ba06fbb10b7accce53a019dd9_276966_800x0_resize_q75_box.jpg 800w, /gallery/landscape/35_hu84e08b0ba06fbb10b7accce53a019dd9_276966_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="500"
+                        loading="lazy"
+                        alt="Featured image of post Install Kubernetes Cluster on CentOS 7 with kubeadm" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/kubenetes/" >
+                Kubenetes
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/en/posts/kubernetes/install-kubernetes-cluster-on-centos7-with-kubeadm/">Install Kubernetes Cluster on CentOS 7 with kubeadm</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">May 28, 2023</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    10 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="overview">Overview</h2>
+<p>This guide will teach you how to deploy a minimum viable Kubernetes Cluster on CentOS 7 by using kubeadm tool. Kubeadm is a command line tool created to help users bootstrap a Kubernetes cluster that conforms to best practices. This tool supports cluster lifecycle management functions such as <a class="link" href="https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/"  target="_blank" rel="noopener"
+    >bootstrap tokens</a> and cluster upgrades.</p>
+<p>For Debian installation: <a class="link" href="https://computingforgeeks.com/deploy-kubernetes-cluster-debian-with-kubespray/"  target="_blank" rel="noopener"
+    >Deploy Kubernetes Cluster on Debian 10 with Kubespray</a></p>
+<p>For Rocky Linux 8: <a class="link" href="https://computingforgeeks.com/install-kubernetes-cluster-on-rocky-linux-with-kubeadm-crio/"  target="_blank" rel="noopener"
+    >Install Kubernetes Cluster on Rocky Linux 8 with Kubeadm &amp; CRI-O</a></p>
+<p>The next sections will discuss in detail the process of deploying a minimal Kubernetes cluster on CentOS 7 servers. This installation is for a <strong>single control-plane</strong> cluster. We have other guides on deployment of highly available Kubernetes cluster with <a class="link" href="https://computingforgeeks.com/install-kubernetes-production-cluster-using-rancher-rke/"  target="_blank" rel="noopener"
+    >RKE</a> and <a class="link" href="https://computingforgeeks.com/deploy-production-kubernetes-cluster-with-ansible/"  target="_blank" rel="noopener"
+    >Kubespray</a>.</p>
+<h2 id="step-1-prepare-kubernetes-servers">Step 1: Prepare Kubernetes Servers</h2>
+<p>The minimal server requirements for the servers used in the cluster are:</p>
+<ul>
+<li><strong>2 GiB</strong> or more of RAM per machine–any less leaves little room for your apps.</li>
+<li>At least <strong>2 CPUs</strong> on the machine that you use as a <strong>control-plane</strong> node.</li>
+<li>Full network connectivity among all machines in the cluster – Can be private or public</li>
+</ul>
+<p>Since this setup is meant for development purposes, I have server with below details</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Server Type</th>
+<th>Server Hostname</th>
+<th>Specs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Master</td>
+<td>k8s-master01.computingforgeeks.com</td>
+<td>4GB Ram, 2vcpus</td>
+</tr>
+<tr>
+<td>Worker</td>
+<td>k8s-worker01.computingforgeeks.com</td>
+<td>4GB Ram, 2vcpus</td>
+</tr>
+<tr>
+<td>Worker</td>
+<td>k8s-worker02.computingforgeeks.com</td>
+<td>4GB Ram, 2vcpus</td>
+</tr>
+</tbody>
+</table></div>
+<p>Login to all servers and update the OS.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo yum -y update <span class="o">&amp;&amp;</span> sudo systemctl reboot
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="step-2-install-kubelet-kubeadm-and-kubectl">Step 2: Install kubelet, kubeadm and kubectl</h2>
+<p>Once the servers are rebooted, add Kubernetes repository for CentOS 7 to all the servers.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo tee /etc/yum.repos.d/kubernetes.repo&lt;&lt;EOF
+</span></span><span class="line"><span class="cl">[kubernetes]
+</span></span><span class="line"><span class="cl">name=Kubernetes
+</span></span><span class="line"><span class="cl">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+</span></span><span class="line"><span class="cl">enabled=1
+</span></span><span class="line"><span class="cl">gpgcheck=1
+</span></span><span class="line"><span class="cl">repo_gpgcheck=1
+</span></span><span class="line"><span class="cl">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+</span></span><span class="line"><span class="cl">EOF
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then install required packages.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo yum clean all <span class="o">&amp;&amp;</span> sudo yum -y makecache
+</span></span><span class="line"><span class="cl">sudo yum -y install epel-release vim git curl wget kubelet kubeadm kubectl --disableexcludes<span class="o">=</span>kubernetes
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Confirm installation by checking the version of kubeadm and kubectl.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubeadm  version
+</span></span><span class="line"><span class="cl">kubeadm version: <span class="p">&amp;</span>version.Info<span class="o">{</span>Major:<span class="s2">&#34;1&#34;</span>, Minor:<span class="s2">&#34;26&#34;</span>, GitVersion:<span class="s2">&#34;v1.26.1&#34;</span>, GitCommit:<span class="s2">&#34;8f94681cd294aa8cfd3407b8191f6c70214973a4&#34;</span>, GitTreeState:<span class="s2">&#34;clean&#34;</span>, BuildDate:<span class="s2">&#34;2023-01-18T15:56:50Z&#34;</span>, GoVersion:<span class="s2">&#34;go1.19.5&#34;</span>, Compiler:<span class="s2">&#34;gc&#34;</span>, Platform:<span class="s2">&#34;linux/amd64&#34;</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ kubectl version --client
+</span></span><span class="line"><span class="cl">Client Version: version.Info<span class="o">{</span>Major:<span class="s2">&#34;1&#34;</span>, Minor:<span class="s2">&#34;26&#34;</span>, GitVersion:<span class="s2">&#34;v1.26.1&#34;</span>, GitCommit:<span class="s2">&#34;8f94681cd294aa8cfd3407b8191f6c70214973a4&#34;</span>, GitTreeState:<span class="s2">&#34;clean&#34;</span>, BuildDate:<span class="s2">&#34;2023-01-18T15:58:16Z&#34;</span>, GoVersion:<span class="s2">&#34;go1.19.5&#34;</span>, Compiler:<span class="s2">&#34;gc&#34;</span>, Platform:<span class="s2">&#34;linux/amd64&#34;</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl">Kustomize Version: v4.5.7
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="step-3-disable-selinux-and-swap">Step 3: Disable SELinux and Swap</h2>
+<p>If you have SELinux in enforcing mode, turn it off or use Permissive mode.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo setenforce <span class="m">0</span>
+</span></span><span class="line"><span class="cl">sudo sed -i <span class="s1">&#39;s/^SELINUX=.*/SELINUX=permissive/g&#39;</span> /etc/selinux/config
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Turn off swap.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo sed -i <span class="s1">&#39;/ swap / s/^\(.*\)$/#\1/g&#39;</span> /etc/fstab
+</span></span><span class="line"><span class="cl">sudo swapoff -a
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Configure sysctl.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo modprobe overlay
+</span></span><span class="line"><span class="cl">sudo modprobe br_netfilter
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo tee /etc/sysctl.d/kubernetes.conf<span class="s">&lt;&lt;EOF
+</span></span></span><span class="line"><span class="cl"><span class="s">net.bridge.bridge-nf-call-ip6tables = 1
+</span></span></span><span class="line"><span class="cl"><span class="s">net.bridge.bridge-nf-call-iptables = 1
+</span></span></span><span class="line"><span class="cl"><span class="s">net.ipv4.ip_forward = 1
+</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo sysctl --system
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="step-4-install-container-runtime">Step 4: Install Container runtime</h2>
+<p>To run containers in Pods, Kubernetes uses a container runtime. Supported container runtimes are:</p>
+<ul>
+<li>Docker</li>
+<li>CRI-O</li>
+<li>Containerd</li>
+</ul>
+<p><strong>NOTE</strong>: You have to choose one runtime at a time.</p>
+<h3 id="using-cri-o-container-runtime">Using CRI-O Container Runtime</h3>
+<p>For CRI-O below are the installation steps.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Ensure you load modules</span>
+</span></span><span class="line"><span class="cl">sudo modprobe overlay
+</span></span><span class="line"><span class="cl">sudo modprobe br_netfilter
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Set up required sysctl params</span>
+</span></span><span class="line"><span class="cl">sudo tee /etc/sysctl.d/kubernetes.conf<span class="s">&lt;&lt;EOF
+</span></span></span><span class="line"><span class="cl"><span class="s">net.bridge.bridge-nf-call-ip6tables = 1
+</span></span></span><span class="line"><span class="cl"><span class="s">net.bridge.bridge-nf-call-iptables = 1
+</span></span></span><span class="line"><span class="cl"><span class="s">net.ipv4.ip_forward = 1
+</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Reload sysctl</span>
+</span></span><span class="line"><span class="cl">sudo sysctl --system
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Add CRI-O repo</span>
+</span></span><span class="line"><span class="cl"><span class="nv">OS</span><span class="o">=</span>CentOS_7
+</span></span><span class="line"><span class="cl"><span class="nv">VERSION</span><span class="o">=</span>1.26
+</span></span><span class="line"><span class="cl">curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/<span class="nv">$OS</span>/devel:kubic:libcontainers:stable.repo
+</span></span><span class="line"><span class="cl">curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:<span class="nv">$VERSION</span>.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:<span class="nv">$VERSION</span>/<span class="nv">$OS</span>/devel:kubic:libcontainers:stable:cri-o:<span class="nv">$VERSION</span>.repo
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install CRI-O</span>
+</span></span><span class="line"><span class="cl">sudo yum remove docker-ce docker-ce-cli containerd.io
+</span></span><span class="line"><span class="cl">sudo yum install cri-o
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Update CRI-O Subnet</span>
+</span></span><span class="line"><span class="cl">sudo sed -i <span class="s1">&#39;s/10.85.0.0/192.168.0.0/g&#39;</span> /etc/cni/net.d/100-crio-bridge.conf
+</span></span><span class="line"><span class="cl">sudo sed -i <span class="s1">&#39;s/10.85.0.0/192.168.0.0/g&#39;</span> /etc/cni/net.d/100-crio-bridge.conflist
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Start and enable Service</span>
+</span></span><span class="line"><span class="cl">sudo systemctl daemon-reload
+</span></span><span class="line"><span class="cl">sudo systemctl start crio
+</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> crio
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="using-docker-container-runtime">Using Docker Container runtime</h3>
+<p>When using Docker container engine run the commands below to install it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Install packages</span>
+</span></span><span class="line"><span class="cl">sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+</span></span><span class="line"><span class="cl">sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+</span></span><span class="line"><span class="cl">sudo yum install docker-ce docker-ce-cli containerd.io
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create required directories</span>
+</span></span><span class="line"><span class="cl">sudo mkdir /etc/docker
+</span></span><span class="line"><span class="cl">sudo mkdir -p /etc/systemd/system/docker.service.d
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create daemon json config file</span>
+</span></span><span class="line"><span class="cl">sudo tee /etc/docker/daemon.json <span class="s">&lt;&lt;EOF
+</span></span></span><span class="line"><span class="cl"><span class="s">{
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;exec-opts&#34;: [&#34;native.cgroupdriver=systemd&#34;],
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;log-driver&#34;: &#34;json-file&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;log-opts&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;max-size&#34;: &#34;100m&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">  },
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;storage-driver&#34;: &#34;overlay2&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;storage-opts&#34;: [
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;overlay2.override_kernel_check=true&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">  ]
+</span></span></span><span class="line"><span class="cl"><span class="s">}
+</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Start and enable Services</span>
+</span></span><span class="line"><span class="cl">sudo systemctl daemon-reload
+</span></span><span class="line"><span class="cl">sudo systemctl restart docker
+</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> docker
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="using-containerd-runtime">Using Containerd runtime</h3>
+<p>Below are the installation steps for Containerd.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Configure persistent loading of modules</span>
+</span></span><span class="line"><span class="cl">sudo tee /etc/modules-load.d/containerd.conf <span class="s">&lt;&lt;EOF
+</span></span></span><span class="line"><span class="cl"><span class="s">overlay
+</span></span></span><span class="line"><span class="cl"><span class="s">br_netfilter
+</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Load at runtime</span>
+</span></span><span class="line"><span class="cl">sudo modprobe overlay
+</span></span><span class="line"><span class="cl">sudo modprobe br_netfilter
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Ensure sysctl params are set</span>
+</span></span><span class="line"><span class="cl">sudo tee /etc/sysctl.d/kubernetes.conf<span class="s">&lt;&lt;EOF
+</span></span></span><span class="line"><span class="cl"><span class="s">net.bridge.bridge-nf-call-ip6tables = 1
+</span></span></span><span class="line"><span class="cl"><span class="s">net.bridge.bridge-nf-call-iptables = 1
+</span></span></span><span class="line"><span class="cl"><span class="s">net.ipv4.ip_forward = 1
+</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Reload configs</span>
+</span></span><span class="line"><span class="cl">sudo sysctl --system
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install required packages</span>
+</span></span><span class="line"><span class="cl">sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Add Docker repo</span>
+</span></span><span class="line"><span class="cl">sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install containerd</span>
+</span></span><span class="line"><span class="cl">sudo yum update -y <span class="o">&amp;&amp;</span> yum install -y containerd.io
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Configure containerd and start service</span>
+</span></span><span class="line"><span class="cl">sudo mkdir -p /etc/containerd
+</span></span><span class="line"><span class="cl">sudo containerd config default &gt; /etc/containerd/config.toml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># restart containerd</span>
+</span></span><span class="line"><span class="cl">sudo systemctl restart containerd
+</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> containerd
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To use the systemd cgroup driver, set <strong>plugins.cri.systemd_cgroup = true</strong> in <code>/etc/containerd/config.toml</code>. When using kubeadm, manually configure the <a class="link" href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#configure-cgroup-driver-used-by-kubelet-on-control-plane-node"  target="_blank" rel="noopener"
+    >cgroup driver for kubelet</a></p>
+<h2 id="step-5-configure-firewalld">Step 5: Configure Firewalld</h2>
+<p>I recommend you disable firewalld on your nodes:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo systemctl disable --now firewalld
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If you have an active firewalld service there are a number of ports to be enabled.</p>
+<p><strong>Master Server ports:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo firewall-cmd --add-port<span class="o">={</span>6443,2379-2380,10250,10251,10252,5473,179,5473<span class="o">}</span>/tcp --permanent
+</span></span><span class="line"><span class="cl">sudo firewall-cmd --add-port<span class="o">={</span>4789,8285,8472<span class="o">}</span>/udp --permanent
+</span></span><span class="line"><span class="cl">sudo firewall-cmd --reload
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Worker Node ports:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo firewall-cmd --add-port<span class="o">={</span>10250,30000-32767,5473,179,5473<span class="o">}</span>/tcp --permanent
+</span></span><span class="line"><span class="cl">sudo firewall-cmd --add-port<span class="o">={</span>4789,8285,8472<span class="o">}</span>/udp --permanent
+</span></span><span class="line"><span class="cl">sudo firewall-cmd --reload
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="step-6-initialize-your-control-plane-node">Step 6: Initialize your control-plane node</h2>
+<p>Login to the server to be used as master and make sure that the <em>br_netfilter</em> module is loaded:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ lsmod <span class="p">|</span> grep br_netfilter
+</span></span><span class="line"><span class="cl">br_netfilter           <span class="m">22256</span>  <span class="m">0</span>
+</span></span><span class="line"><span class="cl">bridge                <span class="m">151336</span>  <span class="m">2</span> br_netfilter,ebtable_broute
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Enable kubelet service.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> kubelet
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We now want to initialize the machine that will run the control plane components which includes <em>etcd</em> (the cluster database) and the API Server.</p>
+<p>Pull container images:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo kubeadm config images pull
+</span></span><span class="line"><span class="cl"><span class="o">[</span>config/images<span class="o">]</span> Pulled registry.k8s.io/kube-apiserver:v1.26.1
+</span></span><span class="line"><span class="cl"><span class="o">[</span>config/images<span class="o">]</span> Pulled registry.k8s.io/kube-controller-manager:v1.26.1
+</span></span><span class="line"><span class="cl"><span class="o">[</span>config/images<span class="o">]</span> Pulled registry.k8s.io/kube-scheduler:v1.26.1
+</span></span><span class="line"><span class="cl"><span class="o">[</span>config/images<span class="o">]</span> Pulled registry.k8s.io/kube-proxy:v1.26.1
+</span></span><span class="line"><span class="cl"><span class="o">[</span>config/images<span class="o">]</span> Pulled registry.k8s.io/pause:3.9
+</span></span><span class="line"><span class="cl"><span class="o">[</span>config/images<span class="o">]</span> Pulled registry.k8s.io/etcd:3.5.6-0
+</span></span><span class="line"><span class="cl"><span class="o">[</span>config/images<span class="o">]</span> Pulled registry.k8s.io/coredns/coredns:v1.9.3
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>These are the basic <code>kubeadm init</code> options that are used to bootstrap cluster.</p>
+<pre>
+--control-plane-endpoint :  set the shared endpoint for all control-plane nodes. Can be DNS/IP
+--pod-network-cidr : Used to set a Pod network add-on CIDR
+--cri-socket : Use if have more than one container runtime to set runtime socket path
+--apiserver-advertise-address : Set advertise address for this particular control-plane node's API server
+</pre>
+<p>Set cluster endpoint DNS name or add record to /etc/hosts file. In this example <strong><em>172.29.20.5</em></strong> is the Control Plane IP address.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo vim /etc/hosts
+</span></span><span class="line"><span class="cl">172.29.20.5 k8sapi.computingforgeeks.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Create cluster:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo kubeadm init <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --pod-network-cidr<span class="o">=</span>192.168.0.0/16 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --upload-certs <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --control-plane-endpoint<span class="o">=</span>k8sapi.computingforgeeks.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Note</strong>: If <em>192.168.0.0/16</em> is already in use within your network you must select a different pod network CIDR, replacing 192.168.0.0/16 in the above command.</p>
+<p>Container runtime sockets:</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th>Path to Unix domain socket</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Docker</td>
+<td>/var/run/docker.sock</td>
+</tr>
+<tr>
+<td>containerd</td>
+<td>/run/containerd/containerd.sock</td>
+</tr>
+<tr>
+<td>CRI-O</td>
+<td>/var/run/crio/crio.sock</td>
+</tr>
+</tbody>
+</table></div>
+<p>You can optionally pass Socket file for runtime and advertise address depending on your setup.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo kubeadm init <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --pod-network-cidr<span class="o">=</span>192.168.0.0/16 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --cri-socket /var/run/crio/crio.sock <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --upload-certs <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --control-plane-endpoint<span class="o">=</span>k8sapi.computingforgeeks.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Configure kubectl using commands in the output:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p <span class="nv">$HOME</span>/.kube
+</span></span><span class="line"><span class="cl">sudo cp -i /etc/kubernetes/admin.conf <span class="nv">$HOME</span>/.kube/config
+</span></span><span class="line"><span class="cl">sudo chown <span class="k">$(</span>id -u<span class="k">)</span>:<span class="k">$(</span>id -g<span class="k">)</span> <span class="nv">$HOME</span>/.kube/config
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Check cluster status:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl cluster-info
+</span></span><span class="line"><span class="cl">Kubernetes master is running at https://k8sapi.computingforgeeks.com:6443
+</span></span><span class="line"><span class="cl">KubeDNS is running at https://k8sapi.computingforgeeks.com:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">To further debug and diagnose cluster problems, use <span class="s1">&#39;kubectl cluster-info dump&#39;</span>.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Additional Master nodes can be added using the command in installation output:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubeadm join k8sapi.computingforgeeks.com:6443 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --token zoy8cq.6v349sx9ass8dzyj <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --discovery-token-ca-cert-hash sha256:14a6e33ca8dc9998f984150bc8780ddf0c3ff9cf6a3848f49825e53ef1374e24 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --control-plane
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="step-7-install-network-plugin">Step 7: Install network plugin</h2>
+<p>In this guide we’ll use <a class="link" href="https://projectcalico.org/"  target="_blank" rel="noopener"
+    >Calico</a>. You can choose any other <a class="link" href="https://kubernetes.io/docs/concepts/cluster-administration/addons/"  target="_blank" rel="noopener"
+    >supported network plugins</a>.</p>
+<p>Get latest release:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">VER</span><span class="o">=</span><span class="k">$(</span>curl -s https://api.github.com/repos/projectcalico/calico/releases/latest<span class="p">|</span>grep tag_name<span class="p">|</span>cut -d <span class="s1">&#39;&#34;&#39;</span> -f 4<span class="k">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Download and install the latest stable release of Tigera Calico operator:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://raw.githubusercontent.com/projectcalico/calico/<span class="si">${</span><span class="nv">VER</span><span class="si">}</span>/manifests/tigera-operator.yaml
+</span></span><span class="line"><span class="cl">kubectl create -f tigera-operator.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Next we install custom resource definitions.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://raw.githubusercontent.com/projectcalico/calico/<span class="si">${</span><span class="nv">VER</span><span class="si">}</span>/manifests/custom-resources.yaml
+</span></span><span class="line"><span class="cl">kubectl create -f custom-resources.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong><em>Operator installation output:</em></strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">namespace/tigera-operator created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/blockaffinities.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/caliconodestatuses.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/clusterinformations.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/felixconfigurations.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/globalnetworkpolicies.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/globalnetworksets.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/hostendpoints.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/ipamblocks.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/ipamconfigs.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/ipamhandles.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/ippools.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/ipreservations.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/kubecontrollersconfigurations.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/networkpolicies.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/networksets.crd.projectcalico.org created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/apiservers.operator.tigera.io created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/imagesets.operator.tigera.io created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/installations.operator.tigera.io created
+</span></span><span class="line"><span class="cl">customresourcedefinition.apiextensions.k8s.io/tigerastatuses.operator.tigera.io created
+</span></span><span class="line"><span class="cl">serviceaccount/tigera-operator created
+</span></span><span class="line"><span class="cl">clusterrole.rbac.authorization.k8s.io/tigera-operator created
+</span></span><span class="line"><span class="cl">clusterrolebinding.rbac.authorization.k8s.io/tigera-operator created
+</span></span><span class="line"><span class="cl">deployment.apps/tigera-operator created
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong><em>Custom resource installation output:</em></strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">installation.operator.tigera.io/default created
+</span></span><span class="line"><span class="cl">apiserver.operator.tigera.io/default created
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Confirm that all of the pods are running:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl get pods -n calico-system -w
+</span></span><span class="line"><span class="cl">NAME                                       READY   STATUS    RESTARTS   AGE
+</span></span><span class="line"><span class="cl">calico-kube-controllers-6b7b9c649d-b5vt5   1/1     Running   <span class="m">0</span>          3m51s
+</span></span><span class="line"><span class="cl">calico-node-4n299                          1/1     Running   <span class="m">0</span>          3m51s
+</span></span><span class="line"><span class="cl">calico-typha-69789694cb-2zw4b              1/1     Running   <span class="m">0</span>          3m52s
+</span></span><span class="line"><span class="cl">csi-node-driver-8z6cv                      2/2     Running   <span class="m">0</span>          3m51s
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Confirm master node is ready:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl get nodes -o wide
+</span></span><span class="line"><span class="cl">NAME              STATUS   ROLES           AGE     VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE                           KERNEL-VERSION              CONTAINER-RUNTIME
+</span></span><span class="line"><span class="cl">rocky8.mylab.io   Ready    control-plane   7m58s   v1.26.1   65.21.188.149   &lt;none&gt;        Rocky Linux 8.7 <span class="o">(</span>Green Obsidian<span class="o">)</span>   4.18.0-425.3.1.el8.x86_64   cri-o://1.26.1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="step-8-add-worker-nodes">Step 8: Add worker nodes</h2>
+<p>With the control plane ready you can add worker nodes to the cluster for running scheduled workloads.</p>
+<p>If endpoint address is not in DNS, add record to <em>/etc/hosts</em>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo vim /etc/hosts
+</span></span><span class="line"><span class="cl">172.29.20.5 k8sapi.computingforgeeks.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The join command that was given is used to add a worker node to the cluster.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubeadm join k8sapi.computingforgeeks.com:6443 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --token zoy8cq.6v349sx9ass8dzyj <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --discovery-token-ca-cert-hash sha256:14a6e33ca8dc9998f984150bc8780ddf0c3ff9cf6a3848f49825e53ef1374e24
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Output:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>preflight<span class="o">]</span> Reading configuration from the cluster...
+</span></span><span class="line"><span class="cl"><span class="o">[</span>preflight<span class="o">]</span> FYI: You can look at this config file with <span class="s1">&#39;kubectl -n kube-system get cm kubeadm-config -oyaml&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>kubelet-start<span class="o">]</span> Downloading configuration <span class="k">for</span> the kubelet from the <span class="s2">&#34;kubelet-config-1.26&#34;</span> ConfigMap in the kube-system namespace
+</span></span><span class="line"><span class="cl"><span class="o">[</span>kubelet-start<span class="o">]</span> Writing kubelet configuration to file <span class="s2">&#34;/var/lib/kubelet/config.yaml&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>kubelet-start<span class="o">]</span> Writing kubelet environment file with flags to file <span class="s2">&#34;/var/lib/kubelet/kubeadm-flags.env&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>kubelet-start<span class="o">]</span> Starting the kubelet
+</span></span><span class="line"><span class="cl"><span class="o">[</span>kubelet-start<span class="o">]</span> Waiting <span class="k">for</span> the kubelet to perform the TLS Bootstrap...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">This node has joined the cluster:
+</span></span><span class="line"><span class="cl">* Certificate signing request was sent to apiserver and a response was received.
+</span></span><span class="line"><span class="cl">* The Kubelet was informed of the new secure connection details.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Run below command on the control-plane to see if the node joined the cluster.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl get nodes
+</span></span><span class="line"><span class="cl">NAME                                 STATUS   ROLES    AGE   VERSION
+</span></span><span class="line"><span class="cl">k8s-master01.computingforgeeks.com   Ready    master   18m   v1.26.1
+</span></span><span class="line"><span class="cl">k8s-worker01.computingforgeeks.com   Ready    &lt;none&gt;   98s   v1.26.1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If the join token is expired, refer to our guide on how to join worker nodes.</p>
+<ul>
+<li><a class="link" href="https://computingforgeeks.com/join-new-kubernetes-worker-node-to-existing-cluster/"  target="_blank" rel="noopener"
+    >Join new Kubernetes Worker Node to an existing Cluster</a></li>
+</ul>
+<h2 id="step-9-deploy-application-on-cluster">Step 9: Deploy application on cluster</h2>
+<p>For single node cluster check out our guide on how to run pods on control plane nodes:</p>
+<ul>
+<li><a class="link" href="https://computingforgeeks.com/how-to-schedule-pods-on-kubernetes-control-plane-node/"  target="_blank" rel="noopener"
+    >Scheduling Pods on Kubernetes Control plane (Master) Nodes</a></li>
+</ul>
+<p>We need to validate that our cluster is working by deploying an application.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f https://k8s.io/examples/pods/commands.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Check to see if pod started</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl get pods
+</span></span><span class="line"><span class="cl">NAME           READY   STATUS      RESTARTS   AGE
+</span></span><span class="line"><span class="cl">command-demo   0/1     Completed   <span class="m">0</span>          40s
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="step-10-install-kubernetes-dashboard-optional">Step 10: Install Kubernetes Dashboard (Optional)</h2>
+<p>Kubernetes dashboard can be used to deploy containerized applications to a Kubernetes cluster, troubleshoot your containerized application, and manage the cluster resources.</p>
+<p>Refer to our guide for installation: <a class="link" href="https://computingforgeeks.com/how-to-install-kubernetes-dashboard-with-nodeport/"  target="_blank" rel="noopener"
+    >How To Install Kubernetes Dashboard with NodePort</a></p>
+<h2 id="step-11-install-an-ingress-controller">Step 11: Install an Ingress Controller</h2>
+<p>If you need an Ingress controller for Kubernetes workloads, you can use our guide in the following link for the installation process:</p>
+<ul>
+<li><a class="link" href="https://computingforgeeks.com/deploy-nginx-ingress-controller-on-kubernetes-using-helm-chart/"  target="_blank" rel="noopener"
+    >Deploy Nginx Ingress Controller on Kubernetes using Helm Chart</a></li>
+<li><a class="link" href="https://computingforgeeks.com/install-configure-traefik-ingress-controller-on-kubernetes/"  target="_blank" rel="noopener"
+    >Install and Configure Traefik Ingress Controller on Kubernetes Cluster</a></li>
+</ul>
+<h2 id="step-12-configure-persistent-volume-storage">Step 12: Configure Persistent volume storage</h2>
+<p>Check out our guides in the following links.</p>
+<ul>
+<li><a class="link" href="https://computingforgeeks.com/configure-nfs-as-kubernetes-persistent-volume-storage/"  target="_blank" rel="noopener"
+    >Configure NFS as Kubernetes Persistent Volume Storage</a></li>
+<li><a class="link" href="https://computingforgeeks.com/ceph-persistent-storage-for-kubernetes-with-cephfs/"  target="_blank" rel="noopener"
+    >Ceph Persistent Storage for Kubernetes with Cephfs</a></li>
+<li><a class="link" href="https://computingforgeeks.com/persistent-storage-for-kubernetes-with-ceph-rbd/"  target="_blank" rel="noopener"
+    >Persistent Storage for Kubernetes with Ceph RBD</a></li>
+<li><a class="link" href="https://computingforgeeks.com/how-to-deploy-rook-ceph-storage-on-kubernetes-cluster/"  target="_blank" rel="noopener"
+    >How To Deploy Rook Ceph Storage on Kubernetes Cluster</a></li>
+<li><a class="link" href="https://computingforgeeks.com/configure-kubernetes-dynamic-volume-provisioning-with-heketi-glusterfs/"  target="_blank" rel="noopener"
+    >How To Configure Kubernetes Dynamic Volume Provisioning With Heketi &amp; GlusterFS</a></li>
+</ul>
+<p>Similar Kubernetes deployment guides:</p>
+<ul>
+<li><a class="link" href="https://computingforgeeks.com/install-kubernetes-production-cluster-using-rancher-rke/"  target="_blank" rel="noopener"
+    >Install Production Kubernetes Cluster with Rancher RKE</a></li>
+<li><a class="link" href="https://computingforgeeks.com/how-to-deploy-lightweight-kubernetes-cluster-with-k3s/"  target="_blank" rel="noopener"
+    >How To Deploy Lightweight Kubernetes Cluster in 5 minutes with K3s</a></li>
+<li><a class="link" href="https://computingforgeeks.com/deploy-production-kubernetes-cluster-with-ansible/"  target="_blank" rel="noopener"
+    >Deploy Production Ready Kubernetes Cluster with Ansible &amp; Kubespray</a></li>
+</ul>
+<h2 id="original-article-link">Original article link</h2>
+<ul>
+<li><a class="link" href="https://computingforgeeks.com/install-kubernetes-cluster-on-centos-with-kubeadm/"  target="_blank" rel="noopener"
+    >Install Kubernetes Cluster on CentOS 7 with kubeadm</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on May 28, 2023 19:06 CST
+        </span>
+    </section></footer>
+
+</article>
+
+
+    
+
+    
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#step-1-prepare-kubernetes-servers">Step 1: Prepare Kubernetes Servers</a></li>
+    <li><a href="#step-2-install-kubelet-kubeadm-and-kubectl">Step 2: Install kubelet, kubeadm and kubectl</a></li>
+    <li><a href="#step-3-disable-selinux-and-swap">Step 3: Disable SELinux and Swap</a></li>
+    <li><a href="#step-4-install-container-runtime">Step 4: Install Container runtime</a>
+      <ol>
+        <li><a href="#using-cri-o-container-runtime">Using CRI-O Container Runtime</a></li>
+        <li><a href="#using-docker-container-runtime">Using Docker Container runtime</a></li>
+        <li><a href="#using-containerd-runtime">Using Containerd runtime</a></li>
+      </ol>
+    </li>
+    <li><a href="#step-5-configure-firewalld">Step 5: Configure Firewalld</a></li>
+    <li><a href="#step-6-initialize-your-control-plane-node">Step 6: Initialize your control-plane node</a></li>
+    <li><a href="#step-7-install-network-plugin">Step 7: Install network plugin</a></li>
+    <li><a href="#step-8-add-worker-nodes">Step 8: Add worker nodes</a></li>
+    <li><a href="#step-9-deploy-application-on-cluster">Step 9: Deploy application on cluster</a></li>
+    <li><a href="#step-10-install-kubernetes-dashboard-optional">Step 10: Install Kubernetes Dashboard (Optional)</a></li>
+    <li><a href="#step-11-install-an-ingress-controller">Step 11: Install an Ingress Controller</a></li>
+    <li><a href="#step-12-configure-persistent-volume-storage">Step 12: Configure Persistent volume storage</a></li>
+    <li><a href="#original-article-link">Original article link</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.3a18546ecb79abf74f4b27df66faadb0bb2e74b596d89f228e44cda88aa926fb.js" integrity="sha256-OhhUbst5q/dPSyffZvqtsLsudLWW2J8ijkTNqIqpJvs="></script>
+    </body>
+</html>

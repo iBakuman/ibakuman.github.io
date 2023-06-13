@@ -6,13 +6,781 @@
         <description>Recent content in Linux on iBakuman&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Wed, 26 Apr 2023 09:03:58 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 30 May 2023 09:28:44 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>iptables 详解</title>
+        <link>https://ibakuman.github.io/posts/linux/iptables/</link>
+        <pubDate>Tue, 30 May 2023 09:28:44 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/posts/linux/iptables/</guid>
+        <description>&lt;img src="https://pic2.zhimg.com/80/v2-7e04b166730a8c88afccb38a5dfb122d_720w.webp" alt="Featured image of post iptables 详解" /&gt;&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;iptables&lt;/code&gt; 其实只是一个简称，其真正代表的是 &lt;code&gt;netfilter/iptables&lt;/code&gt; 这个 IP 数据包过滤系统。为了简便，本文也将整套系统用 iptables 简称。iptables 是 3.5 版本的 Linux 内核集成的 IP 数据包过滤系统。当系统接入网络时，该系统有利于在 Linux 系统上更好地控制 IP 信息包和防火墙配置。此外，iptables 还可以进行 NAT 规则的管理。 上面有提到 netfilter/iptables 这个组合，这个组合中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;netfilter 位于内核空间，是内核的一部分，由一些数据包过滤表组成，这些表包含内核用来控制数据包过滤处理的规则集；而 netfilter 又是由内核中若干 hook 组成的，程序在执行到内核 hook 处时便会执行数据包过滤的相关逻辑。&lt;/li&gt;
+&lt;li&gt;iptables 位于用户空间，是一种工具。该工具可以很便捷地对 netfilter 所维护的表数据进行修改。从而可以很便捷地控制数据包的过滤规则。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;相关概念&#34;&gt;相关概念&lt;/h2&gt;
+&lt;h3 id=&#34;包过滤防火墙&#34;&gt;包过滤防火墙&lt;/h3&gt;
+&lt;p&gt;包过滤防火墙在网络层截取网络数据包的包头（header），针对数据包的包头，根据事先定义好的防火墙过滤规则进行对比，根据对比结果，再执行不同的动作。 包过滤防火墙一般工作在网络层，所以也称为 “网络防火墙”，通过检查数据流中每一个数据包的源 ip 地址，目标 ip 地址，源端口，目标端口，协议类型（tcp,udp,icmp 等），状态等信息来判断是否符合规则。&lt;/p&gt;
+&lt;h3 id=&#34;nat&#34;&gt;NAT&lt;/h3&gt;
+&lt;p&gt;NAT（Network Address Translation）网络地址转换，常用于局域网主机想与互联网服务通信时做地址转换，因为公网 IP 有限，且局域网主机访问公网必须要使用公网 IP 才可以访问到，因此使用 NAT 方法对地址做转换是一个很高效的方法。根据 NAT 使用场景不同可以将 NAT 分为 SNAT（Source Network Address Translation）和 DNAT（Destination Network Address Translation）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SNAT：用于局域网服务访问公网服务的场景。即将局域网发出的请求的原地址转换成 NAT 主机所拥有的公网 IP 地址，从而与公网服务进行通信。&lt;/li&gt;
+&lt;li&gt;DNAT：用于公网请求访问局域网服务的场景。即将从公网接收到的请求的目的地址通过 NAT 规则所配置的局域网网段进行目标服务器局域网地址的转换，从而与局域网内服务通信。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;举个例子，本地 Web 服务器 A 地址为 &lt;code&gt;192.168.1.2&lt;/code&gt;，NAT 主机地址为 &lt;code&gt;192.168.1.1&lt;/code&gt;，公网地址为 &lt;code&gt;1.1.1.1&lt;/code&gt;；另一个局域网主机 B 地址为 &lt;code&gt;172.16.1.2&lt;/code&gt;，NAT 主机地址为 &lt;code&gt;172.16.1.1&lt;/code&gt;，公网地址为 &lt;code&gt;1.1.1.2&lt;/code&gt;。此时 B 想要访问 A 的 Web 服务，B 对应的 NAT 主机会将 B 发出的请求的源地址转换成其公网地址 &lt;code&gt;1.1.1.2&lt;/code&gt; 从而与 A 对应的 NAT 主机进行通信，这里就是 SNAT。而 A 对应的 NAT 主机收到该请求后会将该请求的目的地址转换成 Web 服务器 A 在局域网内的地址，即 &lt;code&gt;192.168.1.2&lt;/code&gt;，从而与 Web 服务器 A 进行通信，这里就是 DNAT。&lt;/p&gt;
+&lt;h3 id=&#34;netfilter-hooks&#34;&gt;Netfilter Hooks&lt;/h3&gt;
+&lt;p&gt;在上面的介绍中我们了解到，Netfilter 其实是内核中若干个 Hook 点组成的。数据包经过内核协议栈处理程序时，处理程序会触发 &lt;strong&gt;内核模块注册在相关 Hook 点上的数据包处理函数&lt;/strong&gt;。至于处理程序会触发哪个 Hook 函数，取决于当前数据包的方向（ingress/egress）、数据包的目的地址、数据包在上一个 Hook 点的状态等等。内核中有关数据过滤的 Hook 点有如下几个：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;NF_IP_PRE_ROUTING&lt;/code&gt;：接收到的数据包进入协议栈后立即触发此 Hook，在进行任何路由判断之前&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NF_IP_LOCAL_IN&lt;/code&gt;：接收到的数据包经过了路由判断，如果目的地址是本机，将触发此 Hook&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NF_IP_FORWARD&lt;/code&gt;：接收到的数据包经过了路由判断，如果目的地址是其他机器，将触发此 Hook&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NF_IP_LOCAL_OUT&lt;/code&gt;：本机产生的准备发送的数据包，在进入协议栈之前立即执行该 Hook&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NF_IP_POST_ROUTING&lt;/code&gt;：本机产生的准备发送的或者转发的数据包，在经过路由判断之后，将执行该 Hook&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/linux/iptables/assets/Netfilter_Hook_%E5%87%BD%E6%95%B0%E5%B7%A5%E4%BD%9C%E4%BD%8D%E7%BD%AE.jpg&#34;
+	width=&#34;554&#34;
+	height=&#34;265&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/linux/iptables/assets/Netfilter_Hook_%E5%87%BD%E6%95%B0%E5%B7%A5%E4%BD%9C%E4%BD%8D%E7%BD%AE_hufbf94b5b17bc79b73dbf5e705adc86ae_17641_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/linux/iptables/assets/Netfilter_Hook_%E5%87%BD%E6%95%B0%E5%B7%A5%E4%BD%9C%E4%BD%8D%E7%BD%AE_hufbf94b5b17bc79b73dbf5e705adc86ae_17641_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;Netfilter Hook 函数工作位置&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;209&#34;
+		data-flex-basis=&#34;501px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;p&gt;内核处理模块在往这些 Hook 上注册处理函数时，必须要提供优先级，以便 Hook 触发时能按照优先级高低 调用处理函数。这就可以保证多个内核模块（或者同一内核模块的多个实例）可以在同一个 Hook 点进行处理函数的注册，并且有确定的调用顺序。内核模块会被依次调用，并且处理完成后返回一个结果给 netfilter 框架，告诉某个数据包应该做什么操作。&lt;/p&gt;
+&lt;h3 id=&#34;表tables链chains规则rules&#34;&gt;表（tables）、链（chains）、规则（rules）&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;iptables&lt;/code&gt; 通过 表（tables）、链（chains）和 规则（rules）来管理数据包处理函数，结合对 netfilter 的了解可知，iptables 会将这些数据包处理函数注册到内核提供的五个 Hook 点上。三者相关定义如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;表（tables）：&lt;strong&gt;表将处理同一类型的数据包规则聚合在一起&lt;/strong&gt;。内核中内置有 4 张表，分别是 &lt;code&gt;raw&lt;/code&gt;、&lt;code&gt;mangle&lt;/code&gt;、&lt;code&gt;nat&lt;/code&gt;、&lt;code&gt;filter&lt;/code&gt;。每一张表都只包含同一类型的数据包规则，比如 nat 表只包含与网络地址转换相关的规则。&lt;/li&gt;
+&lt;li&gt;链（chains）：每一张表包含若干链，其规定了相关规则在什么时候执行。内核中内置有 5 条链，分别对应 netfilter 提供的 5 个 Hook 点。链能够让管理员在数据包传输过程中的某一个点通过相关规则控制数据包的走向。&lt;/li&gt;
+&lt;li&gt;规则（rules）：规则存在于链中，每一条链包含若干规则。当链被调用时，数据包处理函数将按照顺序依次匹配对应链中的所有规则。每条规则都由匹配部分 + 动作部分组成，如果数据包满足匹配规则，则会执行相关动作对数据包进行处理。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;总的来说，规则是最终对数据包进行处理的部分，而表和链则是提供规则在协议栈被触发的前后顺序。三者关系可以用下面的图来表示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/linux/iptables/assets/v2-45e526c5041a149f80041bd695cb04ae_b.jpg&#34;
+	width=&#34;720&#34;
+	height=&#34;335&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/linux/iptables/assets/v2-45e526c5041a149f80041bd695cb04ae_b_hu4d61ec9627451e5932f9af5b6e162249_20580_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/linux/iptables/assets/v2-45e526c5041a149f80041bd695cb04ae_b_hu4d61ec9627451e5932f9af5b6e162249_20580_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;214&#34;
+		data-flex-basis=&#34;515px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;h3 id=&#34;规则优先级&#34;&gt;规则优先级&lt;/h3&gt;
+&lt;p&gt;通过上面几节的介绍，我们应该了解到：数据包在进入协议栈后，触发 Hook 点注册的相关处理函数实际上对应的是表、链、规则中的链。也就是说，某一规则的触发优先级首先取决于 chain 所在的位置。其次通过包含了该 chain 类型的 table 中所对应的实际的 chain 下的规则进行规则匹配和动作执行。在这段过程中，需要注意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class=&#34;ibakuman-inline-note&#34;&gt;table 有优先级：由高到低排列为：raw -&amp;gt; mangle -&amp;gt; nat -&amp;gt; filter&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;当有多个 table 包含同一类型的 chain 时，所有的 table 都会按照上面 table 优先级被遍历，执行 table 中实际的 chain 下的规则。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;尝试了解一条规则被执行的条件和顺序，这对于后面理解 netfilter 在协议栈中处理数据包的全过程有很大的帮助，一通百通。&lt;/p&gt;
+&lt;h2 id=&#34;表&#34;&gt;表&lt;/h2&gt;
+&lt;p&gt;提到 iptables，常常会提到 &lt;strong&gt;三表五链&lt;/strong&gt;、&lt;strong&gt;四表五链&lt;/strong&gt; 等的词汇。这些词汇中提到的 &lt;strong&gt;三表&lt;/strong&gt;，&lt;strong&gt;四表&lt;/strong&gt; 等其实指的就是 Linux 内核中内置的常见表。Linux 内核内置的表其实有五个，分别为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;raw&lt;/li&gt;
+&lt;li&gt;mangle&lt;/li&gt;
+&lt;li&gt;nat（最常用）&lt;/li&gt;
+&lt;li&gt;filter（最常用）&lt;/li&gt;
+&lt;li&gt;security&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;raw-table&#34;&gt;Raw Table&lt;/h3&gt;
+&lt;p&gt;iptables 提供一个有状态的防火墙，基于 netfilter 上建立了连接跟踪的特性，即 connection tracking，简称 conntrack。iptables 在处理数据包时都会依赖之前已经判断过的数据包。例如一条 NAT 记录，在第一次处理过后就会被存储在 conntrack 的哈希表中，下次有相同的数据包，则复用处理结果。 raw 表提供的功能很简单：&lt;strong&gt;提供且仅提供一个让数据包绕过连接跟踪的框架&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;mangle-table&#34;&gt;Mangle Table&lt;/h3&gt;
+&lt;p&gt;mangle 表提供 &lt;strong&gt;修改数据包 IP 头部&lt;/strong&gt; 的功能，例如，修改数据包的 TTL 等。此外，mangle 表中的规则还可以对数据包打一个 &lt;strong&gt;仅在内核内有效的标记（mark）&lt;/strong&gt;，后续对于该数据包的处理可以用到这些标记。&lt;/p&gt;
+&lt;h3 id=&#34;nat-table&#34;&gt;Nat Table&lt;/h3&gt;
+&lt;p&gt;nat 表顾名思义是用来做 &lt;strong&gt;网络地址转换&lt;/strong&gt; 的。当数据包进入协议栈后，nat 表中的相关规则将决定是否修改以及如何修改数据包的源 / 目标地址，从而改变数据包被路由的行为。nat 表通常用于将数据包路由到外部网络无法直接访问到的局域网络中。&lt;/p&gt;
+&lt;p&gt;应用场景：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;企业路由或者网关主机做 SNAT，实现共享上网（通过 POSTROUTING 链）&lt;/li&gt;
+&lt;li&gt;做内部网络和外部网络的 IP 地址一对一映射，常用于 dmz 区域（通过 PREROUTING 链）&lt;/li&gt;
+&lt;li&gt;硬件防火墙映射 IP 到内部服务器&lt;/li&gt;
+&lt;li&gt;可以做单个端口的映射，直接将外部的 80 相关端口映射到内部 Web 服务器非 80 端口上&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;filter-table&#34;&gt;Filter Table&lt;/h3&gt;
+&lt;p&gt;filter 表是 iptables 中最常用的表，用来 &lt;strong&gt;判断一个数据包是否可以通过&lt;/strong&gt;。在防火墙领域，filter 表提供的功能通常被称为 &lt;strong&gt;过滤&lt;/strong&gt;包。这个表提供了防火墙的一些常见功能。Filter 表负责的主要是和主机自身相关的数据包处理手段，是真正负责主机防火墙功能的一张表。&lt;/p&gt;
+&lt;h3 id=&#34;security-table&#34;&gt;Security Table&lt;/h3&gt;
+&lt;p&gt;security 表的作用是 &lt;strong&gt;给数据包打上 SELinux 标记&lt;/strong&gt;。SELinux 以及可以解读 SELinux 安全上下文的系统在处理由 security 表做了标记的数据包时，行为会相应做出改变。&lt;/p&gt;
+&lt;h2 id=&#34;链&#34;&gt;链&lt;/h2&gt;
+&lt;p&gt;内核中内置的链有且仅有 5 条。不难发现，这与前面提到的 NetFilter 提供的 5 个 Hook 点的数量是一致的。没错，内核中内置的 5 条链正是对应 5 个 Hook 点。即：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PREROUTING&lt;/code&gt;: 由 &lt;code&gt;NF_IP_PRE_ROUTING&lt;/code&gt; hook 触发&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;INPUT&lt;/code&gt;: 由 &lt;code&gt;NF_IP_LOCAL_IN&lt;/code&gt; hook 触发&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FORWARD&lt;/code&gt;: 由 &lt;code&gt;NF_IP_FORWARD&lt;/code&gt; hook 触发&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;OUTPUT&lt;/code&gt;: 由 &lt;code&gt;NF_IP_LOCAL_OUT&lt;/code&gt; hook 触发&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;POSTROUTING&lt;/code&gt;: 由 &lt;code&gt;NF_IP_POST_ROUTING&lt;/code&gt; hook 触发&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;前面也提到过，链是位于表中的，内核内置表与内置链之间的包含关系如下表所示：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;Tables&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;PREROUTING&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;INPUT&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;FORWARD&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;OUTPUT&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;POSTROUTING&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;raw&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;mangle&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;nat&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;filter&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;security&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;✅&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在 &lt;code&gt;iptables&lt;/code&gt; 中，&lt;code&gt;nat&lt;/code&gt; 表中的默认链包括 &lt;code&gt;PREROUTING&lt;/code&gt;、&lt;code&gt;POSTROUTING&lt;/code&gt; 和 &lt;code&gt;OUTPUT&lt;/code&gt; 三个链。但是，从 &lt;code&gt;Linux kernel 3.7&lt;/code&gt; 开始，新增了一个可选的 &lt;code&gt;INPUT&lt;/code&gt; 链，通过引入这条链，可以更好地控制流经 NAT 系统的数据包。&lt;/p&gt;
+&lt;p&gt;通常情况下，&lt;code&gt;nat&lt;/code&gt; 表中的 &lt;code&gt;PREROUTING&lt;/code&gt; 链用于处理从网络接口进入 Linux 主机的数据包，&lt;code&gt;POSTROUTING&lt;/code&gt; 链用于处理从 Linux 主机出去的数据包，而 &lt;code&gt;OUTPUT&lt;/code&gt; 链用于处理本地生成的数据包。&lt;/p&gt;
+&lt;p&gt;当然，在一些复杂的场景下，需要在本地主机上进行 DNAT（目标地址转换）或 SNAT（源地址转换），通过添加 &lt;code&gt;INPUT&lt;/code&gt; 链规则，就能够方便地对从外部网络流入主机的数据包进行 DNAT 访问控制。&lt;/p&gt;
+&lt;p&gt;因此，虽然 &lt;code&gt;nat&lt;/code&gt; 表的默认链只有 &lt;code&gt;PREROUTING&lt;/code&gt;、&lt;code&gt;POSTROUTING&lt;/code&gt; 和 &lt;code&gt;OUTPUT&lt;/code&gt; 三条链，但如果根据实际需要，也可以为 &lt;code&gt;nat&lt;/code&gt; 表添加 &lt;code&gt;INPUT&lt;/code&gt; 链。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这里我们对最常用的两个表：filter 和 nat 进行相关链的说明，来看看某条链在某个表中起到什么作用。&lt;/p&gt;
+&lt;h3 id=&#34;filter-table-1&#34;&gt;Filter Table&lt;/h3&gt;
+&lt;p&gt;filter 表中有三条链：input、forward 和 output。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;input：用来过滤进入主机的数据包&lt;/li&gt;
+&lt;li&gt;forward：负责转发流经主机的数据包，起到转发的作用，和 NAT 关系很大。想要主机支持转发需要设置内核参数 &lt;code&gt;net.ipv4.ip_forward = 1&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;output：用来处理从主机发出去的数据包&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;nat-table-1&#34;&gt;Nat Table&lt;/h3&gt;
+&lt;p&gt;nat 表中有三条链：prerouting，postrouting 和 output。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;prerouting：在数据包到达 netfilter 系统时，在进行路由判断之前执行该链上的规则，作用是改变数据包的目的地址、目的端口等，起到 DNAT 的作用；&lt;/li&gt;
+&lt;li&gt;postrouting：数据包发出时，当数据包经过了路由判断后执行该链上的规则，作用是改变数据包的源地址、源端口等，起到 SNAT 的作用；&lt;/li&gt;
+&lt;li&gt;output：用来处理从主机发出去的数据包。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;规则&#34;&gt;规则&lt;/h2&gt;
+&lt;p&gt;规则是最终影响数据包的地方，一条有效的规则必须由 &lt;strong&gt;匹配规则 + 动作目标&lt;/strong&gt; 组成：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;匹配规则：提供了需要执行对应动作的目标匹配机制。通常可以匹配协议类型、目的地址、源地址、目的端口、源端口、目的网段、源网段、接收数据包的网卡、发送数据包的网卡、协议头、连接状态等。&lt;/li&gt;
+&lt;li&gt;动作目标：又称为 Target。是数据包满足匹配规则时触发的相应的动作。Target 分为两种类型：终止目标和非终止目标。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;终止目标&#34;&gt;终止目标&lt;/h3&gt;
+&lt;p&gt;Linux 内核提供如下的终止目标动作：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;动作&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;&lt;center&gt;含义&lt;/center&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;ACCEPT&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;允许数据包通过&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;DROP&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;直接丢弃数据包，不给任何回应信息，这时候客户端会感觉自己的请求没有响应，过了超时时间才会有反应。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;REJECT&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;拒绝数据包通过，必要时会给数据发送端一个响应的信息，客户端刚请求就会收到拒绝的信息&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;SNAT&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;源地址转换，解决内网用户用同一个公网地址上网的问题&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;MASQUERADE&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;是 SNAT 的一种特殊形式，适用于动态的、临时会变的 ip 上&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;DNAT&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;目标地址转换&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;REDIRECT&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;在本机做端口映射&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;LOG&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;在 / var/log/messages 文件中记录日志信息（其实就是写入系统日志，通过 dmesg 也可以看到），然后将数据包传递给下一条规则，也就是说除了记录以外不对数据包做任何其他操作，仍然让下一条规则去匹配&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;特殊的非终止目标--jumping-target&#34;&gt;特殊的非终止目标 —— Jumping Target&lt;/h3&gt;
+&lt;p&gt;我们知道，Linux 内核内置的链只有 5 条，且这 5 条链是 netfilter hooks 触发的唯一方式。那如果我想在不影响其他链的情况下使用自己定义的链，该如何操作呢？这时就可以在内置链上配置一个 Jumping Target。实际上这里指定的就是我自定义的链的名字。例如下面的配置：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@localhost ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# iptables -L&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Chain INPUT &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;policy ACCEPT&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;target     prot opt &lt;span class=&#34;nb&#34;&gt;source&lt;/span&gt;               destination
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;KUBE-FIREWALL  all  --  anywhere             anywhere
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Chain KUBE-FIREWALL &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; references&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;target     prot opt &lt;span class=&#34;nb&#34;&gt;source&lt;/span&gt;               destination
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DROP       all  --  anywhere             anywhere             /* kubernetes firewall &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; dropping marked packets */ mark match 0x8000/0x8000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;上面的配置中，INPUT 链的 target 为一条自定义的名为 KUBE-FIREWALL 的链，这样，从 INPUT 入口进入的数据包将会沿着链到达 KUBE-FIREWALL 链，然后将所有带有 &lt;code&gt;0x8000/0x8000&lt;/code&gt; 标记的包丢弃。&lt;/p&gt;
+&lt;h2 id=&#34;数据包处理流程图&#34;&gt;数据包处理流程图&lt;/h2&gt;
+&lt;p&gt;先通过一个简单的图示来了解各个表和链在数据包处理流程上起作用的位置和效果。如下图所示，将最常用的两张表 filter 和 nat 考虑到数据包过滤流程上。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/linux/iptables/assets/v2-ffbf396884373fdb6c989441cca172d5_b.jpg&#34;
+	width=&#34;720&#34;
+	height=&#34;427&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/linux/iptables/assets/v2-ffbf396884373fdb6c989441cca172d5_b_hu3d655428b6d043b3bd4e1f89d4fad860_29329_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/linux/iptables/assets/v2-ffbf396884373fdb6c989441cca172d5_b_hu3d655428b6d043b3bd4e1f89d4fad860_29329_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;168&#34;
+		data-flex-basis=&#34;404px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;h3 id=&#34;数据流入&#34;&gt;数据流入&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;当数据包流入网卡进入 netfliter 系统中时，首先对数据包进行 DNAT，将公网地址转换成局域网地址；&lt;/li&gt;
+&lt;li&gt;进行路由判断：&lt;/li&gt;
+&lt;li&gt;如果目的地址为本机地址，则进行包过滤；&lt;/li&gt;
+&lt;li&gt;如果目的地址不为本机地址，则准备进行包转发，经过 filter 表中 forward 链的规则匹配后，如果允许对目的地址进行转发，则进行包转发；&lt;/li&gt;
+&lt;li&gt;通过 Nat 表中 PostRouting 链的规则查看当前数据包的转发是否要做 SNAT，处理完成后发出数据包。 值得注意的是，当数据包流入后，经过路由选择发现不是发给 Local 的包，则会通过 FORWARD 链直接到达 POSTROUTING 链，而不会再走 OUTPUT 链。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;数据流出&#34;&gt;数据流出&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;当数据包从本机准备发出时，会先经过 Nat 表的 output 链进行规则检查；&lt;/li&gt;
+&lt;li&gt;随后，会经过 Filter 表的 output 链进行规则检查；&lt;/li&gt;
+&lt;li&gt;最后根据 Nat 表中 PostRouting 链的规则查看当前数据包的发出是否要做 SNAT，处理完成后发出数据包。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;完整图示&#34;&gt;完整图示&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://ibakuman.github.io/posts/linux/iptables/assets/iptables_%E6%95%B0%E6%8D%AE%E6%B5%81%E5%A4%84%E7%90%86%E5%85%A8%E8%BF%87%E7%A8%8B%E5%9B%BE.jpg&#34;
+	width=&#34;720&#34;
+	height=&#34;400&#34;
+	srcset=&#34;https://ibakuman.github.io/posts/linux/iptables/assets/iptables_%E6%95%B0%E6%8D%AE%E6%B5%81%E5%A4%84%E7%90%86%E5%85%A8%E8%BF%87%E7%A8%8B%E5%9B%BE_huff85418506b0fb00649a61c8451dc7fb_53497_480x0_resize_q75_box.jpg 480w, https://ibakuman.github.io/posts/linux/iptables/assets/iptables_%E6%95%B0%E6%8D%AE%E6%B5%81%E5%A4%84%E7%90%86%E5%85%A8%E8%BF%87%E7%A8%8B%E5%9B%BE_huff85418506b0fb00649a61c8451dc7fb_53497_1024x0_resize_q75_box.jpg 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;iptables 数据流处理全过程图&#34;
+	
+	
+		class=&#34;gallery-image&#34;
+		data-flex-grow=&#34;180&#34;
+		data-flex-basis=&#34;432px&#34;
+	
+&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;常用-iptables-命令使用&#34;&gt;常用 iptables 命令使用&lt;/h2&gt;
+&lt;p&gt;iptables 命令的大致语法如下，详细使用 &lt;a class=&#34;link&#34; href=&#34;https://link.zhihu.com/?target=https%3A//man7.org/linux/man-pages/man8/iptables.8.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;参见 manual 手册&lt;/a&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-t TABLE&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;COMMAND&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OPTIONS&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;基础篇&#34;&gt;基础篇&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;查看 iptables 命令使用方式&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 查看 iptables 使用手册&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;man iptables
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 查看 iptables 详细参数使用手册&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;man iptables-extensions
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;查看 Filter 表中所有链以及规则&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -nL --line-numbers
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-n：将主机信息（IP 地址，端口等）以数字的形式打印出来。默认会以 hostname 等方式打印出来； -L：显示规则链中已有的条目； &amp;ndash;line-numbers：显示条目序号。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;向 filter 表的 INPUT 链中新增拒绝所有来自 192.168.1.1 的数据包并指定其序号为 2&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -I INPUT &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; -s 192.168.1.1/32 -j DROP
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-I：表示 insert，即向链中插入一条规则，INPUT 为链名，2 为规则的序号； -s: 代表匹配源地址； -j：规则目标（Target），DROP 代表丢弃所有包。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;删除 filter 表的 INPUT 链中拒绝所有来自 192.168.1.1 的数据包的规则&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -D INPUT -s 192.168.1.1/32
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-D：表示 delete，即从链中删除相关规则。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;删除 filter 表的 INPUT 链中序号为 2 的规则&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -D INPUT &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-D：表示 delete，即从链中删除相关规则，链名后面可以接数字，表示删除某个序号。序号怎么获取可以在查看链规则时使用 &amp;ndash;line-numbers 选项。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;向 filter 表的 INPUT 链中追加一条拒绝所有发送到 192.168.1.1 的数据包&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -A INPUT -d 192.168.1.1/32 -j DROP
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-A：表示 append，即向链末尾追加一条规则； -d：代表匹配目的地址。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在 nat 表的 PREROUTING 链中新增一条序号为 1 的 LOG 规则&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# LOG 目标通常放在对数据包过滤和处理前，可以用来分析数据包流向。&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -I PREROUTING -t nat -j LOG --log-prefix &lt;span class=&#34;s2&#34;&gt;&amp;#34;[NAT_PREROUTING_LOG]&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-I：表示 insert，即向链中插入一条规则，PREROUTING 为链名，没有指定序号默认为 1，即顶部插入； -j：规则目标（Target），LOG 代表获取数据包并打印日志； &amp;ndash;log-prefix：日志信息的前缀，只能在 &lt;code&gt;-j LOG&lt;/code&gt; 的情况下使用。可以通过 &lt;code&gt;man iptables-extensions&lt;/code&gt; 查看其他针对某个 Target 的配置使用方式。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;保存当前系统 iptables 规则&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables-save &amp;gt; &lt;span class=&#34;nv&#34;&gt;$HOME&lt;/span&gt;/iptables-save.bak
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在 filter 表的 INPUT 链上对所有经过路由选择后判定为发给本机的数据包做跳转至 KUBE-NODE-PORT 链的操作&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -I INPUT -m addrtype --dst-type LOCAL -j KUBE-NODE-PORT
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-m：表示 match，这里涉及到 iptables 扩展的用法，即 &lt;a class=&#34;link&#34; href=&#34;https://link.zhihu.com/?target=https%3A//man7.org/linux/man-pages/man8/iptables-extensions.8.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;包匹配扩展模块&lt;/a&gt;（extended packet matching modules）。这里使用的 addrtype 意思是通过选项指定的地址类型进行匹配，结合 &amp;ndash;dst-type 不难得知：当数据包的目的地址类型是本机时，则该包匹配该规则。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;实战篇&#34;&gt;实战篇&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;禁止源地址 192.168.1.1 访问服务器的 22，53，80 端口：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -I INPUT -s 192.168.1.1/32 -p tcp --dport 22,53,80 -j DROP
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-s：source address，匹配源地址 -p：protocol，匹配协议 &amp;ndash;dport：destination port，匹配目的端口。逗号分隔多个端口。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对于访问量比较大的服务器，例如 192.168.1.1，可以通过 raw 表配置绕过连接跟踪：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -t raw -A PREROUTING -d 192.168.1.1/32 -p tcp --dport &lt;span class=&#34;m&#34;&gt;80&lt;/span&gt; -j NOTRACK
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;将访问 192.168.1.1:80 的请求转到 192.168.1.2:9000 上&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -t nat -A PREROUTING -d 192.168.1.1 -t tcp --dport &lt;span class=&#34;m&#34;&gt;80&lt;/span&gt; -j DNAT --to-destination 192.168.1.2:9000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;实现所有 192.168.1.0/24 的地址通过 123.123.123.123 公网地址访问公网&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -j SNAT --to-source 123.123.123.123
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;拒绝一分钟内新建超过 4 次 SSH 连接的 IP 再次连接&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -A INPUT -p tcp -m tcp --dport &lt;span class=&#34;m&#34;&gt;22&lt;/span&gt; -m state --state NEW -m recent --set --name SSH --rsource
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -A INPUT -p tcp -m tcp --dport &lt;span class=&#34;m&#34;&gt;22&lt;/span&gt; -m state --state NEW -m recent --update --seconds &lt;span class=&#34;m&#34;&gt;60&lt;/span&gt; --hitcount &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; --name SSH --rsource -j DROP
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;原文地址&#34;&gt;原文地址&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/618848653&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;《一篇搞懂》系列之一 —— iptables&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
+        <title>在 CentOS 7 中配置静态 IP</title>
+        <link>https://ibakuman.github.io/posts/linux/change-static-ip-in-centos7/</link>
+        <pubDate>Fri, 26 May 2023 15:26:02 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/posts/linux/change-static-ip-in-centos7/</guid>
+        <description>&lt;p&gt;编辑 &lt;code&gt;/etc/sysconfig/network-scripts/ifcfg-ens30&lt;/code&gt; 文件，其中 &lt;code&gt;ens30&lt;/code&gt; 是网卡的名称，改为自己的网卡名称。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vi /etc/sysconfig/network-scripts/ifcfg-ens30
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;将以下几行添加到该文件中&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;TYPE=&amp;#34;Ethernet&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PROXY_METHOD=&amp;#34;none&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;BROWSER_ONLY=&amp;#34;no&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;BOOTPROTO=&amp;#34;static&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DEFROUTE=&amp;#34;yes&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;IPADDR=&amp;lt;desired IP address&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NETMASK=&amp;lt;desired Subnet Mask&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;GATEWAY=&amp;lt;desired Default Gateway&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DNS1=&amp;lt;desired DNS server&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NAME=&amp;#34;ens32&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;UUID=&amp;#34;ab6ebc7c-0ea6-496f-8961-71ba199f3dcc&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DEVICE=&amp;#34;ens32&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ONBOOT=&amp;#34;yes&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;请注意，将 &lt;code&gt;&amp;lt;desired IP address&amp;gt;&lt;/code&gt;、&lt;code&gt;&amp;lt;desired Subnet Mask&amp;gt;&lt;/code&gt;、&lt;code&gt;&amp;lt;desired Default Gateway&amp;gt;&lt;/code&gt; 和 &lt;code&gt;&amp;lt;desired DNS server&amp;gt;&lt;/code&gt; 替换为您要使用的实际IP信息。例如，如果您要使用IP地址为 192.168.0.100、子网掩码为 255.255.255.0、默认网关为 192.168.0.1，则 ifcfg-eth0 文件应如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;TYPE=&amp;#34;Ethernet&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PROXY_METHOD=&amp;#34;none&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;BROWSER_ONLY=&amp;#34;no&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;BOOTPROTO=&amp;#34;static&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DEFROUTE=&amp;#34;yes&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;IPADDR=192.168.22.128
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NETMASK=255.255.255.0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;GATEWAY=192.168.22.2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DNS1=8.8.8.8
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NAME=&amp;#34;ens32&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;UUID=&amp;#34;ab6ebc7c-0ea6-496f-8961-71ba199f3dcc&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DEVICE=&amp;#34;ens32&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ONBOOT=&amp;#34;yes&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;重启网络服务以使更改生效&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl restart network
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description>
+        </item>
+        <item>
         <title>安装以及配置 Manjaro</title>
         <link>https://ibakuman.github.io/posts/manjaro/install/</link>
         <pubDate>Wed, 26 Apr 2023 09:03:58 +0800</pubDate>
         
         <guid>https://ibakuman.github.io/posts/manjaro/install/</guid>
-        <description>&lt;h2 id=&#34;安装软件&#34;&gt;安装软件&lt;/h2&gt;
+        <description>&lt;h2 id=&#34;设置时间&#34;&gt;设置时间&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timedatectl set-ntp &lt;span class=&#34;nb&#34;&gt;true&lt;/span&gt;    &lt;span class=&#34;c1&#34;&gt;#将系统时间与网络时间进行同步&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timedatectl status          &lt;span class=&#34;c1&#34;&gt;#检查服务状态&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果是 Linux + Windows 双系统，则执行如下命令将当前系统时间同步到硬件始终（RTC）上。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo hwclock --localtime --systohc
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;hwclock：硬件时钟命令，用于操作系统硬件时钟。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;ndash;localtime：将本地时间写入硬件时钟。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;ndash;systohc：将系统时间同步到硬件时钟。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当您执行此命令时，它将把当前系统时间保存到硬件时钟中，以保持硬件时钟与系统时钟的同步。&lt;/p&gt;
+&lt;p&gt;在 Linux 系统中，硬件时钟是一种电池供电的计算机硬件，用于在系统关闭时保持系统时间的准确性。当您下次启动计算机时，硬件时钟将向系统提供上一次关闭前的当前时间。&lt;/p&gt;
+&lt;p&gt;因此，通过将系统时间同步到硬件时钟，可以确保时间在电脑关机或重启后不会丢失，并且在下次启动时可以正确地加载时间。&lt;/p&gt;
+&lt;h2 id=&#34;安装软件&#34;&gt;安装软件&lt;/h2&gt;
+&lt;h3 id=&#34;安装-xrdp&#34;&gt;安装 xrdp&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S base-devel yay
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo yay -S xrdp xorgxrdp
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;新建或编辑 &lt;code&gt;/etc/X11/Xwrapper.config&lt;/code&gt; 文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/X11/Xwrapper.config
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 添加如下配置到该文件中&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# allowed_users=anybody&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;拷贝 &lt;code&gt;~/.xinitrc&lt;/code&gt; 文件为 &lt;code&gt;~/.xrdpinitrc&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cp ~/.xinitrc ~/.xrdpinitrc
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;编辑 &lt;code&gt;~/.xrdpinitrc&lt;/code&gt; 文件，修改 &lt;code&gt;local dbus_args=(--sh-syntax --exit-with-session)&lt;/code&gt; 为 &lt;code&gt;local dbus_args=(--sh-syntax)&lt;/code&gt;，即去掉 &lt;code&gt;--exit-with-session&lt;/code&gt; 参数。&lt;/p&gt;
+&lt;p&gt;修改 &lt;code&gt;/etc/xrdp/startwm.sh&lt;/code&gt; 文件。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/xrdp/startwm.sh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;将如下配置中的 &lt;code&gt;~/.xinitrc&lt;/code&gt; 改为刚复制的 &lt;code&gt;~/.xrdpinitrc&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# arch user&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; -r ~/.xinitrc &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    pre_start
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    . ~/.xinitrc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    post_start
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;exit&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;fi&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;修改后的结果如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# arch user&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; -r ~/.xrdpinitrc &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    pre_start
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    . ~/.xrdpinitrc plasma &lt;span class=&#34;c1&#34;&gt;# plasma 环境则在后面加上 plasma&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    post_start
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;exit&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;fi&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;启动 &lt;code&gt;xrdp&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl start xrdp
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;设置开机自启&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl &lt;span class=&#34;nb&#34;&gt;enable&lt;/span&gt; --now xrdp.service
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;安装-freerdp&#34;&gt;安装 freerdp&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;freerdp&lt;/code&gt; 是实现 RDP 协议的客户端，通过运行如下命令安装&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S freerdp
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;使用 &lt;code&gt;freerdp&lt;/code&gt; 连接指定电脑&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;xfreerdp /v:&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;host&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; /p:&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;port&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; /u:&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;user&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; /p:&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;password&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; /f
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;{}&lt;/code&gt; 中是要填写的验证信息&lt;/p&gt;
 &lt;h3 id=&#34;htop&#34;&gt;htop&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;htop&lt;/code&gt; 是 Linux 原生 &lt;code&gt;top&lt;/code&gt; 命令的升级版。它是一个终端下的交互式任务管理器。你可以使用 htop 直接在终端管理你的进程与任务。你可以直接运行 &lt;code&gt;sudo pacman -S htop&lt;/code&gt; 来安装。&lt;/p&gt;
 &lt;p&gt;screenfetch
