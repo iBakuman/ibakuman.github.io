@@ -9,7 +9,7 @@
 <meta property='og:description' content='题目描述 给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i != j、i != k 且 j != k ，同时还满足 nums[i] &#43; nums[j] &#43; nums[k] == 0 。请 你返回所有和为 0 且不重复的三元组'>
 <meta property='og:url' content='https://ibakuman.github.io/posts/leetcode/problems/0015-3sum/'>
 <meta property='og:site_name' content='iBakuman&#39;s Blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Double Pointer' /><meta property='article:published_time' content='2023-04-30T13:03:58&#43;08:00'/><meta property='article:modified_time' content='2023-04-30T13:03:58&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Double Pointer' /><meta property='article:published_time' content='2023-04-30T13:03:58&#43;08:00'/><meta property='article:modified_time' content='2023-07-09T09:27:12&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
 <meta name="twitter:title" content="15. 三数之和">
 <meta name="twitter:description" content="题目描述 给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i != j、i != k 且 j != k ，同时还满足 nums[i] &#43; nums[j] &#43; nums[k] == 0 。请 你返回所有和为 0 且不重复的三元组"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -226,10 +226,10 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/posts/leetcode/problems/0015-3sum/">
-                <img src="/gallery/landscape/23_hu3a7b7452a865fd9297e7a2768212101d_732306_800x0_resize_q75_box.jpg"
-                        srcset="/gallery/landscape/23_hu3a7b7452a865fd9297e7a2768212101d_732306_800x0_resize_q75_box.jpg 800w, /gallery/landscape/23_hu3a7b7452a865fd9297e7a2768212101d_732306_1600x0_resize_q75_box.jpg 1600w"
+                <img src="/gallery/landscape/30_hu6b33f88901e241f064888f7143885028_2042071_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/30_hu6b33f88901e241f064888f7143885028_2042071_800x0_resize_q75_box.jpg 800w, /gallery/landscape/30_hu6b33f88901e241f064888f7143885028_2042071_1600x0_resize_q75_box.jpg 1600w"
                         width="800"
-                        height="500"
+                        height="450"
                         loading="lazy"
                         alt="Featured image of post 15. 三数之和" />
                 
@@ -308,57 +308,34 @@
 <p>你返回所有和为 <code>0</code> 且不重复的三元组。</p>
 <p><strong>注意:</strong> 答案中不可以包含重复的三元组。</p>
 <p><strong>示例 1：</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">输入：nums = [-1,0,1,2,-1,-4]
-</span></span><span class="line"><span class="cl">输出：[[-1,-1,2],[-1,0,1]]
-</span></span><span class="line"><span class="cl">解释：
-</span></span><span class="line"><span class="cl">nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0 。
-</span></span><span class="line"><span class="cl">nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0 。
-</span></span><span class="line"><span class="cl">nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
-</span></span><span class="line"><span class="cl">不同的三元组是 [-1,0,1] 和 [-1,-1,2] 。
-</span></span><span class="line"><span class="cl">注意，输出的顺序和三元组的顺序并不重要。
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>示例 2：</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">输入：nums = [0,1,1]
-</span></span><span class="line"><span class="cl">输出：[]
-</span></span><span class="line"><span class="cl">解释：唯一可能的三元组和不为 0 。
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>示例 3：</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">输入：nums = [0,0,0]
-</span></span><span class="line"><span class="cl">输出：[[0,0,0]]
-</span></span><span class="line"><span class="cl">解释：唯一可能的三元组和为 0 。
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>提示：</strong></p>
 <ul>
-<li>3 &lt;= nums.length &lt;= 3000</li>
+<li>输入：nums = [-1,0,1,2,-1,-4]</li>
+<li>输出：[[-1,-1,2],[-1,0,1]]</li>
+<li>解释：
+<ul>
+<li>nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0 。</li>
+<li>nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0 。</li>
+<li>nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。</li>
+<li>不同的三元组是 [-1,0,1] 和 [-1,-1,2] 。</li>
+</ul>
+</li>
+<li>注意，输出的顺序和三元组的顺序并不重要。</li>
+</ul>
+<p><strong>示例 2：</strong></p>
+<ul>
+<li>输入：nums = [0,1,1]</li>
+<li>输出：[]</li>
+<li>解释：唯一可能的三元组和不为 0 。</li>
+</ul>
+<p><strong>示例 3：</strong></p>
+<ul>
+<li>输入：nums = [0,0,0]</li>
+<li>输出：[[0,0,0]]</li>
+<li>解释：唯一可能的三元组和为 0 。</li>
+</ul>
+<p><strong>提示：</strong></p>
+<ul>
+<li><code>3 &lt;= nums.length &lt;= 3000</code></li>
 <li>-10<sup>5</sup> &lt;= nums[i] &lt;= 10<sup>5</sup></li>
 </ul>
 <h2 id="解法一排序--双指针">解法一：排序 + 双指针</h2>
@@ -447,7 +424,19 @@
 
         <span>Licensed under CC BY-NC-SA 4.0</span>
     </section>
-    </footer>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 2023/07/09 09:27:12
+        </span>
+    </section></footer>
 
 </article>
 
@@ -463,17 +452,65 @@
                 
                     
 <article class="has-image">
+    <a href="/posts/leetcode/problems/0016-3sum-closest/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/12.96e632c8bb9f772b420717529453088f_hudcb57a36f165de723463bb2c9342c95a_1835608_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 16. 最接近的三数之和"
+                        
+                        data-hash="md5-luYyyLufdytCBxdSlFMIjw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">16. 最接近的三数之和</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0167-two-sum-ii-input-array-is-sorted/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/32.72961fc757b77cbc0126f5b7a56d7d38_hu51b920b09f70697adb8efd022a77ced5_660746_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 167. 两数之和 II - 输入有序数组"
+                        
+                        data-hash="md5-cpYfx1e3fLwBJvW3pW19OA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">167. 两数之和 II - 输入有序数组</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
     <a href="/posts/leetcode/offer/57-he-wei-sde-liang-ge-shu-zi-lcof/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/01.4f41f100262ccd6562028b390bb35173_hu984801500a3ee8d5189999f9716a0882_2696078_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/23.7ee86b13d8b9499698c4d66152c021d1_hu3a7b7452a865fd9297e7a2768212101d_732306_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 剑指 Offer 57. 和为 s 的两个数字"
                         
-                        data-hash="md5-T0HxACYszWViAos5C7NRcw==">
+                        data-hash="md5-fuhrE9i5SZaYxNZhUsAh0Q==">
                 
             </div>
         
@@ -491,13 +528,13 @@
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/19.ce3d7e9ebc658f78912c63e56a8e08f1_hu3c9ceb46f3c27ef42abe81330e191c65_524406_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/28.3d3810f889a49ce73e89c7268d405a62_hubb8073e5e8dea6b644ad1c33059b37ce_1206472_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 面试题 02.07. 链表相交"
                         
-                        data-hash="md5-zj1&#43;nrxlj3iRLGPlao4I8Q==">
+                        data-hash="md5-PTgQ&#43;ImknOc&#43;iccmjUBaYg==">
                 
             </div>
         
@@ -515,67 +552,19 @@
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/05.03dfb2d4328e9c3f11f924f8737856fc_hub432477bc07843360148c20e5d960cbf_635143_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 19. 删除链表的倒数第 N 个结点"
                         
-                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                        data-hash="md5-A9&#43;y1DKOnD8R&#43;ST4c3hW/A==">
                 
             </div>
         
 
         <div class="article-details">
             <h2 class="article-title">19. 删除链表的倒数第 N 个结点</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
-    <a href="/posts/leetcode/problems/0206-reverse-linked-list/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/02.22ff935b67faf208274d880305163ff4_huf55d0eff1680a905d0940d9535d13b2a_2828685_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 206. 反转链表"
-                        
-                        data-hash="md5-Iv&#43;TW2f68ggnTYgDBRY/9A==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">206. 反转链表</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
-    <a href="/posts/leetcode/problems/0027-remove-element/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/21.8d447296c490ed11fc3d30613c149f47_hub73357eff33b538ccccba9977cd6e8b3_9581476_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 27. 移除元素"
-                        
-                        data-hash="md5-jURylsSQ7RH8PTBhPBSfRw==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">27. 移除元素</h2>
         </div>
     </a>
 </article>
