@@ -9,7 +9,7 @@
 <meta property='og:description' content='题目描述 给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。 示例 1： 输入：height = [0,1,0,2,1,0,1,3,2,1,2,1] 输出：6 解释'>
 <meta property='og:url' content='https://ibakuman.github.io/posts/leetcode/problems/0042-trapping-rain-water/'>
 <meta property='og:site_name' content='iBakuman&#39;s Blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Stack' /><meta property='article:tag' content='DP' /><meta property='article:tag' content='Double Pointer' /><meta property='article:published_time' content='2023-04-29T13:34:54&#43;08:00'/><meta property='article:modified_time' content='2023-06-04T10:05:36&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Stack' /><meta property='article:tag' content='DP' /><meta property='article:tag' content='Double Pointer' /><meta property='article:published_time' content='2023-04-29T13:34:54&#43;08:00'/><meta property='article:modified_time' content='2023-07-23T09:09:29&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
 <meta name="twitter:title" content="42. 接雨水">
 <meta name="twitter:description" content="题目描述 给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。 示例 1： 输入：height = [0,1,0,2,1,0,1,3,2,1,2,1] 输出：6 解释"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -226,10 +226,10 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/posts/leetcode/problems/0042-trapping-rain-water/">
-                <img src="/gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_800x0_resize_q75_box.jpg"
-                        srcset="/gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_800x0_resize_q75_box.jpg 800w, /gallery/landscape/11_hudf52b8b325017a6d69e0e042062b02e2_3188398_1600x0_resize_q75_box.jpg 1600w"
+                <img src="/gallery/landscape/23_hu3a7b7452a865fd9297e7a2768212101d_732306_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/23_hu3a7b7452a865fd9297e7a2768212101d_732306_800x0_resize_q75_box.jpg 800w, /gallery/landscape/23_hu3a7b7452a865fd9297e7a2768212101d_732306_1600x0_resize_q75_box.jpg 1600w"
                         width="800"
-                        height="534"
+                        height="500"
                         loading="lazy"
                         alt="Featured image of post 42. 接雨水" />
                 
@@ -336,7 +336,87 @@
 <li>0 &lt;= height[i] &lt;= 10<sup>5</sup></li>
 </ul>
 <h2 id="解法一动态规划">解法一：动态规划</h2>
-<h2 id="解法二单调栈">解法二：单调栈</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">trap</span><span class="p">(</span><span class="nx">height</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="nx">ans</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">n</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">height</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">leftMax</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">leftMax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="nx">height</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">leftMax</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nf">max</span><span class="p">(</span><span class="nx">leftMax</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nx">height</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">rightMax</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">rightMax</span><span class="p">[</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">height</span><span class="p">[</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="nx">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">rightMax</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nf">max</span><span class="p">(</span><span class="nx">rightMax</span><span class="p">[</span><span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="nx">height</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">h</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">height</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">ans</span> <span class="o">+=</span> <span class="nf">min</span><span class="p">(</span><span class="nx">leftMax</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">rightMax</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">-</span> <span class="nx">h</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">min</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="nx">b</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">a</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">b</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">max</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">a</span> <span class="p">&gt;</span> <span class="nx">b</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">a</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">b</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="解法二单调栈">解法二：单调栈</h2>
 <p>维护一个单调栈，单调栈存储的是下标，满足从栈底到栈顶的下标在 heights 数组中指向的元素递减。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -547,46 +627,30 @@
 </span><span class="lnt">21
 </span><span class="lnt">22
 </span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">trap</span><span class="p">(</span><span class="nx">height</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">max</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">nums</span> <span class="o">...</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">res</span> <span class="o">:=</span> <span class="nx">nums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">nums</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="nx">v</span> <span class="p">&gt;</span> <span class="nx">res</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nx">res</span> <span class="p">=</span> <span class="nx">v</span>
-</span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">res</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="nx">n</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">height</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    <span class="nx">leftMax</span><span class="p">,</span> <span class="nx">rightMax</span> <span class="o">:=</span> <span class="nx">height</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">height</span><span class="p">[</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">res</span> <span class="o">:=</span> <span class="mi">0</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">left</span><span class="p">,</span> <span class="nx">right</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">left</span> <span class="o">&lt;=</span> <span class="nx">right</span><span class="p">;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">left</span><span class="p">,</span> <span class="nx">right</span><span class="p">,</span> <span class="nx">ans</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">left</span> <span class="o">&lt;=</span> <span class="nx">right</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">leftMax</span> <span class="p">&lt;</span> <span class="nx">rightMax</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="nx">height</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span> <span class="p">&lt;</span> <span class="nx">leftMax</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nx">res</span> <span class="o">+=</span> <span class="nx">leftMax</span> <span class="o">-</span> <span class="nx">height</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">ans</span> <span class="o">+=</span> <span class="nx">leftMax</span> <span class="o">-</span> <span class="nx">height</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">leftMax</span> <span class="p">=</span> <span class="nx">height</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span>
 </span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">leftMax</span> <span class="p">=</span> <span class="nf">max</span><span class="p">(</span><span class="nx">leftMax</span><span class="p">,</span> <span class="nx">height</span><span class="p">[</span><span class="nx">left</span><span class="p">])</span>
 </span></span><span class="line"><span class="cl">            <span class="nx">left</span><span class="o">++</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="nx">height</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="p">&lt;</span> <span class="nx">rightMax</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nx">res</span> <span class="o">+=</span> <span class="nx">rightMax</span> <span class="o">-</span> <span class="nx">height</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">ans</span> <span class="o">+=</span> <span class="nx">rightMax</span> <span class="o">-</span> <span class="nx">height</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">rightMax</span> <span class="p">=</span> <span class="nx">height</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span>
 </span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">rightMax</span> <span class="p">=</span> <span class="nf">max</span><span class="p">(</span><span class="nx">rightMax</span><span class="p">,</span> <span class="nx">height</span><span class="p">[</span><span class="nx">right</span><span class="p">])</span>
 </span></span><span class="line"><span class="cl">            <span class="nx">right</span><span class="o">--</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">res</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">ans</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -629,7 +693,7 @@
 
 
         <span>
-            最后更新于 2023/06/04 10:05:36
+            最后更新于 2023/07/23 09:09:29
         </span>
     </section></footer>
 
@@ -647,23 +711,23 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/0918-maximum-sum-circular-subarray/">
+    <a href="/posts/leetcode/problems/0085-maximal-rectangle/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/06.419dc574ac7e8c69f7dbc91968c103ef_hu81244abf406e14dcc233313eedffeb78_1696606_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/32.72961fc757b77cbc0126f5b7a56d7d38_hu51b920b09f70697adb8efd022a77ced5_660746_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 918. 环形子数组的最大和"
+                        alt="Featured image of post 85. 最大矩形"
                         
-                        data-hash="md5-QZ3FdKx&#43;jGn328kZaMED7w==">
+                        data-hash="md5-cpYfx1e3fLwBJvW3pW19OA==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">918. 环形子数组的最大和</h2>
+            <h2 class="article-title">85. 最大矩形</h2>
         </div>
     </a>
 </article>
@@ -671,7 +735,79 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/0931-minimum-falling-path-sum/">
+    <a href="/posts/leetcode/problems/0140-word-break-ii/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/26.dee6b171b60aa1d21a904baaaa28e0d7_hu8ac3923ab95114b170942013d0440a93_813873_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 140. 单词拆分 II"
+                        
+                        data-hash="md5-3uaxcbYKodIakEuqqijg1w==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">140. 单词拆分 II</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0120-triangle/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/10.ef9e193870ade10ddbc208c402c60540_hucf27c6ee6e299e97a870b7c7ce3b8818_623029_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 120. 三角形最小路径和"
+                        
+                        data-hash="md5-754ZOHCt4Q3bwgjEAsYFQA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">120. 三角形最小路径和</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0097-interleaving-string/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/27.a898762325e450ebefb1d4d92316901c_hubc821d6e6d7f4a0f5b14def3892e014e_5550125_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 97. 交错字符串"
+                        
+                        data-hash="md5-qJh2IyXkUOvvsdTZIxaQHA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">97. 交错字符串</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0698-partition-to-k-equal-sum-subsets/">
 
         
             <div class="article-image">
@@ -679,7 +815,7 @@
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 931. 下降路径最小和"
+                        alt="Featured image of post 698. 划分为 k 个相等的子集"
                         
                         data-hash="md5-A9&#43;y1DKOnD8R&#43;ST4c3hW/A==">
                 
@@ -687,79 +823,7 @@
         
 
         <div class="article-details">
-            <h2 class="article-title">931. 下降路径最小和</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
-    <a href="/posts/leetcode/problems/0016-3sum-closest/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/03.ddc26f6f90e7053d7d5aff4e1d970441_hua119d5172e80ee912c81cee3e4b607ac_783790_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 16. 最接近的三数之和"
-                        
-                        data-hash="md5-3cJvb5DnBT19Wv9OHZcEQQ==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">16. 最接近的三数之和</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
-    <a href="/posts/leetcode/problems/0167-two-sum-ii-input-array-is-sorted/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/24.8b645bb41b4ce91e8e8d27bd4290124f_hu02460565c68f6ee68754f9a01c400f03_406275_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 167. 两数之和 II - 输入有序数组"
-                        
-                        data-hash="md5-i2RbtBtM6R6OjSe9QpASTw==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">167. 两数之和 II - 输入有序数组</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
-    <a href="/posts/leetcode/offer/14-1-jian-sheng-zi-lcof/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/19.ce3d7e9ebc658f78912c63e56a8e08f1_hu3c9ceb46f3c27ef42abe81330e191c65_524406_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 剑指 Offer 14- I. 剪绳子"
-                        
-                        data-hash="md5-zj1&#43;nrxlj3iRLGPlao4I8Q==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">剑指 Offer 14- I. 剪绳子</h2>
+            <h2 class="article-title">698. 划分为 k 个相等的子集</h2>
         </div>
     </a>
 </article>
