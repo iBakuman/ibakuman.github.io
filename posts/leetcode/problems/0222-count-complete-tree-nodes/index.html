@@ -9,7 +9,7 @@
 <meta property='og:description' content='题目描述 给你一棵 完全二叉树 的根节点 root ，求出该树的节点个数。 完全二叉树 的定义如下：在完全二叉树中，除了最底层节点可能没填满外，其余每层节点数都'>
 <meta property='og:url' content='https://ibakuman.github.io/posts/leetcode/problems/0222-count-complete-tree-nodes/'>
 <meta property='og:site_name' content='iBakuman&#39;s Blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Tree' /><meta property='article:published_time' content='2023-05-03T13:31:41&#43;08:00'/><meta property='article:modified_time' content='2023-05-03T23:37:01&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Tree' /><meta property='article:tag' content='Recursion' /><meta property='article:published_time' content='2023-05-03T13:31:41&#43;08:00'/><meta property='article:modified_time' content='2023-08-06T10:55:15&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
 <meta name="twitter:title" content="222. 完全二叉树的节点个数">
 <meta name="twitter:description" content="题目描述 给你一棵 完全二叉树 的根节点 root ，求出该树的节点个数。 完全二叉树 的定义如下：在完全二叉树中，除了最底层节点可能没填满外，其余每层节点数都"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -226,10 +226,10 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/posts/leetcode/problems/0222-count-complete-tree-nodes/">
-                <img src="/gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_800x0_resize_q75_box.jpg"
-                        srcset="/gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_800x0_resize_q75_box.jpg 800w, /gallery/landscape/19_hu3c9ceb46f3c27ef42abe81330e191c65_524406_1600x0_resize_q75_box.jpg 1600w"
+                <img src="/gallery/landscape/24_hu02460565c68f6ee68754f9a01c400f03_406275_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/24_hu02460565c68f6ee68754f9a01c400f03_406275_800x0_resize_q75_box.jpg 800w, /gallery/landscape/24_hu02460565c68f6ee68754f9a01c400f03_406275_1600x0_resize_q75_box.jpg 1600w"
                         width="800"
-                        height="532"
+                        height="600"
                         loading="lazy"
                         alt="Featured image of post 222. 完全二叉树的节点个数" />
                 
@@ -342,8 +342,42 @@
 <li>题目数据保证输入的树是 <strong>完全二叉树</strong></li>
 </ul>
 <p><strong>进阶:</strong> 遍历树来统计节点是一种时间复杂度为 <code>O(n)</code> 的简单解决方案。你可以设计一个更快的算法吗？</p>
-<h2 id="解法一二分搜索">解法一：二分搜索</h2>
-
+<h2 id="解法一递归">解法一：递归</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Definition for a binary tree node.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * type TreeNode struct {
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *     Val int
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *     Left *TreeNode
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *     Right *TreeNode
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * }
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">countNodes</span><span class="p">(</span><span class="nx">root</span> <span class="o">*</span><span class="nx">TreeNode</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">root</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nf">countNodes</span><span class="p">(</span><span class="nx">root</span><span class="p">.</span><span class="nx">Left</span><span class="p">)</span> <span class="o">+</span> <span class="nf">countNodes</span><span class="p">(</span><span class="nx">root</span><span class="p">.</span><span class="nx">Right</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
 </section>
 
 
@@ -352,6 +386,8 @@
     <section class="article-tags">
         
             <a href="/tags/tree/">树</a>
+        
+            <a href="/tags/recursion/">递归</a>
         
     </section>
 
@@ -378,7 +414,7 @@
 
 
         <span>
-            最后更新于 2023/05/03 23:37:01
+            最后更新于 2023/08/06 10:55:15
         </span>
     </section></footer>
 
@@ -396,65 +432,17 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/0116-populating-next-right-pointers-in-each-node/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/29.53d06ddeed9e7c747c87c4da23b8fdf3_hu8940b943a3a3cf8f8bedd9ed1cbe7245_2487543_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 116. 填充每个节点的下一个右侧节点指针"
-                        
-                        data-hash="md5-U9Bt3u2efHR8h8TaI7j98w==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">116. 填充每个节点的下一个右侧节点指针</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
-    <a href="/posts/leetcode/problems/0099-recover-binary-search-tree/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/09.ac6a519f1202ec664435105ea711f181_hu8c633d2cf76ab6635d2135cc8fe71c52_994828_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 99. 恢复二叉搜索树"
-                        
-                        data-hash="md5-rGpRnxIC7GZENRBepxHxgQ==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">99. 恢复二叉搜索树</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
     <a href="/posts/leetcode/offer/33-er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/21.8d447296c490ed11fc3d30613c149f47_hub73357eff33b538ccccba9977cd6e8b3_9581476_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/19.ce3d7e9ebc658f78912c63e56a8e08f1_hu3c9ceb46f3c27ef42abe81330e191c65_524406_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 剑指 Offer 33. 二叉搜索树的后序遍历序列"
                         
-                        data-hash="md5-jURylsSQ7RH8PTBhPBSfRw==">
+                        data-hash="md5-zj1&#43;nrxlj3iRLGPlao4I8Q==">
                 
             </div>
         
@@ -472,13 +460,13 @@
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/33.93a18093c97b5d70c9fda4f4f0835498_hu66ca492386bb42c90e91c813efc08adf_1739420_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/29.53d06ddeed9e7c747c87c4da23b8fdf3_hu8940b943a3a3cf8f8bedd9ed1cbe7245_2487543_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 剑指 Offer 37. 序列化二叉树"
                         
-                        data-hash="md5-k6GAk8l7XXDJ/aT08INUmA==">
+                        data-hash="md5-U9Bt3u2efHR8h8TaI7j98w==">
                 
             </div>
         
@@ -492,23 +480,71 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/offer/68-2-er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/">
+    <a href="/posts/leetcode/offer/55-2-ping-heng-er-cha-shu-lcof/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/31.dfebc6e6b671982c2a1b9a315b4cb43c_hu50ead7b655b5f47cafc1e1da4c3aac1b_499903_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/06.419dc574ac7e8c69f7dbc91968c103ef_hu81244abf406e14dcc233313eedffeb78_1696606_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 剑指 Offer 68 - II. 二叉树的最近公共祖先"
+                        alt="Featured image of post 剑指 Offer 55 - II. 平衡二叉树"
                         
-                        data-hash="md5-3&#43;vG5rZxmCwqG5oxW0y0PA==">
+                        data-hash="md5-QZ3FdKx&#43;jGn328kZaMED7w==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">剑指 Offer 68 - II. 二叉树的最近公共祖先</h2>
+            <h2 class="article-title">剑指 Offer 55 - II. 平衡二叉树</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/offer/55-1-er-cha-shu-de-shen-du-lcof/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/14.f042bee33f5598c65efdcb121a2971b6_hu408d85e3d6fd20da711d14997ee2c37d_918594_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 剑指 Offer 55 - I. 二叉树的深度"
+                        
+                        data-hash="md5-8EK&#43;4z9VmMZe/csSGilxtg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">剑指 Offer 55 - I. 二叉树的深度</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/offer/27-er-cha-shu-de-jing-xiang-lcof/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/07.f853836a7f7a0b03d0899dd0429a5f0d_hu38aa638bb2ccd6db7051157dcdf19c8f_1416034_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 剑指 Offer 27. 二叉树的镜像"
+                        
+                        data-hash="md5-&#43;FODan96CwPQiZ3QQppfDQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">剑指 Offer 27. 二叉树的镜像</h2>
         </div>
     </a>
 </article>
@@ -665,7 +701,7 @@
             <nav id="TableOfContents">
   <ol>
     <li><a href="#题目描述">题目描述</a></li>
-    <li><a href="#解法一二分搜索">解法一：二分搜索</a></li>
+    <li><a href="#解法一递归">解法一：递归</a></li>
   </ol>
 </nav>
         </div>
