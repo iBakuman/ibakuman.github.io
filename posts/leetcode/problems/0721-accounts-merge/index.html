@@ -1,0 +1,641 @@
+
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='题目描述 给定一个列表 accounts，每个元素 accounts[i] 是一个字符串列表，其中第一个元素 accounts[i][0] 是 名称 (name)，其余元素是 emails 表示该账户的邮箱地址。 现在'>
+<title>721. 账户合并</title><link rel='canonical' href='https://ibakuman.github.io/posts/leetcode/problems/0721-accounts-merge/'><link rel="prev" href="https://ibakuman.github.io/posts/leetcode/problems/1281-subtract-the-product-and-sum-of-digits-of-an-integer/" /><link rel="stylesheet" href="/css/style.min.f546ef6f4466c56e4fb7c8686e8b411e70a55207527051e5c25c20c9945b2160.css" integrity="sha256-9Ubvb0RmxW5Pt8hobotBHnClUgdScFHlwlwgyZRbIWA="><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta property='og:title' content='721. 账户合并'>
+<meta property='og:description' content='题目描述 给定一个列表 accounts，每个元素 accounts[i] 是一个字符串列表，其中第一个元素 accounts[i][0] 是 名称 (name)，其余元素是 emails 表示该账户的邮箱地址。 现在'>
+<meta property='og:url' content='https://ibakuman.github.io/posts/leetcode/problems/0721-accounts-merge/'>
+<meta property='og:site_name' content='iBakuman&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='' /><meta property='article:published_time' content='2023-08-09T11:59:48&#43;08:00'/><meta property='article:modified_time' content='2023-08-09T12:15:18&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta name="twitter:title" content="721. 账户合并">
+<meta name="twitter:description" content="题目描述 给定一个列表 accounts，每个元素 accounts[i] 是一个字符串列表，其中第一个元素 accounts[i][0] 是 名称 (name)，其余元素是 emails 表示该账户的邮箱地址。 现在"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="article-page"><script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+
+                    
+                        
+                        <img src="/img/avatar_hu607d9502653a863721bf402ab13c6bbf_56312_300x0_resize_box_3.png" width="300"
+                            height="285" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">♈</span>
+                
+            </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">iBakuman&#39;s Blog</a></h1>
+            <h2 class="site-description">I am because you are.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a
+                        href='https://github.com/ibakuman'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+            <li >
+                <a href='/%E5%85%B3%E4%BA%8E/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                    
+                    <span>关于</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/archives/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                    
+                    <span>归档</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/search/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                    
+                    <span>搜索</span>
+                </a>
+            </li>
+        
+        
+            <li >
+                <a href='/%E9%93%BE%E6%8E%A5/' >
+                    
+                    
+                    
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                    
+                    <span>链接</span>
+                </a>
+            </li>
+        
+
+        <div class="menu-bottom-section">
+                <li id="i18n-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                    <select name="language" onchange="window.location.href = this.selectedOptions[0].value">
+                        
+                            <option value="https://ibakuman.github.io/" selected>中文</option>
+                        
+                            <option value="https://ibakuman.github.io/en/" >English</option>
+                        
+                    </select>
+                </li>
+            
+
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/posts/leetcode/problems/0721-accounts-merge/">
+                <img src="/gallery/landscape/06_hu81244abf406e14dcc233313eedffeb78_1696606_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/06_hu81244abf406e14dcc233313eedffeb78_1696606_800x0_resize_q75_box.jpg 800w, /gallery/landscape/06_hu81244abf406e14dcc233313eedffeb78_1696606_1600x0_resize_q75_box.jpg 1600w"
+                        width="800"
+                        height="533"
+                        loading="lazy"
+                        alt="Featured image of post 721. 账户合并" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/leetcode/" >
+                力扣
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h1 class="article-title">
+            <a href="/posts/leetcode/problems/0721-accounts-merge/">721. 账户合并</a>
+        </h1>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2023/08/09 11:59:48</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 3 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+
+    <section class="article-content  auto-numbering ">
+    
+    
+    <h2 id="题目描述">题目描述</h2>
+<p>给定一个列表 <code>accounts</code>，每个元素 <code>accounts[i]</code> 是一个字符串列表，其中第一个元素 <code>accounts[i][0]</code> 是 <em>名称 (name)</em>，其余元素是 <em><strong>emails</strong></em> 表示该账户的邮箱地址。</p>
+<p>现在，我们想合并这些账户。如果两个账户都有一些共同的邮箱地址，则两个账户必定属于同一个人。请注意，即使两个账户具有相同的名称，它们也可能属于不同的人，因为人们可能具有相同的名称。一个人最初可以拥有任意数量的账户，但其所有账户都具有相同的名称。</p>
+<p>合并账户后，按以下格式返回账户：每个账户的第一个元素是名称，其余元素是 <strong>按字符 ASCII 顺序排列</strong> 的邮箱地址。账户本身可以以 <strong>任意顺序</strong> 返回。</p>
+<p><strong>示例 1：</strong></p>
+<ul>
+<li>输入：</li>
+</ul>
+<pre>
+[
+    ["John", "johnsmith@mail.com", "john00@mail.com"],
+    ["John", "johnnybravo@mail.com"],
+    ["John", "johnsmith@mail.com", "john_newyork@mail.com"],
+    ["Mary", "mary@mail.com"]
+]
+</pre>
+<ul>
+<li>输出：</li>
+</ul>
+<pre>
+[
+    ["John", 'john00@mail.com',
+    'john_newyork@mail.com', 'johnsmith@mail.com'],
+    ["John", "johnnybravo@mail.com"],
+    ["Mary", "mary@mail.com"]
+]
+</pre>
+<ul>
+<li>解释：
+<ul>
+<li>第一个和第三个 John 是同一个人，因为他们有共同的邮箱地址 &ldquo;<a class="link" href="mailto:johnsmith@mail.com" >johnsmith@mail.com</a>&rdquo;。</li>
+<li>第二个 John 和 Mary 是不同的人，因为他们的邮箱地址没有被其他帐户使用。</li>
+<li>可以以任何顺序返回这些列表，例如答案
+<pre>
+[
+    ['Mary'，'mary@mail.com']，['John'，'johnnybravo@mail.com']，
+    ['John'，'john00@mail.com'，'john_newyork@mail.com'，
+    'johnsmith@mail.com']
+]
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>示例 2：</strong></p>
+<ul>
+<li>输入：accounts = [[&ldquo;Gabe&rdquo;,&ldquo;<a class="link" href="mailto:Gabe0@m.co" >Gabe0@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Gabe3@m.co" >Gabe3@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Gabe1@m.co" >Gabe1@m.co</a>&rdquo;],[&ldquo;Kevin&rdquo;,&ldquo;<a class="link" href="mailto:Kevin3@m.co" >Kevin3@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Kevin5@m.co" >Kevin5@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Kevin0@m.co" >Kevin0@m.co</a>&rdquo;],[&ldquo;Ethan&rdquo;,&ldquo;<a class="link" href="mailto:Ethan5@m.co" >Ethan5@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Ethan4@m.co" >Ethan4@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Ethan0@m.co" >Ethan0@m.co</a>&rdquo;],[&ldquo;Hanzo&rdquo;,&ldquo;<a class="link" href="mailto:Hanzo3@m.co" >Hanzo3@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Hanzo1@m.co" >Hanzo1@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Hanzo0@m.co" >Hanzo0@m.co</a>&rdquo;],[&ldquo;Fern&rdquo;,&ldquo;<a class="link" href="mailto:Fern5@m.co" >Fern5@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Fern1@m.co" >Fern1@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Fern0@m.co" >Fern0@m.co</a>&rdquo;]]</li>
+<li>输出：[[&ldquo;Ethan&rdquo;,&ldquo;<a class="link" href="mailto:Ethan0@m.co" >Ethan0@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Ethan4@m.co" >Ethan4@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Ethan5@m.co" >Ethan5@m.co</a>&rdquo;],[&ldquo;Gabe&rdquo;,&ldquo;<a class="link" href="mailto:Gabe0@m.co" >Gabe0@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Gabe1@m.co" >Gabe1@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Gabe3@m.co" >Gabe3@m.co</a>&rdquo;],[&ldquo;Hanzo&rdquo;,&ldquo;<a class="link" href="mailto:Hanzo0@m.co" >Hanzo0@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Hanzo1@m.co" >Hanzo1@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Hanzo3@m.co" >Hanzo3@m.co</a>&rdquo;],[&ldquo;Kevin&rdquo;,&ldquo;<a class="link" href="mailto:Kevin0@m.co" >Kevin0@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Kevin3@m.co" >Kevin3@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Kevin5@m.co" >Kevin5@m.co</a>&rdquo;],[&ldquo;Fern&rdquo;,&ldquo;<a class="link" href="mailto:Fern0@m.co" >Fern0@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Fern1@m.co" >Fern1@m.co</a>&rdquo;,&ldquo;<a class="link" href="mailto:Fern5@m.co" >Fern5@m.co</a>&rdquo;]]</li>
+</ul>
+<p><strong>提示：</strong></p>
+<ul>
+<li><code>1 &lt;= accounts.length &lt;= 1000</code></li>
+<li><code>2 &lt;= accounts[i].length &lt;= 10</code></li>
+<li><code>1 &lt;= accounts[i][j].length &lt;= 30</code></li>
+<li><code>accounts[i][0]</code> 由英文字母组成</li>
+<li><code>accounts[i][j] (for j &gt; 0)</code> 是有效的邮箱地址</li>
+</ul>
+<h2 id="解法一">解法一：</h2>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 2023/08/09 12:15:18
+        </span>
+    </section></footer>
+
+</article>
+
+
+    
+
+    
+
+    <aside class="related-content--wrapper">
+        <h2 class="section-title">相关文章</h2>
+        <div class="related-content">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0947-most-stones-removed-with-same-row-or-column/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/28.3d3810f889a49ce73e89c7268d405a62_hubb8073e5e8dea6b644ad1c33059b37ce_1206472_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 947. 移除最多的同行或同列石头"
+                        
+                        data-hash="md5-PTgQ&#43;ImknOc&#43;iccmjUBaYg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">947. 移除最多的同行或同列石头</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/1631-path-with-minimum-effort/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/05.03dfb2d4328e9c3f11f924f8737856fc_hub432477bc07843360148c20e5d960cbf_635143_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 1631. 最小体力消耗路径"
+                        
+                        data-hash="md5-A9&#43;y1DKOnD8R&#43;ST4c3hW/A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">1631. 最小体力消耗路径</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0365-water-and-jug-problem/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/35.66888b4fd82a190076534ae1a73b2f81_hu84e08b0ba06fbb10b7accce53a019dd9_276966_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 365. 水壶问题"
+                        
+                        data-hash="md5-ZoiLT9gqGQB2U0rhpzsvgQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">365. 水壶问题</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0646-maximum-length-of-pair-chain/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/05.03dfb2d4328e9c3f11f924f8737856fc_hub432477bc07843360148c20e5d960cbf_635143_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 646. 最长数对链"
+                        
+                        data-hash="md5-A9&#43;y1DKOnD8R&#43;ST4c3hW/A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">646. 最长数对链</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0141-linked-list-cycle/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/30.45fe68f0d5e73cec08d4f6208a73548c_hu6b33f88901e241f064888f7143885028_2042071_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 141. 环形链表"
+                        
+                        data-hash="md5-Rf5o8NXnPOwI1PYginNUjA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">141. 环形链表</h2>
+        </div>
+    </a>
+</article>
+
+                
+            </div>
+        </div>
+    </aside>
+
+
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onThemeModeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+
+    
+                <footer class="site-footer"><section class="copyright">
+        &copy;
+        
+            2021 -
+        
+        2023 iBakuman&#39;s Blog
+    </section>
+
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.16.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#题目描述">题目描述</a></li>
+    <li><a href="#解法一">解法一：</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <div class="fixed-buttons"><a href="#" class="fixed-buttons__back-to-top" class="fixed-button" title="">
+                    <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+                </a><a href="#" id="fixed-buttons__view-comments" class="fixed-button" title="">
+                    <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script><script type="text/javascript">window.themeConfig={"code":{"copyTitle":"Copy to clipboard"},"folding":{"maxShownLines":40}};</script><script type="text/javascript" src="/ts/main.min.3a18546ecb79abf74f4b27df66faadb0bb2e74b596d89f228e44cda88aa926fb.js" integrity="sha256-OhhUbst5q/dPSyffZvqtsLsudLWW2J8ijkTNqIqpJvs="></script>
+    </body>
+</html>
