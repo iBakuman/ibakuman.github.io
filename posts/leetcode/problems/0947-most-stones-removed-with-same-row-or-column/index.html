@@ -9,7 +9,7 @@
 <meta property='og:description' content='题目描述 n 块石头放置在二维平面中的一些整数坐标点上。每个坐标点上最多只能有一块石头。 如果一块石头的 同行或者同列 上有其他石头存在，那么就可以移'>
 <meta property='og:url' content='https://ibakuman.github.io/posts/leetcode/problems/0947-most-stones-removed-with-same-row-or-column/'>
 <meta property='og:site_name' content='iBakuman&#39;s Blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='' /><meta property='article:published_time' content='2023-08-08T18:38:21&#43;08:00'/><meta property='article:modified_time' content='2023-08-09T11:11:31&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='UnionFind' /><meta property='article:published_time' content='2023-08-08T18:38:21&#43;08:00'/><meta property='article:modified_time' content='2023-08-12T22:32:10&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
 <meta name="twitter:title" content="947. 移除最多的同行或同列石头">
 <meta name="twitter:description" content="题目描述 n 块石头放置在二维平面中的一些整数坐标点上。每个坐标点上最多只能有一块石头。 如果一块石头的 同行或者同列 上有其他石头存在，那么就可以移"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -226,10 +226,10 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/posts/leetcode/problems/0947-most-stones-removed-with-same-row-or-column/">
-                <img src="/gallery/landscape/25_hu0a3309c019aba12b8d679d09b57cc9da_1259768_800x0_resize_q75_box.jpg"
-                        srcset="/gallery/landscape/25_hu0a3309c019aba12b8d679d09b57cc9da_1259768_800x0_resize_q75_box.jpg 800w, /gallery/landscape/25_hu0a3309c019aba12b8d679d09b57cc9da_1259768_1600x0_resize_q75_box.jpg 1600w"
+                <img src="/gallery/landscape/28_hubb8073e5e8dea6b644ad1c33059b37ce_1206472_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/28_hubb8073e5e8dea6b644ad1c33059b37ce_1206472_800x0_resize_q75_box.jpg 800w, /gallery/landscape/28_hubb8073e5e8dea6b644ad1c33059b37ce_1206472_1600x0_resize_q75_box.jpg 1600w"
                         width="800"
-                        height="500"
+                        height="450"
                         loading="lazy"
                         alt="Featured image of post 947. 移除最多的同行或同列石头" />
                 
@@ -399,18 +399,6 @@
 </span><span class="lnt">47
 </span><span class="lnt">48
 </span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">UnionFind</span> <span class="kd">struct</span> <span class="p">{</span>
@@ -462,18 +450,6 @@
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">uf</span><span class="p">.</span><span class="nf">Resolve</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">subtractProductAndSum</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 由于 1 &lt;= n &lt;= 10^5，所以可以将 product 初始化为 1
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">product</span><span class="p">,</span> <span class="nx">sum</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">n</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">digit</span> <span class="o">:=</span> <span class="nx">n</span> <span class="o">%</span> <span class="mi">10</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">product</span> <span class="o">*=</span> <span class="nx">digit</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">sum</span> <span class="o">+=</span> <span class="nx">digit</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">n</span> <span class="o">/=</span> <span class="mi">10</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">product</span> <span class="o">-</span> <span class="nx">sum</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div>
@@ -483,6 +459,8 @@
     <footer class="article-footer">
     
     <section class="article-tags">
+        
+            <a href="/tags/unionfind/">UnionFind</a>
         
     </section>
 
@@ -509,7 +487,7 @@
 
 
         <span>
-            最后更新于 2023/08/09 11:11:31
+            最后更新于 2023/08/12 22:32:10
         </span>
     </section></footer>
 
@@ -527,7 +505,79 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/0721-accounts-merge/">
+    <a href="/posts/leetcode/problems/1579-remove-max-number-of-edges-to-keep-graph-fully-traversable/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 1579. 保证图可完全遍历"
+                        
+                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">1579. 保证图可完全遍历</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0803-bricks-falling-when-hit/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 803. 打砖块"
+                        
+                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">803. 打砖块</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/1202-smallest-string-with-swaps/">
+
+        
+            <div class="article-image">
+                <img src="/gallery/landscape/07.f853836a7f7a0b03d0899dd0429a5f0d_hu38aa638bb2ccd6db7051157dcdf19c8f_1416034_250x150_fill_q75_box_smart1.jpg"
+                        width="250"
+                        height="150"
+                        loading="lazy"
+                        alt="Featured image of post 1202. 交换字符串中的元素"
+                        
+                        data-hash="md5-&#43;FODan96CwPQiZ3QQppfDQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">1202. 交换字符串中的元素</h2>
+        </div>
+    </a>
+</article>
+
+                
+                    
+<article class="has-image">
+    <a href="/posts/leetcode/problems/0959-regions-cut-by-slashes/">
 
         
             <div class="article-image">
@@ -535,7 +585,7 @@
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 721. 账户合并"
+                        alt="Featured image of post 959. 由斜杠划分区域"
                         
                         data-hash="md5-jURylsSQ7RH8PTBhPBSfRw==">
                 
@@ -543,7 +593,7 @@
         
 
         <div class="article-details">
-            <h2 class="article-title">721. 账户合并</h2>
+            <h2 class="article-title">959. 由斜杠划分区域</h2>
         </div>
     </a>
 </article>
@@ -551,95 +601,23 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/1631-path-with-minimum-effort/">
+    <a href="/posts/leetcode/problems/1319-number-of-operations-to-make-network-connected/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/05.03dfb2d4328e9c3f11f924f8737856fc_hub432477bc07843360148c20e5d960cbf_635143_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/08.4f15a71dcde1ee073c7d3381c3255585_hufd4c43b663954d2f1b153b9f2254ca86_1202710_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 1631. 最小体力消耗路径"
+                        alt="Featured image of post 1319. 连通网络的操作次数"
                         
-                        data-hash="md5-A9&#43;y1DKOnD8R&#43;ST4c3hW/A==">
+                        data-hash="md5-TxWnHc3h7gc8fTOBwyVVhQ==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">1631. 最小体力消耗路径</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
-    <a href="/posts/leetcode/problems/0365-water-and-jug-problem/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/35.66888b4fd82a190076534ae1a73b2f81_hu84e08b0ba06fbb10b7accce53a019dd9_276966_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 365. 水壶问题"
-                        
-                        data-hash="md5-ZoiLT9gqGQB2U0rhpzsvgQ==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">365. 水壶问题</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
-    <a href="/posts/leetcode/problems/0646-maximum-length-of-pair-chain/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/05.03dfb2d4328e9c3f11f924f8737856fc_hub432477bc07843360148c20e5d960cbf_635143_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 646. 最长数对链"
-                        
-                        data-hash="md5-A9&#43;y1DKOnD8R&#43;ST4c3hW/A==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">646. 最长数对链</h2>
-        </div>
-    </a>
-</article>
-
-                
-                    
-<article class="has-image">
-    <a href="/posts/leetcode/problems/0141-linked-list-cycle/">
-
-        
-            <div class="article-image">
-                <img src="/gallery/landscape/30.45fe68f0d5e73cec08d4f6208a73548c_hu6b33f88901e241f064888f7143885028_2042071_250x150_fill_q75_box_smart1.jpg"
-                        width="250"
-                        height="150"
-                        loading="lazy"
-                        alt="Featured image of post 141. 环形链表"
-                        
-                        data-hash="md5-Rf5o8NXnPOwI1PYginNUjA==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">141. 环形链表</h2>
+            <h2 class="article-title">1319. 连通网络的操作次数</h2>
         </div>
     </a>
 </article>

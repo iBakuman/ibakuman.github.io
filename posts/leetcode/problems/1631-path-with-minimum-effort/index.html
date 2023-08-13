@@ -9,7 +9,7 @@
 <meta property='og:description' content='题目描述 你准备参加一场远足活动。给你一个二维 rows x columns 的地图 heights ，其中 heights[row][col] 表示格子 (row, col) 的高度。一开始你在最左上角的格子 (0, 0) ，且你希望去最右下角的格子'>
 <meta property='og:url' content='https://ibakuman.github.io/posts/leetcode/problems/1631-path-with-minimum-effort/'>
 <meta property='og:site_name' content='iBakuman&#39;s Blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='' /><meta property='article:published_time' content='2023-08-08T10:54:55&#43;08:00'/><meta property='article:modified_time' content='2023-08-08T11:22:11&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='DFS' /><meta property='article:tag' content='BinarySearch' /><meta property='article:published_time' content='2023-08-08T10:54:55&#43;08:00'/><meta property='article:modified_time' content='2023-08-12T22:34:05&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
 <meta name="twitter:title" content="1631. 最小体力消耗路径">
 <meta name="twitter:description" content="题目描述 你准备参加一场远足活动。给你一个二维 rows x columns 的地图 heights ，其中 heights[row][col] 表示格子 (row, col) 的高度。一开始你在最左上角的格子 (0, 0) ，且你希望去最右下角的格子"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -226,8 +226,8 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/posts/leetcode/problems/1631-path-with-minimum-effort/">
-                <img src="/gallery/landscape/06_hu81244abf406e14dcc233313eedffeb78_1696606_800x0_resize_q75_box.jpg"
-                        srcset="/gallery/landscape/06_hu81244abf406e14dcc233313eedffeb78_1696606_800x0_resize_q75_box.jpg 800w, /gallery/landscape/06_hu81244abf406e14dcc233313eedffeb78_1696606_1600x0_resize_q75_box.jpg 1600w"
+                <img src="/gallery/landscape/12_hudcb57a36f165de723463bb2c9342c95a_1835608_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/12_hudcb57a36f165de723463bb2c9342c95a_1835608_800x0_resize_q75_box.jpg 800w, /gallery/landscape/12_hudcb57a36f165de723463bb2c9342c95a_1835608_1600x0_resize_q75_box.jpg 1600w"
                         width="800"
                         height="533"
                         loading="lazy"
@@ -371,7 +371,7 @@
 <li><code>1 &lt;= rows, columns &lt;= 100</code></li>
 <li>1 &lt;= heights[i][j] &lt;= 10<sup>6</sup></li>
 </ul>
-<h2 id="解法一dfs超时">解法一：DFS（超时）</h2>
+<h2 id="解法一bfs">解法一：BFS</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -412,39 +412,9 @@
 </span><span class="lnt">36
 </span><span class="lnt">37
 </span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">min</span><span class="p">(</span><span class="nx">nums</span> <span class="o">...</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">res</span> <span class="o">:=</span> <span class="nx">nums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">num</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">nums</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">num</span> <span class="p">&lt;</span> <span class="nx">res</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">res</span> <span class="p">=</span> <span class="nx">num</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">res</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">max</span><span class="p">(</span><span class="nx">nums</span> <span class="o">...</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">res</span> <span class="o">:=</span> <span class="nx">nums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">num</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">nums</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">num</span> <span class="p">&gt;</span> <span class="nx">res</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">res</span> <span class="p">=</span> <span class="nx">num</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">res</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">abs</span><span class="p">(</span><span class="nx">num</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">abs</span><span class="p">(</span><span class="nx">num</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">num</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="nx">num</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
@@ -453,35 +423,36 @@
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">minimumEffortPath</span><span class="p">(</span><span class="nx">heights</span> <span class="p">[][]</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nx">h</span><span class="p">,</span> <span class="nx">w</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">heights</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="nx">heights</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">left</span><span class="p">,</span> <span class="nx">right</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    <span class="nx">dirs</span> <span class="o">:=</span> <span class="p">[][</span><span class="mi">2</span><span class="p">]</span><span class="kt">int</span><span class="p">{{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">}}</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// dfs(i, j) 计算从坐标 (i, j) 走到右下角的最小体力消耗值
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">var</span> <span class="nx">dfs</span> <span class="kd">func</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">dfs</span> <span class="p">=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">i</span> <span class="o">==</span> <span class="nx">h</span><span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">j</span> <span class="o">==</span> <span class="nx">w</span><span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="mi">0</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">raw</span> <span class="o">:=</span> <span class="nx">heights</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">heights</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span> <span class="p">=</span> <span class="mi">0</span>
-</span></span><span class="line"><span class="cl">        <span class="k">defer</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">heights</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span> <span class="p">=</span> <span class="nx">raw</span> <span class="p">}()</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">ret</span> <span class="o">:=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">MaxInt32</span>
-</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">dir</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">dirs</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">ni</span><span class="p">,</span> <span class="nx">nj</span> <span class="o">:=</span> <span class="nx">i</span><span class="o">+</span><span class="nx">dir</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">j</span><span class="o">+</span><span class="nx">dir</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nx">ni</span> <span class="o">&amp;&amp;</span> <span class="nx">ni</span> <span class="p">&lt;</span> <span class="nx">h</span> <span class="o">&amp;&amp;</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nx">nj</span> <span class="o">&amp;&amp;</span> <span class="nx">nj</span> <span class="p">&lt;</span> <span class="nx">w</span> <span class="o">&amp;&amp;</span> <span class="nx">heights</span><span class="p">[</span><span class="nx">ni</span><span class="p">][</span><span class="nx">nj</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nx">ret</span> <span class="p">=</span> <span class="nf">min</span><span class="p">(</span><span class="nf">max</span><span class="p">(</span><span class="nf">dfs</span><span class="p">(</span><span class="nx">ni</span><span class="p">,</span> <span class="nx">nj</span><span class="p">),</span> <span class="nf">abs</span><span class="p">(</span><span class="nx">raw</span><span class="o">-</span><span class="nx">heights</span><span class="p">[</span><span class="nx">ni</span><span class="p">][</span><span class="nx">nj</span><span class="p">])),</span> <span class="nx">ret</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">mid</span> <span class="o">:=</span> <span class="nx">left</span> <span class="o">+</span> <span class="p">(</span><span class="nx">right</span><span class="o">-</span><span class="nx">left</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">var</span> <span class="nx">queue</span> <span class="p">[][</span><span class="mi">2</span><span class="p">]</span><span class="kt">int</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">seen</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">bool</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">queue</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">queue</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">seen</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="nb">len</span><span class="p">(</span><span class="nx">queue</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">cur</span> <span class="o">:=</span> <span class="nx">queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="o">:=</span> <span class="nx">cur</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">cur</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">queue</span> <span class="p">=</span> <span class="nx">queue</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">dir</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">dirs</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">nx</span><span class="p">,</span> <span class="nx">ny</span> <span class="o">:=</span> <span class="nx">x</span><span class="o">+</span><span class="nx">dir</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">y</span><span class="o">+</span><span class="nx">dir</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                <span class="k">for</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nx">nx</span> <span class="o">&amp;&amp;</span> <span class="nx">nx</span> <span class="p">&lt;</span> <span class="nx">h</span> <span class="o">&amp;&amp;</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nx">ny</span> <span class="o">&amp;&amp;</span> <span class="nx">ny</span> <span class="p">&lt;</span> <span class="nx">w</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nx">seen</span><span class="p">[</span><span class="nx">nx</span><span class="o">*</span><span class="nx">w</span><span class="o">+</span><span class="nx">ny</span><span class="p">]</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">                    <span class="nf">abs</span><span class="p">(</span><span class="nx">heights</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="nx">y</span><span class="p">]</span><span class="o">-</span><span class="nx">heights</span><span class="p">[</span><span class="nx">nx</span><span class="p">][</span><span class="nx">ny</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="nx">mid</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">seen</span><span class="p">[</span><span class="nx">nx</span><span class="o">*</span><span class="nx">w</span><span class="o">+</span><span class="nx">ny</span><span class="p">]</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">queue</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">queue</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="nx">nx</span><span class="p">,</span> <span class="nx">ny</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}</span>
 </span></span><span class="line"><span class="cl">            <span class="p">}</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">ret</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">seen</span><span class="p">[</span><span class="nx">h</span><span class="o">*</span><span class="nx">w</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">right</span> <span class="p">=</span> <span class="nx">mid</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">left</span> <span class="p">=</span> <span class="nx">mid</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nf">dfs</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">right</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
-</div>
-</div><p>将上述代码加上记忆化搜索来优化，优化后的代码如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"></code></pre></td></tr></table>
 </div>
 </div>
 </section>
@@ -490,6 +461,10 @@
     <footer class="article-footer">
     
     <section class="article-tags">
+        
+            <a href="/tags/dfs/">DFS</a>
+        
+            <a href="/tags/binarysearch/">BinarySearch</a>
         
     </section>
 
@@ -516,7 +491,7 @@
 
 
         <span>
-            最后更新于 2023/08/08 11:22:11
+            最后更新于 2023/08/12 22:34:05
         </span>
     </section></footer>
 
@@ -534,23 +509,23 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/0721-accounts-merge/">
+    <a href="/posts/leetcode/problems/0547-number-of-provinces/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/21.8d447296c490ed11fc3d30613c149f47_hub73357eff33b538ccccba9977cd6e8b3_9581476_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/23.7ee86b13d8b9499698c4d66152c021d1_hu3a7b7452a865fd9297e7a2768212101d_732306_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 721. 账户合并"
+                        alt="Featured image of post 547. 省份数量"
                         
-                        data-hash="md5-jURylsSQ7RH8PTBhPBSfRw==">
+                        data-hash="md5-fuhrE9i5SZaYxNZhUsAh0Q==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">721. 账户合并</h2>
+            <h2 class="article-title">547. 省份数量</h2>
         </div>
     </a>
 </article>
@@ -558,23 +533,23 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/0947-most-stones-removed-with-same-row-or-column/">
+    <a href="/posts/leetcode/problems/0399-evaluate-division/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/28.3d3810f889a49ce73e89c7268d405a62_hubb8073e5e8dea6b644ad1c33059b37ce_1206472_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/10.ef9e193870ade10ddbc208c402c60540_hucf27c6ee6e299e97a870b7c7ce3b8818_623029_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 947. 移除最多的同行或同列石头"
+                        alt="Featured image of post 399. 除法求值"
                         
-                        data-hash="md5-PTgQ&#43;ImknOc&#43;iccmjUBaYg==">
+                        data-hash="md5-754ZOHCt4Q3bwgjEAsYFQA==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">947. 移除最多的同行或同列石头</h2>
+            <h2 class="article-title">399. 除法求值</h2>
         </div>
     </a>
 </article>
@@ -582,23 +557,23 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/0365-water-and-jug-problem/">
+    <a href="/posts/leetcode/problems/0210-course-schedule-ii/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/35.66888b4fd82a190076534ae1a73b2f81_hu84e08b0ba06fbb10b7accce53a019dd9_276966_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/15.06c3dbd93982e483daa78dd72cef19b1_hu9990e0c65ada11c3249979cb281e5728_1046110_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 365. 水壶问题"
+                        alt="Featured image of post 210. 课程表 II"
                         
-                        data-hash="md5-ZoiLT9gqGQB2U0rhpzsvgQ==">
+                        data-hash="md5-BsPb2TmC5IPap43XLO8ZsQ==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">365. 水壶问题</h2>
+            <h2 class="article-title">210. 课程表 II</h2>
         </div>
     </a>
 </article>
@@ -606,23 +581,23 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/0646-maximum-length-of-pair-chain/">
+    <a href="/posts/leetcode/problems/0207-course-schedule/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/05.03dfb2d4328e9c3f11f924f8737856fc_hub432477bc07843360148c20e5d960cbf_635143_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/31.dfebc6e6b671982c2a1b9a315b4cb43c_hu50ead7b655b5f47cafc1e1da4c3aac1b_499903_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 646. 最长数对链"
+                        alt="Featured image of post 207. 课程表"
                         
-                        data-hash="md5-A9&#43;y1DKOnD8R&#43;ST4c3hW/A==">
+                        data-hash="md5-3&#43;vG5rZxmCwqG5oxW0y0PA==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">646. 最长数对链</h2>
+            <h2 class="article-title">207. 课程表</h2>
         </div>
     </a>
 </article>
@@ -630,23 +605,23 @@
                 
                     
 <article class="has-image">
-    <a href="/posts/leetcode/problems/0141-linked-list-cycle/">
+    <a href="/posts/leetcode/problems/0199-binary-tree-right-side-view/">
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/30.45fe68f0d5e73cec08d4f6208a73548c_hu6b33f88901e241f064888f7143885028_2042071_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/18.1d6c831bbe3ac5066415b0e3b01e7d47_hu7a8b922ea914ad8a12e0fc01dcf809f5_223556_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
-                        alt="Featured image of post 141. 环形链表"
+                        alt="Featured image of post 199. 二叉树的右视图"
                         
-                        data-hash="md5-Rf5o8NXnPOwI1PYginNUjA==">
+                        data-hash="md5-HWyDG746xQZkFbDjsB59Rw==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">141. 环形链表</h2>
+            <h2 class="article-title">199. 二叉树的右视图</h2>
         </div>
     </a>
 </article>
@@ -803,7 +778,7 @@
             <nav id="TableOfContents">
   <ol>
     <li><a href="#题目描述">题目描述</a></li>
-    <li><a href="#解法一dfs超时">解法一：DFS（超时）</a></li>
+    <li><a href="#解法一bfs">解法一：BFS</a></li>
   </ol>
 </nav>
         </div>
