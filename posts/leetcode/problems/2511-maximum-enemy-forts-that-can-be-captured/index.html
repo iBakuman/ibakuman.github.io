@@ -9,7 +9,7 @@
 <meta property='og:description' content='题目描述 给你一个长度为 n ，下标从 0 开始的整数数组 forts ，表示一些城堡。forts[i] 可以是 -1 ，0 或者 1 ，其中： -1 表示第 i 个位置 没有 城堡。 0 表示'>
 <meta property='og:url' content='https://ibakuman.github.io/posts/leetcode/problems/2511-maximum-enemy-forts-that-can-be-captured/'>
 <meta property='og:site_name' content='iBakuman&#39;s Blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='' /><meta property='article:published_time' content='2023-09-02T07:46:43&#43;08:00'/><meta property='article:modified_time' content='2023-09-02T07:51:24&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='' /><meta property='article:published_time' content='2023-09-02T07:46:43&#43;08:00'/><meta property='article:modified_time' content='2023-09-02T07:52:56&#43;08:00'/><meta property='og:image' content='https://ibakuman.github.io/img/default.png' />
 <meta name="twitter:title" content="2511. 最多可以摧毁的敌人城堡数目">
 <meta name="twitter:description" content="题目描述 给你一个长度为 n ，下标从 0 开始的整数数组 forts ，表示一些城堡。forts[i] 可以是 -1 ，0 或者 1 ，其中： -1 表示第 i 个位置 没有 城堡。 0 表示"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://ibakuman.github.io/img/default.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -226,8 +226,8 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/posts/leetcode/problems/2511-maximum-enemy-forts-that-can-be-captured/">
-                <img src="/gallery/landscape/05_hub432477bc07843360148c20e5d960cbf_635143_800x0_resize_q75_box.jpg"
-                        srcset="/gallery/landscape/05_hub432477bc07843360148c20e5d960cbf_635143_800x0_resize_q75_box.jpg 800w, /gallery/landscape/05_hub432477bc07843360148c20e5d960cbf_635143_1600x0_resize_q75_box.jpg 1600w"
+                <img src="/gallery/landscape/30_hu6b33f88901e241f064888f7143885028_2042071_800x0_resize_q75_box.jpg"
+                        srcset="/gallery/landscape/30_hu6b33f88901e241f064888f7143885028_2042071_800x0_resize_q75_box.jpg 800w, /gallery/landscape/30_hu6b33f88901e241f064888f7143885028_2042071_1600x0_resize_q75_box.jpg 1600w"
                         width="800"
                         height="450"
                         loading="lazy"
@@ -413,6 +413,51 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
+</div><p>官方题解如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">captureForts</span><span class="p">(</span><span class="nx">forts</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ans</span><span class="p">,</span> <span class="nx">pre</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">fort</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">forts</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">fort</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">||</span> <span class="nx">fort</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="nx">pre</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">forts</span><span class="p">[</span><span class="nx">pre</span><span class="p">]</span> <span class="o">!=</span> <span class="nx">fort</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">ans</span> <span class="p">=</span> <span class="nf">max</span><span class="p">(</span><span class="nx">ans</span><span class="p">,</span> <span class="nx">i</span> <span class="o">-</span> <span class="nx">pre</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">pre</span> <span class="p">=</span> <span class="nx">i</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">ans</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">max</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">a</span> <span class="p">&gt;</span> <span class="nx">b</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">a</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">b</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
 </div>
 </section>
 
@@ -446,7 +491,7 @@
 
 
         <span>
-            最后更新于 2023/09/02 07:51:24
+            最后更新于 2023/09/02 07:52:56
         </span>
     </section></footer>
 
@@ -468,13 +513,13 @@
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/11.2f093314f7144588c8c264fd8c5edd91_hudf52b8b325017a6d69e0e042062b02e2_3188398_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/07.f853836a7f7a0b03d0899dd0429a5f0d_hu38aa638bb2ccd6db7051157dcdf19c8f_1416034_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 1654. 到家的最少跳跃次数"
                         
-                        data-hash="md5-LwkzFPcURYjIwmT9jF7dkQ==">
+                        data-hash="md5-&#43;FODan96CwPQiZ3QQppfDQ==">
                 
             </div>
         
@@ -492,13 +537,13 @@
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/10.ef9e193870ade10ddbc208c402c60540_hucf27c6ee6e299e97a870b7c7ce3b8818_623029_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/33.93a18093c97b5d70c9fda4f4f0835498_hu66ca492386bb42c90e91c813efc08adf_1739420_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 57. 插入区间"
                         
-                        data-hash="md5-754ZOHCt4Q3bwgjEAsYFQA==">
+                        data-hash="md5-k6GAk8l7XXDJ/aT08INUmA==">
                 
             </div>
         
@@ -516,13 +561,13 @@
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/12.96e632c8bb9f772b420717529453088f_hudcb57a36f165de723463bb2c9342c95a_1835608_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/17.9800920920e8a9ef0cfbd3d8d3787fb2_hudbc1561b7a760b2f47477637bc223f35_938024_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 1782. 统计点对的数目"
                         
-                        data-hash="md5-luYyyLufdytCBxdSlFMIjw==">
+                        data-hash="md5-mACSCSDoqe8M&#43;9PY03h/sg==">
                 
             </div>
         
@@ -540,13 +585,13 @@
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/13.505cf4b0f36e39cf77e954b4565ec4bd_hudf999d0dc4b7b257102e5c819f964247_303499_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/16.939adf57434b8b256e488a22d644b448_hu0ea51e27a440094cf104de9d9c751749_432111_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 849. 到最近的人的最大距离"
                         
-                        data-hash="md5-UFz0sPNuOc936VS0Vl7EvQ==">
+                        data-hash="md5-k5rfV0NLiyVuSIoi1kS0SA==">
                 
             </div>
         
@@ -564,13 +609,13 @@
 
         
             <div class="article-image">
-                <img src="/gallery/landscape/05.03dfb2d4328e9c3f11f924f8737856fc_hub432477bc07843360148c20e5d960cbf_635143_250x150_fill_q75_box_smart1.jpg"
+                <img src="/gallery/landscape/33.93a18093c97b5d70c9fda4f4f0835498_hu66ca492386bb42c90e91c813efc08adf_1739420_250x150_fill_q75_box_smart1.jpg"
                         width="250"
                         height="150"
                         loading="lazy"
                         alt="Featured image of post 2337. 移动片段得到字符串"
                         
-                        data-hash="md5-A9&#43;y1DKOnD8R&#43;ST4c3hW/A==">
+                        data-hash="md5-k6GAk8l7XXDJ/aT08INUmA==">
                 
             </div>
         
