@@ -6,7 +6,92 @@
         <description>Recent content in BinarySearch on iBakuman&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Tue, 08 Aug 2023 10:54:55 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/tags/binarysearch/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 07 Sep 2023 08:22:16 +0800</lastBuildDate><atom:link href="https://ibakuman.github.io/tags/binarysearch/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>2594. 修车的最少时间</title>
+        <link>https://ibakuman.github.io/posts/leetcode/problems/2594-minimum-time-to-repair-cars/</link>
+        <pubDate>Thu, 07 Sep 2023 08:22:16 +0800</pubDate>
+        
+        <guid>https://ibakuman.github.io/posts/leetcode/problems/2594-minimum-time-to-repair-cars/</guid>
+        <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述&lt;/h2&gt;
+&lt;p&gt;给你一个整数数组 &lt;code&gt;ranks&lt;/code&gt; ，表示一些机械工的 &lt;strong&gt;能力值&lt;/strong&gt; 。ranks&lt;sub&gt;i&lt;/sub&gt; 是第 &lt;code&gt;i&lt;/code&gt; 位机械工的能力值。能力值为 &lt;code&gt;r&lt;/code&gt; 的机械工可以在 r * n&lt;sup&gt;2&lt;/sup&gt; 分钟内修好 &lt;code&gt;n&lt;/code&gt; 辆车。&lt;/p&gt;
+&lt;p&gt;同时给你一个整数 &lt;code&gt;cars&lt;/code&gt; ，表示总共需要修理的汽车数目。&lt;/p&gt;
+&lt;p&gt;请你返回修理所有汽车 &lt;strong&gt;最少&lt;/strong&gt; 需要多少时间。&lt;/p&gt;
+&lt;p&gt;**注意：**所有机械工可以同时修理汽车。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;示例 1：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入：ranks = [4,2,3,1], cars = 10&lt;/li&gt;
+&lt;li&gt;输出：16&lt;/li&gt;
+&lt;li&gt;解释：
+&lt;ul&gt;
+&lt;li&gt;第一位机械工修 2 辆车，需要 4 * 2 * 2 = 16 分钟。&lt;/li&gt;
+&lt;li&gt;第二位机械工修 2 辆车，需要 2 * 2 * 2 = 8 分钟。&lt;/li&gt;
+&lt;li&gt;第三位机械工修 2 辆车，需要 3 * 2 * 2 = 12 分钟。&lt;/li&gt;
+&lt;li&gt;第四位机械工修 4 辆车，需要 1 * 4 * 4 = 16 分钟。&lt;/li&gt;
+&lt;li&gt;16 分钟是修理完所有车需要的最少时间。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;示例 2：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入：ranks = [5,1,8], cars = 6&lt;/li&gt;
+&lt;li&gt;输出：16&lt;/li&gt;
+&lt;li&gt;解释：
+&lt;ul&gt;
+&lt;li&gt;第一位机械工修 1 辆车，需要 5 * 1 * 1 = 5 分钟。&lt;/li&gt;
+&lt;li&gt;第二位机械工修 4 辆车，需要 1 * 4 * 4 = 16 分钟。&lt;/li&gt;
+&lt;li&gt;第三位机械工修 1 辆车，需要 8 * 1 * 1 = 8 分钟。&lt;/li&gt;
+&lt;li&gt;16 分钟时修理完所有车需要的最少时间。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;提示：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1 &amp;lt;= ranks.length &amp;lt;= 10&lt;sup&gt;5&lt;/sup&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;1 &amp;lt;= ranks[i] &amp;lt;= 100&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;1 &amp;lt;= cars &amp;lt;= 10&lt;sup&gt;6&lt;/sup&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;解法一二分查找&#34;&gt;解法一：二分查找&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	n := len(ranks)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	left, right := int64(1), int64(math.MaxInt64)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	for left &amp;lt; right {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		mid := left + (right-left)/2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		fixedCarNum := 0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		for i := 0; i &amp;lt; n; i++ {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			fixedCarNum += int(math.Sqrt(float64(mid)/float64(ranks[i])))
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		if fixedCarNum &amp;gt;= cars {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			right = mid
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		} else {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			left = mid+1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	return right
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description>
+        </item>
+        <item>
         <title>1631. 最小体力消耗路径</title>
         <link>https://ibakuman.github.io/posts/leetcode/problems/1631-path-with-minimum-effort/</link>
         <pubDate>Tue, 08 Aug 2023 10:54:55 +0800</pubDate>
